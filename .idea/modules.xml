@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lambda.iml" filepath="$PROJECT_DIR$/.idea/modules/lambda.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lambda.main.iml" filepath="$PROJECT_DIR$/.idea/modules/lambda.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lambda.test.iml" filepath="$PROJECT_DIR$/.idea/modules/lambda.test.iml" />
+    </modules>
+  </component>
+</project>
