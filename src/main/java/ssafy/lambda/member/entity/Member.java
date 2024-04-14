@@ -2,6 +2,7 @@ package ssafy.lambda.member.entity;
 
 
 import jakarta.persistence.*;
+import java.util.Date;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,10 +23,22 @@ public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long memberId;
+
     @Enumerated(EnumType.STRING)
     SocialType social;
+
     @Column
     String name;
-    @OneToMany
+
+    @Column
+    Integer point;
+
+    @Column
+    Date createdAt;
+
+    @Column
+    String profileImgUrl;
+
+    @OneToMany(mappedBy = "member")
     List<Membership> memberships;
 }

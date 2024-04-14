@@ -14,9 +14,11 @@ import ssafy.lambda.member.entity.Member;
 @NoArgsConstructor
 @Entity
 public class Membership {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     Member member;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
     Team team;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

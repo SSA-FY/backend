@@ -14,7 +14,7 @@ import java.util.List;
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long groupId;
+    Long teamId;
 
     @Column
     String groupName;
@@ -27,7 +27,7 @@ public class Team {
 
     @Column
     Integer participants;
-    @OneToMany
+    @OneToMany(mappedBy = "team")
     List<Membership> memberships;
 
 }
