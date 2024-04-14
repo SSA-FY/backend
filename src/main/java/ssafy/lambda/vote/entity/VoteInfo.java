@@ -15,8 +15,8 @@ public class VoteInfo {
     @Column(name = "vote_info_id")
     private Long id;
 
-    @Column(name = "choosed_user_id")
-    private Long choosedUserId;
+    @Column(name = "choosed_member_id")
+    private Long choosedMemberId;
 
     @CreatedDate
     @Column(name = "created_at")
@@ -32,15 +32,26 @@ public class VoteInfo {
     @JoinColumn(name = "vote_id")
     private Vote vote;
 
+    // @조인해서 가져와야함
+    @Column(name = "member_id")
+    private Long memberId;
+
     protected VoteInfo(){}
 
     @Builder
-    public VoteInfo(Long id, Long choosedUserId, LocalDateTime createAt, boolean isOpen, String opinion, Vote vote) {
-        this.id = id;
-        this.choosedUserId = choosedUserId;
-        this.createAt = createAt;
-        this.isOpen = isOpen;
-        this.opinion = opinion;
+    public VoteInfo(Long choosedMemberId, Vote vote, Long memberId) {
+        this.choosedMemberId = choosedMemberId;
+        this.createAt = LocalDateTime.now();
+        this.isOpen = false;
         this.vote = vote;
+        this.memberId = memberId;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
+
+    public void setOpinion(String opinion) {
+        this.opinion = opinion;
     }
 }

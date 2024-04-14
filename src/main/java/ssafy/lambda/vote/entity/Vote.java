@@ -32,6 +32,7 @@ public class Vote {
     @Column(name = "img_url")
     private String imgUrl;
 
+    // 다대일 양방향 매핑
     @OneToMany(mappedBy = "vote")
     List<VoteInfo> voteInfoList = new ArrayList<>();
 

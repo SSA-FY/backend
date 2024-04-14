@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface VoteService {
     void createVote(RequestVoteDto requestVoteDto);
+
+    void doVote(Long voteId, Long teamId, Long memberId, Long choosedMemberId);
 }
