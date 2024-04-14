@@ -2,7 +2,6 @@ package ssafy.lambda.team.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,19 +33,23 @@ public class Team {
     @Column
     private Integer participants;
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", orphanRemoval = true)
     private List<Membership> memberships = new ArrayList<>();
 
     protected Team() {
     }
 
     @Builder
-    public Team(Long teamId, String teamName, String description,
-        Integer participants) {
+    public Team(Long teamId, String teamName, String description) {
         this.teamId = teamId;
         this.teamName = teamName;
         this.description = description;
         this.createdAt = LocalDateTime.now();
-        this.participants = participants;
+        this.participants = 0;
+    }
+
+    public void update(String teamName, String description) {
+        this.teamName = teamName;
+        this.description = description;
     }
 }

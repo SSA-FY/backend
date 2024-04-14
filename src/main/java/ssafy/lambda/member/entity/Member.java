@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,7 +43,7 @@ public class Member {
     @Column
     private String email;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
     private List<Membership> memberships = new ArrayList<>();
 
     protected Member() {
@@ -60,5 +59,12 @@ public class Member {
         this.createdAt = LocalDateTime.now();
         this.profileImgUrl = profileImgUrl;
         this.email = email;
+    }
+
+    public void update(String name, Integer point,
+        String profileImgUrl) {
+        this.name = name;
+        this.point = point;
+        this.profileImgUrl = profileImgUrl;
     }
 }
