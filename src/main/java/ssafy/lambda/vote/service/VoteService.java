@@ -8,5 +8,5 @@ import ssafy.lambda.vote.entity.VoteInfo;
 import java.util.List;
 
 public interface VoteService {
-    void createVote(RequestVoteDto requestVoteDto, RequestMemberDto requestMemberDto);
+    void createVote(RequestVoteDto requestVoteDto);
 }

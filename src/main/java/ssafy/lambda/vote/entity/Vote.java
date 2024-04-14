@@ -40,12 +40,12 @@ public class Vote {
 
 
     @Builder
-    public Vote(Long id, String content, LocalDateTime createAt, LocalDateTime expiredAt, boolean isProceeding, String imgUrl) {
+    public Vote(Long id, String content, String imgUrl) {
         this.id = id;
         this.content = content;
-        this.createAt = createAt;
-        this.expiredAt = expiredAt;
-        this.isProceeding = isProceeding;
+        this.createAt = LocalDateTime.now();
+        this.expiredAt = LocalDateTime.now().plusDays(7);
+        this.isProceeding = true;
         this.imgUrl = imgUrl;
     }
 }
