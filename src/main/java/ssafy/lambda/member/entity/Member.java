@@ -5,47 +5,60 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import ssafy.lambda.membership.entity.Membership;
 
 
 @Getter
-@Setter
 @Entity
-@RequiredArgsConstructor
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long memberId;
+    private Long memberId;
 
     @Enumerated(EnumType.STRING)
-    SocialType social;
+    private SocialType social;
 
     @Column
-    String name;
+    private String name;
 
     @Column
-    Integer point;
+    private Integer point;
 
     @Column
-    Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column
-    String profileImgUrl;
+    private String profileImgUrl;
 
     @Column
-    String email;
+    private String email;
 
-    @OneToMany(mappedBy = "member")
-    List<Membership> memberships = new ArrayList<>();
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Membership> memberships = new ArrayList<>();
+
+    protected Member() {
+    }
+
+    @Builder
+    public Member(Long memberId, SocialType social, String name, Integer point,
+        String profileImgUrl, String email) {
+        this.memberId = memberId;
+        this.social = social;
+        this.name = name;
+        this.point = point;
+        this.createdAt = LocalDateTime.now();
+        this.profileImgUrl = profileImgUrl;
+        this.email = email;
+    }
 }
