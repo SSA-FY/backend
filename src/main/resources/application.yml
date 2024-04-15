@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mariadb://localhost:3306/ssafy
+    url: jdbc:mariadb://localhost:3307/ssafy
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
     password: ssafy
@@ -9,4 +9,4 @@ spring:
     generate-ddl: true
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
