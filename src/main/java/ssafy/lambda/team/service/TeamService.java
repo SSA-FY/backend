@@ -22,7 +22,7 @@ public class TeamService {
 
     public Team findTeamById(Long teamId) {
         return teamRepository.findById(teamId)
-            .orElse(null);
+            .orElseThrow(() -> new IllegalArgumentException("not found: " + teamId));
     }
 
     @Transactional
