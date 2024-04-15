@@ -1,5 +1,6 @@
 package ssafy.lambda.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @Operation(summary = "유저 목록 조회", description = "유저 목록을 조회합니다")
     @GetMapping
     public ResponseEntity<List<ResponseMemberDto>> getMembers() {
         List<ResponseMemberDto> members = memberService.findAllMember()
@@ -35,6 +37,7 @@ public class MemberController {
             .body(members);
     }
 
+    @Operation(summary = "유저 조회", description = "유저 정보를 조회합니다")
     @GetMapping("{id}")
     public ResponseEntity<ResponseMemberDto> getMember(@PathVariable("id") Long id) {
         Member member = memberService.findMemberById(id);
@@ -43,6 +46,7 @@ public class MemberController {
             .body(new ResponseMemberDto(member));
     }
 
+    @Operation(summary = "유저 생성", description = "새로운 유저를 생성합니다")
     @PostMapping
     public ResponseEntity<ResponseMemberDto> register(
         @RequestBody RequestMemberDto requestMemberDto) {
@@ -52,6 +56,7 @@ public class MemberController {
             .body(new ResponseMemberDto(savedMember));
     }
 
+    @Operation(summary = "유저 갱신", description = "유저 정보를 갱신합니다")
     @PutMapping("{id}")
     public ResponseEntity<ResponseMemberDto> update(@PathVariable("id") Long id,
         @RequestBody RequestMemberDto requestMemberDto) {
@@ -61,6 +66,7 @@ public class MemberController {
             .body(new ResponseMemberDto(updatedMember));
     }
 
+    @Operation(summary = "유저 삭제", description = "유저를 삭제합니다")
     @DeleteMapping("{id}")
     public ResponseEntity<ResponseMemberDto> delete(@PathVariable("id") Long id) {
         memberService.deleteMemberById(id);

@@ -1,5 +1,6 @@
 package ssafy.lambda.team.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class TeamController {
 
     private final TeamService teamService;
 
+    @Operation(summary = "그룹 목록 조회", description = "그룹 목록을 조회합니다")
     @GetMapping
     public ResponseEntity<List<ResponseTeamDto>> getTeams() {
         List<ResponseTeamDto> teams = teamService.findAllTeam()
@@ -35,6 +37,7 @@ public class TeamController {
             .body(teams);
     }
 
+    @Operation(summary = "그룹 조회", description = "그룹을 조회합니다")
     @GetMapping("{id}")
     public ResponseEntity<ResponseTeamDto> getTeam(@PathVariable("id") Long id) {
         Team team = teamService.findTeamById(id);
@@ -43,6 +46,7 @@ public class TeamController {
             .body(new ResponseTeamDto(team));
     }
 
+    @Operation(summary = "그룹 생성", description = "그룹을 생성합니다")
     @PostMapping
     public ResponseEntity<ResponseTeamDto> createTeam(@RequestBody RequestTeamDto team) {
         Team createdTeam = teamService.createTeam(team);
@@ -51,6 +55,7 @@ public class TeamController {
             .body(new ResponseTeamDto(createdTeam));
     }
 
+    @Operation(summary = "그룹 갱신", description = "그룹을 갱신합니다")
     @PutMapping("{id}")
     public ResponseEntity<ResponseTeamDto> updateTeam(@PathVariable("id") Long id,
         @RequestBody RequestTeamDto team) {
@@ -60,6 +65,7 @@ public class TeamController {
             .body(new ResponseTeamDto(updatedTeam));
     }
 
+    @Operation(summary = "그룹 삭제", description = "그룹을 삭제합니다")
     @DeleteMapping("{id}")
     public ResponseEntity<ResponseTeamDto> deleteTeam(@PathVariable("id") Long id) {
         teamService.deleteTeam(id);
