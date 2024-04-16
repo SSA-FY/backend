@@ -12,7 +12,15 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
     FROM voteinfo
     WHERE voteid = {voteId} AND memberid = {memberId}
     LIMIT 1;
-    */
+    * */
     public boolean existsByVoteIdAndMemberId(Long voteId, Long memberId);
+
+
+    /* 유저가 투표한 내용을 가져오는 함수
+    SELCT *
+    FROM voteinfo
+    WHERE voteid = {voteId} AND memberid = {memberId}
+    * */
+    public Optional<VoteInfo> findByVoteIdAndMemberId(Long voteId, Long memberId);
 
 }
