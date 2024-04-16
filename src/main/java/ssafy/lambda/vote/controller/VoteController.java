@@ -1,14 +1,13 @@
 package ssafy.lambda.vote.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.repository.VoteRepository;
+import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.service.VoteService;
 
 @RestController
@@ -33,7 +32,7 @@ public class VoteController {
 
 
     @Operation(summary = "투표하기", description = "유저가 투표를 합니다")
-    @GetMapping("/vote/{voteId}")
+    @PostMapping("/vote/{voteId}")
     public ResponseEntity createVote(
             @PathVariable Long voteId,
             @RequestParam Long memberId,
@@ -54,6 +53,18 @@ public class VoteController {
     ){
         log.info("review - member {}, vote {}  : {}", memberId, voteId, review );
         voteService.review(memberId, voteId, review);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @Operation(summary = "투표 결과", description = "현재 투표의 결과로, 상위 6명 유저 정보를 반환합니다")
+    @GetMapping("/vote/{voteId}")
+    public ResponseEntity getVoteResult(
+        @PathVariable Long voteId,
+        @RequestParam Long memberId
+    ){
+        log.info("voteResult - vote {} ");
+        List<ResponseProfileWithPercentDto> voteResult = voteService.voteResult(voteId);
         return ResponseEntity.ok().build();
     }
 }
