@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import ssafy.lambda.member.entity.Member;
 
 @Entity
 @Getter
@@ -28,12 +29,14 @@ public class VoteInfo {
     @Column(name = "opinion")
     private String opinion;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vote_id")
     private Vote vote;
 
-    // @조인해서 가져와야함
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "member_id")
     @Column(name = "member_id")
+//    private Member member;
     private Long memberId;
 
     protected VoteInfo(){}

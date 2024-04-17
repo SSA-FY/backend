@@ -6,5 +6,4 @@ import lombok.Data;
 public class RequestVoteDto {
     String content;
     String backgroundUrl;
-    RequestMemberDto memberDto;
 }
