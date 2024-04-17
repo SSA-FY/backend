@@ -4,10 +4,8 @@ import static ssafy.lambda.membership.entity.QMembership.membership;
 import static ssafy.lambda.vote.entity.QVote.vote;
 import static ssafy.lambda.vote.entity.QVoteInfo.voteInfo;
 
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

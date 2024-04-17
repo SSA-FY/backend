@@ -1,10 +1,9 @@
 package ssafy.lambda.vote.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
-
-import java.util.Optional;
 
 public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
 

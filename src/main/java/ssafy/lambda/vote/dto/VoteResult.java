@@ -1,6 +1,5 @@
 package ssafy.lambda.vote.dto;
 
-import lombok.Data;
 import lombok.ToString;
 
 @ToString
