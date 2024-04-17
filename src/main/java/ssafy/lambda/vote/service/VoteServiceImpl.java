@@ -1,16 +1,19 @@
 package ssafy.lambda.vote.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ssafy.lambda.vote.dto.RequestMemberDto;
+import org.springframework.transaction.annotation.Transactional;
+import ssafy.lambda.membership.entity.Membership;
+import ssafy.lambda.membership.repository.MembershipRepository;
 import ssafy.lambda.vote.dto.RequestVoteDto;
+import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
 import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -57,4 +60,12 @@ public class VoteServiceImpl implements VoteService{
 
         return;
     }
+
+    @Override
+    @Transactional
+    public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
+        //임시
+        return voteRepository.findVoteByMemberIdAndTeamId(memberId, teamId);
+    }
+
 }
