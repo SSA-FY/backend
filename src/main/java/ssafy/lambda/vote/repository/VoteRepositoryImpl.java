@@ -4,6 +4,8 @@ import static ssafy.lambda.membership.entity.QMembership.membership;
 import static ssafy.lambda.vote.entity.QVote.vote;
 import static ssafy.lambda.vote.entity.QVoteInfo.voteInfo;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
@@ -43,12 +45,12 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
                                    vote.content.as("content"),
                                    vote.imgUrl.as("imgUrl"),
                                    new CaseBuilder().
-                                       when(voteInfo.memberId.eq(memberId)).then(true)
+                                       when(voteInfo.memberId.eq(memberId))
+                                       .then(true)
                                        .otherwise(false)))
                            .from(voteInfo)
-//                           .from(vote) 에러
-//                           .leftJoin(vote, voteInfo.vote) //에러
                            .rightJoin(voteInfo.vote, vote)
+                           .on(voteInfo.memberId.eq(memberId))
                            .where(
                                isProceeding(),
                                vote.id.in(
@@ -57,26 +59,13 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
                                                  .from(voteSub)
                                                  .join(voteSub.membership, membership)
                                                  .where(
-//                                                     voteSub.membership.team.teamId.eq(teamId)
                                                      teamEq(teamId)
                                                  ))
                            )
+                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.memberId).nullsFirst(),
+                               new OrderSpecifier(Order.ASC, vote.expiredAt),
+                               new OrderSpecifier(Order.ASC, vote.id))
                            .fetch();
-
-//        return queryFactory
-//            .select(new QResponseVoteDto(
-//                membership.team.teamId,
-//                vote.content,
-//                vote.imgUrl,
-//                membership.team.teamName
-//            ))
-//            .from(vote)
-//            .join(vote.membership, membership)
-//            .on(vote.membership.eq(membership))
-//            .where(
-//                membership.eq(membershipParam)
-//                          .and(vote.isProceeding.isTrue()))
-//            .fetch();
     }
 
     /**
@@ -89,7 +78,6 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
     }
 
     /**
-     *
      * vote의 membership.member.memberId와 파라미터가 같은지 확인
      * @param teamId
      * @return BooleanExpression or null
