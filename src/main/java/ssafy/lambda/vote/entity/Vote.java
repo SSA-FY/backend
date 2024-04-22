@@ -1,12 +1,21 @@
 package ssafy.lambda.vote.entity;
 
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+import ssafy.lambda.membership.entity.Membership;
 
 @Entity
 @Getter
@@ -36,17 +45,22 @@ public class Vote {
     @OneToMany(mappedBy = "vote")
     List<VoteInfo> voteInfoList = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private Membership membership;
+
     protected Vote() {
+
     }
 
-
     @Builder
-    public Vote(Long id, String content, String imgUrl) {
+    public Vote(Long id, String content, String imgUrl, Membership membership) {
         this.id = id;
         this.content = content;
         this.createAt = LocalDateTime.now();
         this.expiredAt = LocalDateTime.now().plusDays(7);
         this.isProceeding = true;
         this.imgUrl = imgUrl;
+        this.membership = membership;
     }
 }
