@@ -42,8 +42,7 @@ public class VoteController {
     ){
         log.info("doVote - team {}, vote {} : {} -> {}", teamId, voteId, memberId, choosedMemberId );
         voteService.doVote(voteId, teamId, memberId, choosedMemberId);
-        return ResponseEntity.ok()
-                             .build();
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "한줄평 남기기", description = "유저가 투표한 유저에게 한줄평를 남깁니다")
@@ -61,13 +60,12 @@ public class VoteController {
 
     @Operation(summary = "투표 결과", description = "현재 투표의 결과로, 상위 6명 유저 정보를 반환합니다")
     @GetMapping("/vote/{voteId}")
-    public ResponseEntity getVoteResult(
-        @PathVariable Long voteId,
-        @RequestParam Long memberId
+    public ResponseEntity<List<ResponseProfileWithPercentDto>> getVoteResult(
+        @PathVariable Long voteId
     ){
         log.info("voteResult - vote {} ");
         List<ResponseProfileWithPercentDto> voteResult = voteService.voteResult(voteId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(voteResult);
     }
 
     @Operation(summary = "투표 리스트 가져오기", description = "유저가 선택한 그룹의 진행 중인 투표를 가져옵니다.")
