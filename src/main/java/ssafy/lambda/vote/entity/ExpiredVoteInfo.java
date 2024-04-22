@@ -23,7 +23,7 @@ public class ExpiredVoteInfo {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "choosed_member")
+    @JoinColumn(name = "choosed_member_id")
     private Member choosedMember;
 
     @CreatedDate

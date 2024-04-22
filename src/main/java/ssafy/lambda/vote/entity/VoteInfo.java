@@ -24,14 +24,14 @@ public class VoteInfo {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "choosed_member")
+    @JoinColumn(name = "choosed_member_id")
     private Member choosedMember;
 
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createAt;
 
-    @Column(name = "is_open")
+    @Column(name = "is_open", columnDefinition="boolean default false", nullable = false)
     private boolean isOpen;
 
     @Column(name = "opinion")
@@ -51,7 +51,6 @@ public class VoteInfo {
     public VoteInfo(Member choosedMember, Vote vote, Member member) {
         this.choosedMember = choosedMember;
         this.createAt = LocalDateTime.now();
-        this.isOpen = false;
         this.vote = vote;
         this.member = member;
     }

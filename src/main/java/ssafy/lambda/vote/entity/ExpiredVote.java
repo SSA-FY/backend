@@ -41,11 +41,11 @@ public class ExpiredVote {
     @Column(name = "img_url")
     private String imgUrl;
 
-//    @OneToMany(mappedBy = "expired_vote_id")
-//    List<ExpiredVoteInfo> expiredVoteInfoList = new ArrayList<>();
+    @OneToMany(mappedBy = "expiredVote")
+    List<ExpiredVoteInfo> expiredVoteInfoList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "membership_id")
     private Membership membership;
 
     protected ExpiredVote() {
