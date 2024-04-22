@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.lang.management.MemoryManagerMXBean;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,10 +16,10 @@ import ssafy.lambda.member.entity.Member;
 
 @Entity
 @Getter
-public class VoteInfo {
+public class ExpiredVoteInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "vote_info_id")
+    @Column(name = "expired_vote_info_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,29 +37,31 @@ public class VoteInfo {
     private String opinion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vote_id")
-    private Vote vote;
+    @JoinColumn(name = "expired_vote_id")
+    private ExpiredVote expiredVote;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected VoteInfo(){}
+    protected ExpiredVoteInfo(){}
 
+
+    //voteInfo를 그대로 가져오므로 All
     @Builder
-    public VoteInfo(Member choosedMember, Vote vote, Member member) {
+    public ExpiredVoteInfo(Long id, Member choosedMember, LocalDateTime createAt, boolean isOpen,
+        String opinion, ExpiredVote expiredVote, Member member) {
+        this.id = id;
         this.choosedMember = choosedMember;
-        this.createAt = LocalDateTime.now();
-        this.isOpen = false;
-        this.vote = vote;
+        this.createAt = createAt;
+        this.isOpen = isOpen;
+        this.opinion = opinion;
+        this.expiredVote = expiredVote;
         this.member = member;
     }
 
+    //만료된 투표도 Open상태 변경 가능.
     public void setOpen(boolean open) {
         isOpen = open;
-    }
-
-    public void setOpinion(String opinion) {
-        this.opinion = opinion;
     }
 }

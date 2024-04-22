@@ -12,6 +12,8 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.QResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.QVote;
@@ -28,14 +30,11 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
     /**
      * MemberShipList를 이용하여 해당 유저의 모든 VoteList반환
      * <p>
-     * select ms.id, ms.team_id, ms.member_id, vote.vote_id, vote.content from membership ms join
-     * vote on ms.id = vote.id where ms.team_id = 3 and vote.is_proceeding = TRUE;
-     *
      * @param
      * @return
      */
     @Override
-    public List<ResponseVoteDto> findVoteByMemberIdAndTeamId(Long memberId, Long teamId) {
+    public List<ResponseVoteDto> findVoteByMemberIdAndTeamId(Member member, Team team) {
         QVote voteSub = new QVote("voteSub");
         return queryFactory.select(
                                new QResponseVoteDto(
@@ -45,12 +44,12 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
                                    vote.content.as("content"),
                                    vote.imgUrl.as("imgUrl"),
                                    new CaseBuilder().
-                                       when(voteInfo.memberId.eq(memberId))
+                                       when(voteInfo.member.eq(member))
                                        .then(true)
                                        .otherwise(false)))
                            .from(voteInfo)
                            .rightJoin(voteInfo.vote, vote)
-                           .on(voteInfo.memberId.eq(memberId))
+                           .on(voteInfo.member.eq(member))
                            .where(
                                isProceeding(),
                                vote.id.in(
@@ -59,10 +58,10 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
                                                  .from(voteSub)
                                                  .join(voteSub.membership, membership)
                                                  .where(
-                                                     teamEq(teamId)
+                                                     teamEq(team)
                                                  ))
                            )
-                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.memberId).nullsFirst(),
+                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.member).nullsFirst(),
                                new OrderSpecifier(Order.ASC, vote.expiredAt),
                                new OrderSpecifier(Order.ASC, vote.id))
                            .fetch();
@@ -70,20 +69,20 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
 
     /**
      * vote의 membership.member.memberId와 파라미터가 같은지 확인
-     * @param memberId
-     * @return BooleanExpression or null
+     * @param member
+     * @return
      */
-    public BooleanExpression memberEq(Long memberId){
-        return memberId != null ? vote.membership.member.memberId.eq(memberId) : null;
+    public BooleanExpression memberEq(Member member){
+        return member != null ? vote.membership.member.eq(member) : null;
     }
 
     /**
      * vote의 membership.member.memberId와 파라미터가 같은지 확인
-     * @param teamId
-     * @return BooleanExpression or null
+     * @param team
+     * @return
      */
-    public BooleanExpression teamEq(Long teamId) {
-        return teamId != null ? vote.membership.team.teamId.eq(teamId) : null;
+    public BooleanExpression teamEq(Team team) {
+        return team != null ? vote.membership.team.eq(team) : null;
     }
 
     public BooleanExpression isProceeding() {

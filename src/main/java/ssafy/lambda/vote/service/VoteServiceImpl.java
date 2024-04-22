@@ -26,7 +26,7 @@ public class VoteServiceImpl implements VoteService{
     private final VoteInfoRepository voteInfoRepository;
     // TODO memberRepository 분리하기
     private final MemberRepository memberRepository;
-
+    // TODO: CommonService 받아서 doVote(), getUserVote() 메서드 완성
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -53,11 +53,12 @@ public class VoteServiceImpl implements VoteService{
             throw new IllegalArgumentException("The member already voted");
         }
 
+        //TODO : 이후, Member 도메인으로부터 member를 받아서 로직 처리
         // 투표하기
         VoteInfo voteInfo
                 = VoteInfo.builder()
-                    .choosedMemberId(choosedMemberId)
-                    .memberId(memberId)
+                    .choosedMember(null)
+                    .member(null)
                     .vote(foundVote)
                 .build();
 
@@ -141,7 +142,7 @@ public class VoteServiceImpl implements VoteService{
     @Override
     @Transactional
     public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
-        return voteRepository.findVoteByMemberIdAndTeamId(memberId, teamId);
+        //TODO : MemberService, TeamService or MemberShipService에서 id로 엔티티 찾아오기
+        return voteRepository.findVoteByMemberIdAndTeamId(null, null);
     }
-
 }
