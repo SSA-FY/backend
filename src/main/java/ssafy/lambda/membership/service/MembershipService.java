@@ -37,11 +37,17 @@ public class MembershipService {
     }
 
     @Transactional
+    public Membership findMembershipByMemberIdAndTeamId(Long memberId, Long teamId) {
+        return membershipRepository.findByMemberIdAndTeamId(memberId, teamId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Membership not found with memberId " + memberId + " and teamId " + teamId));
+    }
+
+    @Transactional
     public List<Membership> findMembershipByTeam(Long teamId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new IllegalArgumentException(
                 "Team not found with id " + teamId));
-
         return membershipRepository.findByTeam(team);
     }
 
