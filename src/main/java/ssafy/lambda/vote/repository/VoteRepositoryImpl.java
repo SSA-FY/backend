@@ -34,13 +34,11 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
      * @return
      */
     @Override
-    public List<ResponseVoteDto> findVoteByMemberIdAndTeamId(Member member, Team team) {
+    public List<ResponseVoteDto> findVoteByMemberAndTeam(Member member, Team team) {
         QVote voteSub = new QVote("voteSub");
         return queryFactory.select(
                                new QResponseVoteDto(
                                    vote.id.as("voteId"),
-                                   vote.membership.team.teamId.as("team_id"),
-                                   vote.membership.team.teamName.as("teamName"),
                                    vote.content.as("content"),
                                    vote.imgUrl.as("imgUrl"),
                                    new CaseBuilder().

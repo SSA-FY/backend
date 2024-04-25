@@ -151,11 +151,18 @@ public class VoteServiceImpl implements VoteService{
 
 
     @Override
-    @Transactional
     public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
+        //TODO : entityManager 사용 코드 지우고 Member, Team Service에서 받아오기
         Member member = entityManager.find(Member.class, memberId);
         Team team = entityManager.find(Team.class, teamId);
 
-        return voteRepository.findVoteByMemberIdAndTeamId(member, team);
+        if (member == null) {
+            throw new IllegalArgumentException("member doesn't exist");
+        }
+        if (team == null) {
+            throw new IllegalArgumentException("taem doesn't exist");
+        }
+
+        return voteRepository.findVoteByMemberAndTeam(member, team);
     }
 }

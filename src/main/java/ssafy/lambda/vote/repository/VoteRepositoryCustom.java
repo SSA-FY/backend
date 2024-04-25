@@ -6,5 +6,5 @@ import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 
 public interface VoteRepositoryCustom {
-    List<ResponseVoteDto> findVoteByMemberIdAndTeamId(Member member, Team team);
+    List<ResponseVoteDto> findVoteByMemberAndTeam(Member member, Team team);
 }
