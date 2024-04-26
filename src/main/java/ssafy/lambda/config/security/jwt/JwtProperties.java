@@ -12,9 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("jwt")
 public class JwtProperties {
-    
+
+    // JWT 발급자
     private String issuer;
+    // JWT 비밀키
     private SecretKey secretKey;
+    // JWT 관련 static 변수
     public static final String HEADER_AUTHORIZATION = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
