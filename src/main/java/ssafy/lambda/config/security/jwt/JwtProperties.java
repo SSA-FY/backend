@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("jwt")
 public class JwtProperties {
-
+    
     private String issuer;
     private SecretKey secretKey;
     public static final String HEADER_AUTHORIZATION = "Authorization";
