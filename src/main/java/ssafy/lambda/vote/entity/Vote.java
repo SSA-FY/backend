@@ -35,18 +35,17 @@ public class Vote {
     @Column(name = "expired_at")
     private LocalDateTime expiredAt;
 
-    @Column(name = "is_proceeding")
+    @Column(name = "is_proceeding", columnDefinition="boolean default true", nullable = false)
     private boolean isProceeding;
 
     @Column(name = "img_url")
     private String imgUrl;
 
-    // 다대일 양방향 매핑
     @OneToMany(mappedBy = "vote")
     List<VoteInfo> voteInfoList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "membership_id")
     private Membership membership;
 
     protected Vote() {
@@ -54,12 +53,10 @@ public class Vote {
     }
 
     @Builder
-    public Vote(Long id, String content, String imgUrl, Membership membership) {
-        this.id = id;
+    public Vote(String content, String imgUrl, Membership membership) {
         this.content = content;
         this.createAt = LocalDateTime.now();
         this.expiredAt = LocalDateTime.now().plusDays(7);
-        this.isProceeding = true;
         this.imgUrl = imgUrl;
         this.membership = membership;
     }

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
-import ssafy.lambda.member.repository.MemberRepository;
+import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.RequestVoteDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
@@ -24,55 +24,63 @@ public class VoteServiceImpl implements VoteService{
 
     private final VoteRepository voteRepository;
     private final VoteInfoRepository voteInfoRepository;
-    // TODO memberRepository 분리하기
-    private final MemberRepository memberRepository;
+
+    // TODO: CommonService 받아서 createVote() 메서드 완성
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public void createVote(Long memberId, Long teamId, RequestVoteDto requestVoteDto) {
-
-        // Entity 수정 후, 멤버십을 연결한 vote 객체 생성
-
+        // TODO : memberId와 teamId로 membership 객체 받아와 Vote 생성시 넣기
         Vote vote = Vote.builder()
                 .content(requestVoteDto.getContent())
                 .imgUrl(requestVoteDto.getBackgroundUrl())
-                .build();
+                .membership(null)
+            .build();
         voteRepository.save(vote);
-
     }
 
     @Override
     public void doVote(Long voteId, Long teamId, Long memberId, Long choosedMemberId) throws IllegalArgumentException{
 
         Vote foundVote = validateVote(voteId);
+        Member member = entityManager.find(Member.class, memberId);
+        Member choosedMember = entityManager.find(Member.class, choosedMemberId);
+
+        if(member==null || choosedMember == null){
+            throw new IllegalArgumentException("member doesn't exist");
+        }
 
         // 이미 투표했는가
-        if(voteInfoRepository.existsByVoteAndMemberId(foundVote, memberId)){
+        if(voteInfoRepository.existsByVoteAndMember(foundVote, member)){
             throw new IllegalArgumentException("The member already voted");
         }
 
         // 투표하기
         VoteInfo voteInfo
                 = VoteInfo.builder()
-                    .choosedMemberId(choosedMemberId)
-                    .memberId(memberId)
+                    .member(member)
+                    .choosedMember(choosedMember)
                     .vote(foundVote)
                 .build();
 
         voteInfoRepository.save(voteInfo);
 
-        return;
     }
 
     @Override
     public void review(Long memberId, Long voteId, String review){
 
         Vote foundVote = validateVote(voteId);
+        Member member = entityManager.find(Member.class, memberId);
+
+        if(member==null){
+            throw new IllegalArgumentException("member doesn't exist");
+        }
 
         // 투표했는가
-        VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndMemberId(foundVote, memberId).orElseThrow(
+        VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndMember(foundVote, member).orElseThrow(
             ()-> new IllegalArgumentException("user hasn't voted yet")
         );
 
@@ -101,23 +109,27 @@ public class VoteServiceImpl implements VoteService{
         query.setParameter("voteId", voteId);
 
         List<Object[]> resultOfQuery = query.getResultList();
-        List<ResponseProfileWithPercentDto> resultOfDto = new ArrayList<>();
-        for(Object[] ob : resultOfQuery){
-            Long memberId = ((Number) ob[0]).longValue();
-//            Long cnt = ((Number) ob[1]).longValue();
-            Double percent = ((Number) ob[2]).doubleValue();
+        List<ResponseProfileWithPercentDto> resultOfDto = resultOfQuery.stream().map(
+            row ->{
+                Long memberId = ((Number) row[0]).longValue();
+//                Long cnt = ((Number) ob[1]).longValue();
+                Double percent = ((Number) row[2]).doubleValue();
 
-            // 투표받은사람이 존재하지 않음(그 사이 회원탈퇴함)
-            Member choosedMember = memberRepository.findById(memberId).orElseThrow(
-                ()-> new IllegalArgumentException("user doesn't exist"));
+                // 쿼리 최대 6번 날라감, 최적화 필요
+                Member choosedMember = entityManager.find(Member.class, memberId);
 
-            var dto = new ResponseProfileWithPercentDto(
-                choosedMember.getName(),
-                choosedMember.getProfileImgUrl(),
-                percent
-            );
-            resultOfDto.add(dto);
-        }
+                // 투표받은사람이 존재하지 않음(그 사이 회원탈퇴함)
+//                if(choosedMember == null) {
+//                    throw new IllegalArgumentException("user doesn't exist");
+//                }
+
+                return new ResponseProfileWithPercentDto(
+                    choosedMember.getName(),
+                    choosedMember.getProfileImgUrl(),
+                    percent);
+            }
+
+        ).toList();
 
         return resultOfDto;
     }
@@ -139,9 +151,18 @@ public class VoteServiceImpl implements VoteService{
 
 
     @Override
-    @Transactional
     public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
-        return voteRepository.findVoteByMemberIdAndTeamId(memberId, teamId);
-    }
+        //TODO : entityManager 사용 코드 지우고 Member, Team Service에서 받아오기
+        Member member = entityManager.find(Member.class, memberId);
+        Team team = entityManager.find(Team.class, teamId);
 
+        if (member == null) {
+            throw new IllegalArgumentException("member doesn't exist");
+        }
+        if (team == null) {
+            throw new IllegalArgumentException("taem doesn't exist");
+        }
+
+        return voteRepository.findVoteByMemberAndTeam(member, team);
+    }
 }
