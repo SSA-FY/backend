@@ -17,6 +17,7 @@ import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.QResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.QVote;
+import ssafy.lambda.vote.entity.Vote;
 
 public class VoteRepositoryImpl implements VoteRepositoryCustom{
 
@@ -66,13 +67,38 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
     }
 
     /**
-     * vote의 membership.member.memberId와 파라미터가 같은지 확인
+     * 현재 진행 중인 투표에 대해
+     * 멤버가 아직 투표하지 않은 투표를 가져오며,
+     * 이를 팀을 통해 해당 팀으로 필터링한다.
+     * 최적화 : 하나의 팀에 대해서를 모든 팀에 대해서 1번 쿼리를 날릴 수 있도록
      * @param member
+     * @param team
      * @return
      */
-    public BooleanExpression memberEq(Member member){
-        return member != null ? vote.membership.member.eq(member) : null;
+    @Override
+    public Vote findInCompleteVoteByMemberAndTeam(Member member, Team team) {
+        BooleanExpression inMembership = vote.membership.in(
+            JPAExpressions.select(membership)
+                          .from(membership)
+                          .where(membership.team.eq(team))
+        );
+
+        BooleanExpression notInVoteInfo = vote.notIn(
+            JPAExpressions.select(voteInfo.vote)
+                          .from(voteInfo)
+                          .where(voteInfo.member.eq(member))
+        );
+
+        return queryFactory
+            .selectFrom(vote)
+            .where(isProceeding().and(inMembership)
+                                 .and(notInVoteInfo))
+            .orderBy(vote.expiredAt.asc()) //가장 빨리 끝나는 1개의 레코드만 가져온다
+            .limit(1)
+            .fetchOne();
     }
+
+
 
     /**
      * vote의 membership.member.memberId와 파라미터가 같은지 확인
