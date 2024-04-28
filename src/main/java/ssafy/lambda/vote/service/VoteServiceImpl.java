@@ -4,14 +4,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.RequestVoteDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
+import ssafy.lambda.vote.dto.ResponseVoteStatusDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
@@ -19,13 +21,14 @@ import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class VoteServiceImpl implements VoteService{
 
     private final VoteRepository voteRepository;
     private final VoteInfoRepository voteInfoRepository;
 
-    // TODO: CommonService 받아서 createVote() 메서드 완성
+    // TODO : MemberShip
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -152,7 +155,8 @@ public class VoteServiceImpl implements VoteService{
 
     @Override
     public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
-        //TODO : entityManager 사용 코드 지우고 Member, Team Service에서 받아오기
+        //TODO: entityManager 사용 코드 지우고 Member, Team Service에서 받아오기
+        //TODO: 예외처리 로직 삭제
         Member member = entityManager.find(Member.class, memberId);
         Team team = entityManager.find(Team.class, teamId);
 
@@ -164,5 +168,38 @@ public class VoteServiceImpl implements VoteService{
         }
 
         return voteRepository.findVoteByMemberAndTeam(member, team);
+    }
+
+    /**
+     * sortByVoteStatus : 투표 상태에 따른 정렬 로직
+     * 팀 리스트를 받고 각각의 팀에 대해 아직 투표했는지 안했는지를 판단
+     * 이를 통해 ResponseSortVoteDto에 2개의 리스트에 각각 저장
+     * but 팀 리스트의 size()만큼 쿼리가 나간다.
+     * TODO: 주석 처리 된 부분에 파라미터를 통해 실제 엔티티 받아와서 로직 처리 (entityManager 삭제 후 주석 해제)
+     * @param memberId
+     * @param teamIds
+     * @return ResponseSortVoteDto(유저가 모든 투표에 참여한 팀리스트, 투표가 아직 남은 팀 리스트)
+     */
+    @Override
+    public ResponseVoteStatusDto sortByVoteStatus(Long memberId, List<Long> teamIds) {
+        ResponseVoteStatusDto responseVoteStatusDto = new ResponseVoteStatusDto();
+        List<Object[]> inCompleteVotes = new ArrayList<>();
+        for (Long teamId : teamIds) {
+            Vote findResult = voteRepository.findInCompleteVoteByMemberAndTeam(null, null);
+            if (findResult == null) {
+//                responseSortVoteDto.getCompletedTeams()
+//                                   .add(team.getTeamId());
+            } else {
+//                inCompleteVotes.add(new Object[]{team.getTeamId(), findResult});
+            }
+        }
+
+        Collections.sort(inCompleteVotes, (o1, o2) -> ((Vote) o1[1]).getExpiredAt()
+                                                                    .compareTo(
+                                                                        ((Vote) o2[1]).getExpiredAt()));
+        inCompleteVotes.stream()
+                       .forEach((o1) -> responseVoteStatusDto.getInCompletedTeams()
+                                                             .add((Long) o1[0]));
+        return responseVoteStatusDto;
     }
 }
