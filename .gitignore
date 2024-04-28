@@ -2,6 +2,7 @@ src/main/resources/application.yml
 src/main/resources/application.properties
 
 .env
+bin
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,intellij,gradle,vue,vuejs,windows,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,intellij,gradle,vue,vuejs,windows,macos,linux

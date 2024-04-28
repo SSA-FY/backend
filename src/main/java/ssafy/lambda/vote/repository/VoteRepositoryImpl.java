@@ -12,9 +12,12 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.QResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.QVote;
+import ssafy.lambda.vote.entity.Vote;
 
 public class VoteRepositoryImpl implements VoteRepositoryCustom{
 
@@ -28,29 +31,24 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
     /**
      * MemberShipList를 이용하여 해당 유저의 모든 VoteList반환
      * <p>
-     * select ms.id, ms.team_id, ms.member_id, vote.vote_id, vote.content from membership ms join
-     * vote on ms.id = vote.id where ms.team_id = 3 and vote.is_proceeding = TRUE;
-     *
      * @param
      * @return
      */
     @Override
-    public List<ResponseVoteDto> findVoteByMemberIdAndTeamId(Long memberId, Long teamId) {
+    public List<ResponseVoteDto> findVoteByMemberAndTeam(Member member, Team team) {
         QVote voteSub = new QVote("voteSub");
         return queryFactory.select(
                                new QResponseVoteDto(
                                    vote.id.as("voteId"),
-                                   vote.membership.team.teamId.as("team_id"),
-                                   vote.membership.team.teamName.as("teamName"),
                                    vote.content.as("content"),
                                    vote.imgUrl.as("imgUrl"),
                                    new CaseBuilder().
-                                       when(voteInfo.memberId.eq(memberId))
+                                       when(voteInfo.member.eq(member))
                                        .then(true)
                                        .otherwise(false)))
                            .from(voteInfo)
                            .rightJoin(voteInfo.vote, vote)
-                           .on(voteInfo.memberId.eq(memberId))
+                           .on(voteInfo.member.eq(member))
                            .where(
                                isProceeding(),
                                vote.id.in(
@@ -59,31 +57,56 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
                                                  .from(voteSub)
                                                  .join(voteSub.membership, membership)
                                                  .where(
-                                                     teamEq(teamId)
+                                                     teamEq(team)
                                                  ))
                            )
-                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.memberId).nullsFirst(),
+                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.member).nullsFirst(),
                                new OrderSpecifier(Order.ASC, vote.expiredAt),
                                new OrderSpecifier(Order.ASC, vote.id))
                            .fetch();
     }
 
     /**
-     * vote의 membership.member.memberId와 파라미터가 같은지 확인
-     * @param memberId
-     * @return BooleanExpression or null
+     * 현재 진행 중인 투표에 대해
+     * 멤버가 아직 투표하지 않은 투표를 가져오며,
+     * 이를 팀을 통해 해당 팀으로 필터링한다.
+     * 최적화 : 하나의 팀에 대해서를 모든 팀에 대해서 1번 쿼리를 날릴 수 있도록
+     * @param member
+     * @param team
+     * @return
      */
-    public BooleanExpression memberEq(Long memberId){
-        return memberId != null ? vote.membership.member.memberId.eq(memberId) : null;
+    @Override
+    public Vote findInCompleteVoteByMemberAndTeam(Member member, Team team) {
+        BooleanExpression inMembership = vote.membership.in(
+            JPAExpressions.select(membership)
+                          .from(membership)
+                          .where(membership.team.eq(team))
+        );
+
+        BooleanExpression notInVoteInfo = vote.notIn(
+            JPAExpressions.select(voteInfo.vote)
+                          .from(voteInfo)
+                          .where(voteInfo.member.eq(member))
+        );
+
+        return queryFactory
+            .selectFrom(vote)
+            .where(isProceeding().and(inMembership)
+                                 .and(notInVoteInfo))
+            .orderBy(vote.expiredAt.asc()) //가장 빨리 끝나는 1개의 레코드만 가져온다
+            .limit(1)
+            .fetchOne();
     }
+
+
 
     /**
      * vote의 membership.member.memberId와 파라미터가 같은지 확인
-     * @param teamId
-     * @return BooleanExpression or null
+     * @param team
+     * @return
      */
-    public BooleanExpression teamEq(Long teamId) {
-        return teamId != null ? vote.membership.team.teamId.eq(teamId) : null;
+    public BooleanExpression teamEq(Team team) {
+        return team != null ? vote.membership.team.eq(team) : null;
     }
 
     public BooleanExpression isProceeding() {

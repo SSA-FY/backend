@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.dto.RequestMemberDto;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.entity.SocialType;
+import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.member.repository.MemberRepository;
 
 @Service
@@ -23,7 +24,8 @@ public class MemberService {
 
     public Member findMemberById(Long id) {
         return memberRepository.findById(id)
-            .orElse(null);
+            .orElseThrow(() -> new MemberNotFoundException(id));
+
     }
 
     @Transactional

@@ -2,6 +2,7 @@ package ssafy.lambda.vote.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
 
@@ -13,7 +14,7 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
     WHERE voteid = {vote} AND memberid = {memberId}
     LIMIT 1;
     * */
-    public boolean existsByVoteAndMemberId(Vote vote, Long memberId);
+    public boolean existsByVoteAndMember(Vote vote, Member member);
 
 
     /* 유저가 투표한 내용을 가져오는 함수
@@ -21,6 +22,6 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
     FROM voteinfo
     WHERE voteid = {voteId} AND memberid = {memberId}
     * */
-    public Optional<VoteInfo> findByVoteAndMemberId(Vote vote, Long memberId);
+    public Optional<VoteInfo> findByVoteAndMember(Vote vote, Member member);
 
 }
