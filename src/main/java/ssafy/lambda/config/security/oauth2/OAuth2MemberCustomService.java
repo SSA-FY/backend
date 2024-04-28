@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.oauth;
+package ssafy.lambda.config.security.oauth2;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +11,21 @@ import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.repository.MemberRepository;
 
+/**
+ * oauth2를 통해 얻은 멤버 정보 처리 서비스
+ */
 @RequiredArgsConstructor
 @Service
 public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
 
+    /**
+     * oauth2를 통해 얻은 멤버 정보 처리
+     *
+     * @param userRequest oauth2를 통해 얻은 멤버 정보
+     * @return Member
+     */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User member = super.loadUser(userRequest);
@@ -32,6 +41,12 @@ public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
         return member;
     }
 
+    /**
+     * oauth2를 통해 얻은 멤버 정보를 DB에 추가 혹은 업데이트
+     *
+     * @param oAuth2User oauth2를 통해 얻은 멤버 정보
+     * @return Member
+     */
     private Member saveOrUpdate(OAuth2User oAuth2User, SocialType social) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
 

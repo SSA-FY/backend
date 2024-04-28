@@ -11,14 +11,22 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ssafy.lambda.config.security.jwt.TokenAuthenticationFilter;
 import ssafy.lambda.config.security.jwt.TokenService;
+import ssafy.lambda.config.security.oauth2.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import ssafy.lambda.config.security.oauth2.OAuth2MemberCustomService;
+import ssafy.lambda.config.security.oauth2.OAuth2SuccessHandler;
+import ssafy.lambda.member.service.MemberService;
 
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
 
-    // JWT 관련
+    // JWT 관련 서비스
     private final TokenService tokenService;
+
+    // Oauth2 관련 서비스
+    private final OAuth2MemberCustomService oAuth2MemberCustomService;
+    private final MemberService memberService;
 
     // Spring Security 필터 설정
     @Bean
@@ -36,6 +44,20 @@ public class SecurityConfig {
         http.addFilterBefore(tokenAuthenticationFilter(),
             RequestCacheAwareFilter.class);
 
+        // oauth2 추가
+        http.oauth2Login(
+            (oauth2) -> {
+                oauth2
+                    .authorizationEndpoint(endpoint -> endpoint
+                        .authorizationRequestRepository(
+                            oAuth2AuthorizationRequestBasedOnCookieRepository())
+                    )
+                    .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                        .userService(oAuth2MemberCustomService))
+                    .successHandler(oAuth2SuccessHandler());
+            }
+        );
+
         // API 접속 허용 로직
         http.authorizeHttpRequests(
             auth -> auth.requestMatchers(new AntPathRequestMatcher("/**"))
@@ -51,5 +73,20 @@ public class SecurityConfig {
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
         return new TokenAuthenticationFilter(
             tokenService);
+    }
+
+    // Oauth2 성공 Handler
+    @Bean
+    public OAuth2SuccessHandler oAuth2SuccessHandler() {
+        return new OAuth2SuccessHandler(tokenService,
+            oAuth2AuthorizationRequestBasedOnCookieRepository(),
+            memberService
+        );
+    }
+
+    // Oauth2 요청 정보 저장 Repository
+    @Bean
+    public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository() {
+        return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 }

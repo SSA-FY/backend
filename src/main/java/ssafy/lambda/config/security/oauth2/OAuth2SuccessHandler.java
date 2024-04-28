@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.oauth;
+package ssafy.lambda.config.security.oauth2;
 
 import static ssafy.lambda.config.security.jwt.JwtProperties.REFRESH_TOKEN_COOKIE_NAME;
 import static ssafy.lambda.config.security.jwt.JwtProperties.REFRESH_TOKEN_DURATION;
@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.commons.utils.CookieUtil;
-import ssafy.lambda.config.security.jwt.TokenProvider;
+import ssafy.lambda.config.security.jwt.TokenService;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.service.MemberService;
@@ -25,7 +25,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     public static final String REDIRECT_PATH = "/token";
 
-    private final TokenProvider tokenProvider;
+    private final TokenService tokenService;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
     private final MemberService memberService;
 
@@ -38,7 +38,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Member member = memberService.findMemberByEmailAndSocial((String) oAuth2User.getAttributes()
             .get("email"), SocialType.Google);
 
-        String refreshToken = tokenProvider.generateToken(member, REFRESH_TOKEN_DURATION);
+        String refreshToken = tokenService.generateToken(member, REFRESH_TOKEN_DURATION);
         member.setRefreshToken(refreshToken);
         CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
             (int) REFRESH_TOKEN_DURATION.toSeconds());
@@ -46,14 +46,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         clearAuthenticationAttributes(request, response);
 
         getRedirectStrategy().sendRedirect(request, response, REDIRECT_PATH);
-    }
-
-    private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response,
-        String refreshToken) {
-        int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
-
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
-        CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
     }
 
     private void clearAuthenticationAttributes(HttpServletRequest request,
