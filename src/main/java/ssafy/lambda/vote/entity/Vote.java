@@ -20,6 +20,7 @@ import ssafy.lambda.membership.entity.Membership;
 @Entity
 @Getter
 public class Vote {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "vote_id")
@@ -35,7 +36,7 @@ public class Vote {
     @Column(name = "expired_at")
     private LocalDateTime expiredAt;
 
-    @Column(name = "is_proceeding", columnDefinition="boolean default true", nullable = false)
+    @Column(name = "is_proceeding", nullable = false)
     private boolean isProceeding;
 
     @Column(name = "img_url")
@@ -56,8 +57,10 @@ public class Vote {
     public Vote(String content, String imgUrl, Membership membership) {
         this.content = content;
         this.createAt = LocalDateTime.now();
-        this.expiredAt = LocalDateTime.now().plusDays(7);
+        this.expiredAt = LocalDateTime.now()
+            .plusDays(7);
         this.imgUrl = imgUrl;
         this.membership = membership;
+        this.isProceeding = true;
     }
 }
