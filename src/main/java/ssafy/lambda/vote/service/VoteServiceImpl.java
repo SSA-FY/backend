@@ -1,5 +1,6 @@
 package ssafy.lambda.vote.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,11 +13,15 @@ import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 import ssafy.lambda.vote.dto.RequestVoteDto;
+import ssafy.lambda.vote.dto.ResponseCommentDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteStatusDto;
+import ssafy.lambda.vote.entity.ExpiredVote;
 import ssafy.lambda.vote.entity.Vote;
+import ssafy.lambda.vote.entity.VoteComment;
 import ssafy.lambda.vote.entity.VoteInfo;
+import ssafy.lambda.vote.repository.CommentRepository;
 import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
 
@@ -27,6 +32,7 @@ public class VoteServiceImpl implements VoteService {
 
     private final VoteRepository voteRepository;
     private final VoteInfoRepository voteInfoRepository;
+    private final CommentRepository commentRepository;
     private final MembershipService membershipService;
     // TODO findById 메서드 확인
     private final TeamService teamService;
@@ -172,5 +178,40 @@ public class VoteServiceImpl implements VoteService {
             .forEach((o1) -> responseVoteStatusDto.getInCompletedTeams()
                 .add((Long) o1[0]));
         return responseVoteStatusDto;
+    }
+
+    @Override
+    public List<ResponseCommentDto> getComments(Long expriedVoteId) {
+//        List<VoteComment> commentList = commentRepository.findByExpiredVoteId(expriedVoteId);
+
+        return commentRepository.findAllByVoteId(expriedVoteId)
+            .stream()
+            .map(
+                comment ->
+                    new ResponseCommentDto(((Number) comment[0]).longValue(), (String) comment[1],
+                        (String) comment[2], (LocalDateTime) comment[3])
+            )
+            .toList();
+
+    }
+
+    @Override
+    public void writeComment(Long voteId, Long memberId, String content) {
+        Member member = memberService.findMemberById(memberId);
+        ExpiredVote expiredVote = null;
+        VoteComment comment = VoteComment.builder()
+            .content(content)
+            .member(member)
+            .expiredVote(expiredVote)
+            .build();
+        commentRepository.save(comment);
+    }
+
+    @Override
+    public void deleteComment(Long commentId) {
+        VoteComment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new IllegalArgumentException("Comment doesn't exist")
+            );
+        commentRepository.delete(comment);
     }
 }
