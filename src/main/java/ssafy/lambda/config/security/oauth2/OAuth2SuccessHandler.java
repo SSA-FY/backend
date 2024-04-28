@@ -18,10 +18,12 @@ import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.service.MemberService;
 
+/**
+ * oauth2 성공시 Handler
+ */
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
 
     public static final String REDIRECT_PATH = "/token";
 
@@ -29,6 +31,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
     private final MemberService memberService;
 
+    /**
+     * oauth2 성공시 로직
+     *
+     * @param request        HttpServletRequest
+     * @param response       HttpServletResponse
+     * @param authentication 인증 정보
+     */
     @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -48,6 +57,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         getRedirectStrategy().sendRedirect(request, response, REDIRECT_PATH);
     }
 
+    /**
+     * oauth2 처리 과정에서 저장했던 요청 정보 제거
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     */
     private void clearAuthenticationAttributes(HttpServletRequest request,
         HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
