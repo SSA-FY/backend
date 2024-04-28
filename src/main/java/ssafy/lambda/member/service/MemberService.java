@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.dto.RequestMemberDto;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.repository.MemberRepository;
 
 @Service
@@ -44,5 +45,10 @@ public class MemberService {
     @Transactional
     public List<Member> findAllMember() {
         return memberRepository.findAll();
+    }
+
+    public Member findMemberByEmailAndSocial(String id, SocialType social) {
+        return memberRepository.findByEmailAndSocial(id, social)
+            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
     }
 }

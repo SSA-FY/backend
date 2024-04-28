@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.member.entity.SocialType;
 
 
 @Repository
@@ -18,4 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Override
     @EntityGraph(attributePaths = {"memberships"})
     List<Member> findAll();
+
+    Optional<Member> findByEmailAndSocial(String email, SocialType social);
 }

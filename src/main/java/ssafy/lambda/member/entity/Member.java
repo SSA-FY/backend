@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import ssafy.lambda.membership.entity.Membership;
 
 
@@ -28,6 +29,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private SocialType social;
 
+    @Setter
     @Column
     private String name;
 
@@ -45,6 +47,10 @@ public class Member {
 
     @OneToMany(mappedBy = "member", orphanRemoval = true)
     private List<Membership> memberships = new ArrayList<>();
+
+    @Setter
+    @Column
+    private String refreshToken;
 
     protected Member() {
     }
