@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
@@ -16,7 +15,7 @@ import ssafy.lambda.config.security.oauth2.OAuth2MemberCustomService;
 import ssafy.lambda.config.security.oauth2.OAuth2SuccessHandler;
 import ssafy.lambda.member.service.MemberService;
 
-@EnableWebSecurity(debug = true)
+//@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {

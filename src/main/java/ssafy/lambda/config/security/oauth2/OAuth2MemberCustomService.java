@@ -1,19 +1,22 @@
 package ssafy.lambda.config.security.oauth2;
 
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import ssafy.lambda.config.security.oauth2.userinfo.GoogleUserInfo;
+import ssafy.lambda.config.security.oauth2.userinfo.KakaoUserInfo;
+import ssafy.lambda.config.security.oauth2.userinfo.OAuth2UserInfo;
 import ssafy.lambda.member.entity.Member;
-import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.repository.MemberRepository;
 
 /**
  * oauth2를 통해 얻은 멤버 정보 처리 서비스
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
@@ -28,39 +31,34 @@ public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
      */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User member = super.loadUser(userRequest);
+        OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        SocialType social = switch (userRequest.getClientRegistration()
+        OAuth2UserInfo oAuth2UserInfo = null;
+
+        switch (userRequest.getClientRegistration()
             .getRegistrationId()) {
-            case "google" -> SocialType.Google;
-            default -> throw new OAuth2AuthenticationException("Provider Not Found");
-        };
+            case "google":
+                oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+                break;
+            case "kakao":
+                oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
+                break;
+            default:
+                throw new OAuth2AuthenticationException("Provider Not Found");
+        }
 
-        saveOrUpdate(member, social);
+        Member member = memberRepository.findByEmailAndSocial(oAuth2UserInfo.getEmail(),
+                oAuth2UserInfo.getSocial())
+            .orElse(Member.builder()
+                .email(oAuth2UserInfo.getEmail())
+                .social(oAuth2UserInfo.getSocial())
+                .build());
+        member.setName(oAuth2UserInfo.getName());
+
+        memberRepository.save(member);
 
         return member;
     }
 
-    /**
-     * oauth2를 통해 얻은 멤버 정보를 DB에 추가 혹은 업데이트
-     *
-     * @param oAuth2User oauth2를 통해 얻은 멤버 정보
-     * @return Member
-     */
-    private Member saveOrUpdate(OAuth2User oAuth2User, SocialType social) {
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-
-        String email = (String) attributes.get("email");
-        String name = (String) attributes.get("name");
-
-        Member member = memberRepository.findByEmailAndSocial(email, social)
-            .orElse(Member.builder()
-                .email(email)
-                .social(social)
-                .build());
-        member.setName(name);
-
-        return memberRepository.save(member);
-    }
 }
 
