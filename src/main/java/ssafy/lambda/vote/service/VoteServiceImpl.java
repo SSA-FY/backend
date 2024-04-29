@@ -41,10 +41,11 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public void createVote(Long memberId, Long teamId, RequestVoteDto requestVoteDto) {
         Vote vote = Vote.builder()
-            .content(requestVoteDto.getContent())
-            .imgUrl(requestVoteDto.getBackgroundUrl())
-            .membership(membershipService.findMembershipByMemberIdAndTeamId(memberId, teamId))
-            .build();
+                        .content(requestVoteDto.getContent())
+                        .imgUrl(requestVoteDto.getBackgroundUrl())
+                        .membership(
+                            membershipService.findMembershipByMemberIdAndTeamId(memberId, teamId))
+                        .build();
         voteRepository.save(vote);
     }
 
@@ -62,12 +63,11 @@ public class VoteServiceImpl implements VoteService {
         }
 
         // 투표하기
-        VoteInfo voteInfo
-            = VoteInfo.builder()
-            .member(member)
-            .choosedMember(choosedMember)
-            .vote(foundVote)
-            .build();
+        VoteInfo voteInfo = VoteInfo.builder()
+                                    .member(member)
+                                    .choosedMember(choosedMember)
+                                    .vote(foundVote)
+                                    .build();
 
         voteInfoRepository.save(voteInfo);
 
@@ -81,9 +81,10 @@ public class VoteServiceImpl implements VoteService {
 
         // 투표했는가
         VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndMember(foundVote, member)
-            .orElseThrow(
-                () -> new IllegalArgumentException("user hasn't voted yet")
-            );
+                                                   .orElseThrow(
+                                                       () -> new IllegalArgumentException(
+                                                           "user hasn't voted yet")
+                                                   );
 
         // 이미 한줄평을 남겼는가
         if (foundVoteInfo.getOpinion() != null) {
@@ -128,9 +129,9 @@ public class VoteServiceImpl implements VoteService {
      * */
     private Vote validateVote(Long voteId) {
         Vote foundVote = voteRepository.findById(voteId)
-            .orElseThrow(
-                () -> new IllegalArgumentException("vote doesn't exist")
-            );
+                                       .orElseThrow(
+                                           () -> new IllegalArgumentException("vote doesn't exist")
+                                       );
         if (foundVote.isProceeding() == false) {
             throw new IllegalArgumentException("vote is over");
         }
@@ -172,11 +173,11 @@ public class VoteServiceImpl implements VoteService {
         }
 
         Collections.sort(inCompleteVotes, (o1, o2) -> ((Vote) o1[1]).getExpiredAt()
-            .compareTo(
-                ((Vote) o2[1]).getExpiredAt()));
+                                                                    .compareTo(
+                                                                        ((Vote) o2[1]).getExpiredAt()));
         inCompleteVotes.stream()
-            .forEach((o1) -> responseVoteStatusDto.getInCompletedTeams()
-                .add((Long) o1[0]));
+                       .forEach((o1) -> responseVoteStatusDto.getInCompletedTeams()
+                                                             .add((Long) o1[0]));
         return responseVoteStatusDto;
     }
 
@@ -185,13 +186,14 @@ public class VoteServiceImpl implements VoteService {
 //        List<VoteComment> commentList = commentRepository.findByExpiredVoteId(expriedVoteId);
 
         return commentRepository.findAllByVoteId(expriedVoteId)
-            .stream()
-            .map(
-                comment ->
-                    new ResponseCommentDto(((Number) comment[0]).longValue(), (String) comment[1],
-                        (String) comment[2], (LocalDateTime) comment[3])
-            )
-            .toList();
+                                .stream()
+                                .map(
+                                    comment ->
+                                        new ResponseCommentDto(((Number) comment[0]).longValue(),
+                                            (String) comment[1],
+                                            (String) comment[2], (LocalDateTime) comment[3])
+                                )
+                                .toList();
 
     }
 
@@ -200,18 +202,19 @@ public class VoteServiceImpl implements VoteService {
         Member member = memberService.findMemberById(memberId);
         ExpiredVote expiredVote = null;
         VoteComment comment = VoteComment.builder()
-            .content(content)
-            .member(member)
-            .expiredVote(expiredVote)
-            .build();
+                                         .content(content)
+                                         .member(member)
+                                         .expiredVote(expiredVote)
+                                         .build();
         commentRepository.save(comment);
     }
 
     @Override
     public void deleteComment(Long commentId) {
         VoteComment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new IllegalArgumentException("Comment doesn't exist")
-            );
+                                               .orElseThrow(() -> new IllegalArgumentException(
+                                                   "Comment doesn't exist")
+                                               );
         commentRepository.delete(comment);
     }
 }

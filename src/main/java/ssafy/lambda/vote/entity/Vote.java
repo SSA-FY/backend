@@ -58,7 +58,7 @@ public class Vote {
         this.content = content;
         this.createAt = LocalDateTime.now();
         this.expiredAt = LocalDateTime.now()
-            .plusDays(7);
+                                      .plusDays(7);
         this.imgUrl = imgUrl;
         this.membership = membership;
         this.isProceeding = true;

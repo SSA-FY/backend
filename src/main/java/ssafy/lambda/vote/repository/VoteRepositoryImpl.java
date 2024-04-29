@@ -43,32 +43,32 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     public List<ResponseVoteDto> findVoteByMemberAndTeam(Member member, Team team) {
         QVote voteSub = new QVote("voteSub");
         return queryFactory.select(
-                new QResponseVoteDto(
-                    vote.id.as("voteId"),
-                    vote.content.as("content"),
-                    vote.imgUrl.as("imgUrl"),
-                    new CaseBuilder().
-                        when(voteInfo.member.eq(member))
-                        .then(true)
-                        .otherwise(false)))
-            .from(voteInfo)
-            .rightJoin(voteInfo.vote, vote)
-            .on(voteInfo.member.eq(member))
-            .where(
-                isProceeding(),
-                vote.id.in(
-                    //해당 유저의 선택 그룹에 대한 진행중인 모든 투표의 아이디를 가져온다.
-                    JPAExpressions.select(voteSub.id)
-                        .from(voteSub)
-                        .join(voteSub.membership, membership)
-                        .where(
-                            teamEq(team)
-                        ))
-            )
-            .orderBy(new OrderSpecifier(Order.ASC, voteInfo.member).nullsFirst(),
-                new OrderSpecifier(Order.ASC, vote.expiredAt),
-                new OrderSpecifier(Order.ASC, vote.id))
-            .fetch();
+                               new QResponseVoteDto(
+                                   vote.id.as("voteId"),
+                                   vote.content.as("content"),
+                                   vote.imgUrl.as("imgUrl"),
+                                   new CaseBuilder().
+                                       when(voteInfo.member.eq(member))
+                                       .then(true)
+                                       .otherwise(false)))
+                           .from(voteInfo)
+                           .rightJoin(voteInfo.vote, vote)
+                           .on(voteInfo.member.eq(member))
+                           .where(
+                               isProceeding(),
+                               vote.id.in(
+                                   //해당 유저의 선택 그룹에 대한 진행중인 모든 투표의 아이디를 가져온다.
+                                   JPAExpressions.select(voteSub.id)
+                                                 .from(voteSub)
+                                                 .join(voteSub.membership, membership)
+                                                 .where(
+                                                     teamEq(team)
+                                                 ))
+                           )
+                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.member).nullsFirst(),
+                               new OrderSpecifier(Order.ASC, vote.expiredAt),
+                               new OrderSpecifier(Order.ASC, vote.id))
+                           .fetch();
     }
 
     /**
@@ -83,20 +83,20 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     public Vote findInCompleteVoteByMemberAndTeam(Member member, Team team) {
         BooleanExpression inMembership = vote.membership.in(
             JPAExpressions.select(membership)
-                .from(membership)
-                .where(membership.team.eq(team))
+                          .from(membership)
+                          .where(membership.team.eq(team))
         );
 
         BooleanExpression notInVoteInfo = vote.notIn(
             JPAExpressions.select(voteInfo.vote)
-                .from(voteInfo)
-                .where(voteInfo.member.eq(member))
+                          .from(voteInfo)
+                          .where(voteInfo.member.eq(member))
         );
 
         return queryFactory
             .selectFrom(vote)
             .where(isProceeding().and(inMembership)
-                .and(notInVoteInfo))
+                                 .and(notInVoteInfo))
             .orderBy(vote.expiredAt.asc()) //가장 빨리 끝나는 1개의 레코드만 가져온다
             .limit(1)
             .fetchOne();
