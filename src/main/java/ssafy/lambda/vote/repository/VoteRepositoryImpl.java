@@ -11,6 +11,8 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.util.List;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.entity.Team;
@@ -19,9 +21,11 @@ import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.QVote;
 import ssafy.lambda.vote.entity.Vote;
 
-public class VoteRepositoryImpl implements VoteRepositoryCustom{
+public class VoteRepositoryImpl implements VoteRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public VoteRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
@@ -31,6 +35,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
     /**
      * MemberShipList를 이용하여 해당 유저의 모든 VoteList반환
      * <p>
+     *
      * @param
      * @return
      */
@@ -67,10 +72,9 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
     }
 
     /**
-     * 현재 진행 중인 투표에 대해
-     * 멤버가 아직 투표하지 않은 투표를 가져오며,
-     * 이를 팀을 통해 해당 팀으로 필터링한다.
-     * 최적화 : 하나의 팀에 대해서를 모든 팀에 대해서 1번 쿼리를 날릴 수 있도록
+     * 현재 진행 중인 투표에 대해 멤버가 아직 투표하지 않은 투표를 가져오며, 이를 팀을 통해 해당 팀으로 필터링한다. 최적화 : 하나의 팀에 대해서를 모든 팀에 대해서
+     * 1번 쿼리를 날릴 수 있도록
+     *
      * @param member
      * @param team
      * @return
@@ -99,9 +103,9 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
     }
 
 
-
     /**
      * vote의 membership.member.memberId와 파라미터가 같은지 확인
+     *
      * @param team
      * @return
      */
@@ -111,5 +115,24 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom{
 
     public BooleanExpression isProceeding() {
         return vote.isProceeding.isTrue();
+    }
+
+
+    public List<Object[]> findVoteInfoByCnt(Long voteId) {
+
+        String sql =
+            "SELECT choosed_member_id, COUNT(*) as cnt, ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
+                +
+                "FROM vote_info " +
+                "WHERE vote_id = :voteId " +
+                "GROUP BY choosed_member_id " +
+                "ORDER BY cnt DESC " +
+                "LIMIT 6";
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("voteId", voteId);
+
+        List<Object[]> resultOfQuery = query.getResultList();
+        return resultOfQuery;
     }
 }
