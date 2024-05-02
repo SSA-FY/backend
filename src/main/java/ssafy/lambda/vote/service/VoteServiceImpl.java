@@ -103,6 +103,8 @@ public class VoteServiceImpl implements VoteService {
                     Double percent = ((Number) row[2]).doubleValue();
 
                     // TODO 쿼리 최대 6번 날라감, 최적화 필요
+                    // MemberRepository에서 List<Member> findByIdIn(List<Long> memberIds); 메서드 선언 후
+                    // List<Long> topVoteeIds를 파라미터로 넘겨줘서 컬렉션 조회 1번으로 줄이기
                     Member choosedMember = memberService.findMemberById(memberId);
 
                     return new ResponseProfileWithPercentDto(

@@ -121,18 +121,17 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     public List<Object[]> findVoteInfoByCnt(Long voteId) {
 
         String sql =
-            "SELECT votee_id, COUNT(*) as cnt, ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
-                +
-                "FROM vote_info " +
-                "WHERE vote_id = :voteId " +
-                "GROUP BY votee_id " +
-                "ORDER BY cnt DESC " +
-                "LIMIT 6";
+            " SELECT vi.votee.id, COUNT(*) as cnt, ROUND(1.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
+                + "FROM VoteInfo vi "
+                + "WHERE vi.vote.id = :voteId "
+                + "GROUP BY vi.votee.id "
+                + "ORDER BY cnt DESC LIMIT 6";
 
-        Query query = entityManager.createNativeQuery(sql);
+        Query query = entityManager.createQuery(sql);
         query.setParameter("voteId", voteId);
 
         List<Object[]> resultOfQuery = query.getResultList();
+
         return resultOfQuery;
     }
 }
