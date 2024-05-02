@@ -5,13 +5,13 @@ import lombok.ToString;
 @ToString
 public class VoteResult {
 
-    private Long choosedMemberId;
+    private Long voteeId;
     private Long voteCount;
     private Double percent;
 
 
-    public VoteResult(Long choosedMemberId, Long voteCount, Double percent) {
-        this.choosedMemberId = choosedMemberId;
+    public VoteResult(Long voteeId, Long voteCount, Double percent) {
+        this.voteeId = voteeId;
         this.voteCount = voteCount;
         this.percent = percent;
     }

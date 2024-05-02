@@ -10,13 +10,13 @@ public interface VoteService {
 
     void createVote(Long memberId, Long teamId, RequestVoteDto requestVoteDto);
 
-    void doVote(Long voteId, Long teamId, Long memberId, Long choosedMemberId);
+    void doVote(Long voteId, Long teamId, Long voterId, Long voteeId);
 
-    void review(Long memberId, Long voteId, String review);
+    void review(Long memberId, Long voteInfoId, String review);
 
     List<ResponseProfileWithPercentDto> voteResult(Long voteId);
 
-    List<ResponseVoteDto> getUserVote(Long memberId, Long teamId);
+    List<ResponseVoteDto> getVoteListByMember(Long memberId, Long teamId);
 
     ResponseVoteStatusDto sortByVoteStatus(Long memberId, List<Long> teamIds);
 

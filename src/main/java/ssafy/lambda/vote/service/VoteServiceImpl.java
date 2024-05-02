@@ -44,22 +44,22 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public void doVote(Long voteId, Long teamId, Long memberId, Long chosenMemberId)
+    public void doVote(Long voteId, Long teamId, Long voterId, Long voteeId)
         throws IllegalArgumentException {
 
         Vote foundVote = validateVote(voteId);
-        Member member = memberService.findMemberById(memberId);
-        Member choosedMember = memberService.findMemberById(chosenMemberId);
+        Member voter = memberService.findMemberById(voterId);
+        Member votee = memberService.findMemberById(voteeId);
 
         // 이미 투표했는가
-        if (voteInfoRepository.existsByVoteAndVoter(foundVote, member)) {
+        if (voteInfoRepository.existsByVoteAndVoter(foundVote, voter)) {
             throw new IllegalArgumentException("The member already voted");
         }
 
         // 투표하기
         VoteInfo voteInfo = VoteInfo.builder()
-                                    .voter(member)
-                                    .votee(choosedMember)
+                                    .voter(voter)
+                                    .votee(votee)
                                     .vote(foundVote)
                                     .build();
 
@@ -77,12 +77,12 @@ public class VoteServiceImpl implements VoteService {
         VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndVoter(foundVote, member)
                                                    .orElseThrow(
                                                        () -> new IllegalArgumentException(
-                                                           "user hasn't voted yet")
+                                                           "The member hasn't voted yet")
                                                    );
 
         // 이미 한줄평을 남겼는가
         if (foundVoteInfo.getOpinion() != null) {
-            throw new IllegalArgumentException("user already left a review");
+            throw new IllegalArgumentException("The member already left a review");
         }
 
         foundVoteInfo.setOpinion(review);
@@ -136,7 +136,7 @@ public class VoteServiceImpl implements VoteService {
 
 
     @Override
-    public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
+    public List<ResponseVoteDto> getVoteListByMember(Long memberId, Long teamId) {
         Member member = memberService.findMemberById(memberId);
         Team team = teamService.findTeamById(teamId);
         return voteRepository.findVoteByVoterAndTeam(member, team);
@@ -149,7 +149,7 @@ public class VoteServiceImpl implements VoteService {
      *
      * @param memberId
      * @param teamIds
-     * @return ResponseSortVoteDto(유저가 모든 투표에 참여한 팀리스트, 투표가 아직 남은 팀 리스트)
+     * @return ResponseSortVoteDto(멤버가 모든 투표에 참여한 팀리스트, 투표가 아직 남은 팀 리스트)
      */
     @Override
     public ResponseVoteStatusDto sortByVoteStatus(Long memberId, List<Long> teamIds) {

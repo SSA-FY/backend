@@ -31,7 +31,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void writeComment(Long voteId, Long memberId, String content) {
+    public void writeComment(Long expiredVoteId, Long memberId, String content) {
         Member member = memberService.findMemberById(memberId);
         // TODO expiredVote 객체 넣기
         ExpiredVote expiredVote = null;
@@ -55,7 +55,7 @@ public class BoardServiceImpl implements BoardService {
                                                 );
         if (comment.getCommenter()
                    .getMemberId() != memberId) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("This member isn't a commenter of this comment ");
         }
         comment.setContent(content);
         commentRepository.saveComment(comment);

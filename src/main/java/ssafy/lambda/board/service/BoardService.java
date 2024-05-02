@@ -7,7 +7,7 @@ public interface BoardService {
 
     List<ResponseCommentDto> getCommentList(Long expiredVoteId);
 
-    void writeComment(Long voteId, Long memberId, String content);
+    void writeComment(Long expiredVoteId, Long memberId, String content);
 
     void editComment(Long commentId, Long memberId, String content);
 

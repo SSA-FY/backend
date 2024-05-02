@@ -26,10 +26,10 @@ public class BoardController {
     @Operation(summary = "댓글 조회", description = "만료된 투표에 대한 댓글 목록을 반환합니다")
     @GetMapping("/comment")
     public ResponseEntity<List<ResponseCommentDto>> getComments(
-        @RequestParam Long voteId
+        @RequestParam Long expiredVoteId
     ) {
-        log.info("getVoteResult - vote {} ", voteId);
-        List<ResponseCommentDto> voteResult = boardService.getCommentList(voteId);
+        log.info("getVoteResult - vote {} ", expiredVoteId);
+        List<ResponseCommentDto> voteResult = boardService.getCommentList(expiredVoteId);
         return ResponseEntity.ok()
                              .body(voteResult);
     }
@@ -37,12 +37,12 @@ public class BoardController {
     @Operation(summary = "댓글 작성", description = "만료된 투표에 대한 댓글을 작성합니다")
     @PostMapping("/comment")
     public ResponseEntity writeComment(
-        @RequestParam Long voteId,
+        @RequestParam Long expiredVoteId,
         @RequestParam Long memberId,
         @RequestBody String content
     ) {
-        log.info("writeComment - member {}, vote {}  : {}", memberId, voteId, content);
-        boardService.writeComment(voteId, memberId, content);
+        log.info("writeComment - member {}, vote {}  : {}", memberId, expiredVoteId, content);
+        boardService.writeComment(expiredVoteId, memberId, content);
         return ResponseEntity.ok()
                              .build();
     }
