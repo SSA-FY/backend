@@ -5,7 +5,7 @@ import ssafy.lambda.board.dto.ResponseCommentDto;
 
 public interface BoardService {
 
-    List<ResponseCommentDto> getComments(Long expriedVoteId);
+    List<ResponseCommentDto> getCommentList(Long expiredVoteId);
 
     void writeComment(Long voteId, Long memberId, String content);
 

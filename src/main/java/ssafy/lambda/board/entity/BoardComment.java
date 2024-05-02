@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import ssafy.lambda.global.common.BaseEntity;
@@ -16,18 +15,15 @@ import ssafy.lambda.member.entity.Member;
 
 @Entity
 @Getter
-public class VoteComment extends BaseEntity {
+public class BoardComment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
+    @Column(name = "board_comment_id")
     private Long id;
 
     @Column
     private String content;
-
-    @Column(nullable = false)
-    private LocalDateTime createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expired_vote_id")
@@ -35,19 +31,19 @@ public class VoteComment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member commenter;
 
-    protected VoteComment() {
+    protected BoardComment() {
 
     }
 
     @Builder
-    public VoteComment(String content, ExpiredVote expiredVote, Member member) {
+    public BoardComment(String content, ExpiredVote expiredVote, Member commenter) {
         this.content = content;
-        this.createAt = LocalDateTime.now();
         this.expiredVote = expiredVote;
-        this.member = member;
+        this.commenter = commenter;
     }
+
 
     public void setContent(String content) {
         this.content = content;

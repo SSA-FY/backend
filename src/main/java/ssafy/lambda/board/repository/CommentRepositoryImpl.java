@@ -2,7 +2,7 @@ package ssafy.lambda.board.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import ssafy.lambda.board.entity.VoteComment;
+import ssafy.lambda.board.entity.BoardComment;
 
 // comment 관련 구현 : 클래스명 주의!!
 public class CommentRepositoryImpl implements BoardRepositoryCustom {
@@ -15,7 +15,7 @@ public class CommentRepositoryImpl implements BoardRepositoryCustom {
      * 쿼리 최적화를 위해 생성
      * */
     @Override
-    public void saveComment(VoteComment voteComment) {
-        entityManager.persist(voteComment);
+    public void saveComment(BoardComment comment) {
+        entityManager.persist(comment);
     }
 }

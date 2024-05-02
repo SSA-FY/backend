@@ -9,12 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
 import ssafy.lambda.membership.entity.Membership;
 
 @Entity
@@ -26,42 +25,57 @@ public class ExpiredVote {
     @Column(name = "expired_vote_id")
     private Long id;
 
-    @Column(name = "content")
+    @Column
     private String content;
 
-    @CreatedDate
-    @Column(name = "create_at")
-    private LocalDateTime createAt;
-
-    @Column(name = "expired_at")
-    private LocalDateTime expiredAt;
-
-    @Column(name = "is_proceeding")
-    private boolean isProceeding;
-
-    @Column(name = "img_url")
+    @Column
     private String imgUrl;
-
-    @OneToMany(mappedBy = "expiredVote")
-    List<ExpiredVoteInfo> expiredVoteInfoList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membership_id")
     private Membership membership;
 
+    @Column
+    private Boolean isProceeding;
+
+    @Column
+    private Instant expiredAt;
+
+    @Column
+    private Instant createdAt;
+
+    @Column
+    private Instant updatedAt;
+
+    @Column
+    private Long voteId;
+
+    @OneToMany(mappedBy = "expiredVote")
+    List<ExpiredVoteInfo> expiredVoteInfoList = new ArrayList<>();
+
+
     protected ExpiredVote() {
 
     }
 
+    /**
+     * ExpiredVote은 Vote의 정보를 그대로 가져오므로 All (expired_vote_id 제외) 이때, createdAt와 updatedAt는 Vote 테이블의
+     * 것임에 주의한다. 자체적인 createdAt는 존재하지 않아 BaseEntity를 상속받지 않는다.
+     */
     @Builder
-    public ExpiredVote(Long id, String content, LocalDateTime createAt, LocalDateTime expiredAt,
-        boolean isProceeding, String imgUrl, Membership membership) {
-        this.id = id;
+    public ExpiredVote(String content, String imgUrl, Membership membership, Boolean isProceeding,
+        Instant expiredAt, Instant createdAt, Instant updatedAt, Long voteId,
+        List<ExpiredVoteInfo> expiredVoteInfoList) {
         this.content = content;
-        this.createAt = createAt;
-        this.expiredAt = expiredAt;
-        this.isProceeding = isProceeding;
         this.imgUrl = imgUrl;
         this.membership = membership;
+        this.isProceeding = isProceeding;
+        this.expiredAt = expiredAt;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.voteId = voteId;
+        this.expiredVoteInfoList = expiredVoteInfoList;
     }
+
+
 }

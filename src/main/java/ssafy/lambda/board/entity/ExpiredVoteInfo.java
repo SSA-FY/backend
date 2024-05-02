@@ -8,10 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
 import ssafy.lambda.member.entity.Member;
 
 @Entity
@@ -24,42 +23,51 @@ public class ExpiredVoteInfo {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "choosed_member_id")
-    private Member choosedMember;
-
-    @CreatedDate
-    @Column(name = "created_at")
-    private LocalDateTime createAt;
-
-    @Column(name = "is_open")
-    private boolean isOpen;
-
-    @Column(name = "opinion")
-    private String opinion;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expired_vote_id")
     private ExpiredVote expiredVote;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "voter_id")
+    private Member voter;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "votee_id")
+    private Member votee;
+
+    @Column
+    private String opinion;
+
+    @Column
+    private Boolean isOpen;
+
+    @Column
+    private Instant createdAt;
+
+    @Column
+    private Instant updatedAt;
+
+    @Column
+    private Long voteId;
+
 
     protected ExpiredVoteInfo() {
     }
 
-
-    // voteInfo를 그대로 가져오므로 All
+    /**
+     * ExpiredVoteInfo는 VoteInfo의 정보를 그대로 가져오므로 All (expired_vote_info_id 제외) 이때, createdAt와
+     * updatedAt는 VoteInfo 테이블의 것임에 주의한다. 자체적인 createdAt는 존재하지 않아 BaseEntity를 상속받지 않는다.
+     */
     @Builder
-    public ExpiredVoteInfo(Long id, Member choosedMember, LocalDateTime createAt, boolean isOpen,
-        String opinion, ExpiredVote expiredVote, Member member) {
-        this.id = id;
-        this.choosedMember = choosedMember;
-        this.createAt = createAt;
-        this.isOpen = isOpen;
-        this.opinion = opinion;
+    public ExpiredVoteInfo(ExpiredVote expiredVote, Member voter, Member votee, String opinion,
+        Boolean isOpen, Instant createdAt, Instant updatedAt, Long voteId) {
         this.expiredVote = expiredVote;
-        this.member = member;
+        this.voter = voter;
+        this.votee = votee;
+        this.opinion = opinion;
+        this.isOpen = isOpen;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.voteId = voteId;
     }
 
     // 만료된 투표도 Open상태 변경 가능.

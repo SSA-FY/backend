@@ -29,7 +29,7 @@ public class BoardController {
         @RequestParam Long voteId
     ) {
         log.info("getVoteResult - vote {} ", voteId);
-        List<ResponseCommentDto> voteResult = boardService.getComments(voteId);
+        List<ResponseCommentDto> voteResult = boardService.getCommentList(voteId);
         return ResponseEntity.ok()
                              .body(voteResult);
     }

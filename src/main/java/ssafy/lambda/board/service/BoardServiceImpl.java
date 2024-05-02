@@ -1,14 +1,13 @@
 package ssafy.lambda.board.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.board.dto.ResponseCommentDto;
+import ssafy.lambda.board.entity.BoardComment;
 import ssafy.lambda.board.entity.ExpiredVote;
-import ssafy.lambda.board.entity.VoteComment;
 import ssafy.lambda.board.repository.CommentRepository;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
@@ -25,18 +24,9 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
-    public List<ResponseCommentDto> getComments(Long expriedVoteId) {
-//        List<VoteComment> commentList = commentRepository.findByExpiredVoteId(expriedVoteId);
-
-        return commentRepository.findAllByVoteId(expriedVoteId)
-                                .stream()
-                                .map(
-                                    comment ->
-                                        new ResponseCommentDto(((Number) comment[0]).longValue(),
-                                            (String) comment[1],
-                                            (String) comment[2], (LocalDateTime) comment[3])
-                                )
-                                .toList();
+    public List<ResponseCommentDto> getCommentList(Long expiredVoteId) {
+//        List<BoardComment> commentList = commentRepository.findByExpiredVoteId(expriedVoteId);
+        return commentRepository.findAllByVoteId(expiredVoteId);
 
     }
 
@@ -45,11 +35,11 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberService.findMemberById(memberId);
         // TODO expiredVote 객체 넣기
         ExpiredVote expiredVote = null;
-        VoteComment comment = VoteComment.builder()
-                                         .content(content)
-                                         .member(member)
-                                         .expiredVote(expiredVote)
-                                         .build();
+        BoardComment comment = BoardComment.builder()
+                                           .content(content)
+                                           .commenter(member)
+                                           .expiredVote(expiredVote)
+                                           .build();
         commentRepository.save(comment);
     }
 
@@ -59,11 +49,11 @@ public class BoardServiceImpl implements BoardService {
     public void editComment(Long commentId, Long memberId, String content) {
         // TODO expiredVote 객체 넣기
         ExpiredVote expiredVote = null;
-        VoteComment comment = commentRepository.findById(commentId)
-                                               .orElseThrow(() -> new IllegalArgumentException(
-                                                   "Comment doesn't exist")
-                                               );
-        if (comment.getMember()
+        BoardComment comment = commentRepository.findById(commentId)
+                                                .orElseThrow(() -> new IllegalArgumentException(
+                                                    "Comment doesn't exist")
+                                                );
+        if (comment.getCommenter()
                    .getMemberId() != memberId) {
             throw new IllegalArgumentException();
         }
@@ -74,10 +64,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void deleteComment(Long commentId) {
-        VoteComment comment = commentRepository.findById(commentId)
-                                               .orElseThrow(() -> new IllegalArgumentException(
-                                                   "Comment doesn't exist")
-                                               );
+        BoardComment comment = commentRepository.findById(commentId)
+                                                .orElseThrow(() -> new IllegalArgumentException(
+                                                    "Comment doesn't exist")
+                                                );
         commentRepository.delete(comment);
     }
 }
