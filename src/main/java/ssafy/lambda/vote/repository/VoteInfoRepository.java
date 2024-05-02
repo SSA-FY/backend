@@ -11,17 +11,17 @@ public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
     /* 해당 투표를 유저가 이미 투표한 적이 있는지 판단하는 함수
     SELECT COALESCE(1, 0) AS vote_exists
     FROM voteinfo
-    WHERE voteid = {vote} AND memberid = {memberId}
+    WHERE voteid = {vote} AND voterId = {voterId}
     LIMIT 1;
     * */
-    public boolean existsByVoteAndMember(Vote vote, Member member);
-
+    public boolean existsByVoteAndVoter(Vote vote, Member voter);
 
     /* 유저가 투표한 내용을 가져오는 함수
     SELCT *
     FROM voteinfo
-    WHERE voteid = {voteId} AND memberid = {memberId}
+    WHERE voteid = {voteId} AND voterId = {voterId}
     * */
-    public Optional<VoteInfo> findByVoteAndMember(Vote vote, Member member);
+    public Optional<VoteInfo> findByVoteAndVoter(Vote vote, Member voter);
+
 
 }

@@ -40,7 +40,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
      * @return
      */
     @Override
-    public List<ResponseVoteDto> findVoteByMemberAndTeam(Member member, Team team) {
+    public List<ResponseVoteDto> findVoteByVoterAndTeam(Member voter, Team team) {
         QVote voteSub = new QVote("voteSub");
         return queryFactory.select(
                                new QResponseVoteDto(
@@ -48,12 +48,12 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
                                    vote.content.as("content"),
                                    vote.imgUrl.as("imgUrl"),
                                    new CaseBuilder().
-                                       when(voteInfo.member.eq(member))
+                                       when(voteInfo.voter.eq(voter))
                                        .then(true)
                                        .otherwise(false)))
                            .from(voteInfo)
                            .rightJoin(voteInfo.vote, vote)
-                           .on(voteInfo.member.eq(member))
+                           .on(voteInfo.voter.eq(voter))
                            .where(
                                isProceeding(),
                                vote.id.in(
@@ -65,7 +65,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
                                                      teamEq(team)
                                                  ))
                            )
-                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.member).nullsFirst(),
+                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.voter).nullsFirst(),
                                new OrderSpecifier(Order.ASC, vote.expiredAt),
                                new OrderSpecifier(Order.ASC, vote.id))
                            .fetch();
@@ -80,7 +80,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
      * @return
      */
     @Override
-    public Vote findInCompleteVoteByMemberAndTeam(Member member, Team team) {
+    public Vote findInCompleteVoteByVoterAndTeam(Member voter, Team team) {
         BooleanExpression inMembership = vote.membership.in(
             JPAExpressions.select(membership)
                           .from(membership)
@@ -90,7 +90,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
         BooleanExpression notInVoteInfo = vote.notIn(
             JPAExpressions.select(voteInfo.vote)
                           .from(voteInfo)
-                          .where(voteInfo.member.eq(member))
+                          .where(voteInfo.voter.eq(voter))
         );
 
         return queryFactory
@@ -121,11 +121,11 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     public List<Object[]> findVoteInfoByCnt(Long voteId) {
 
         String sql =
-            "SELECT choosed_member_id, COUNT(*) as cnt, ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
+            "SELECT votee_id, COUNT(*) as cnt, ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
                 +
                 "FROM vote_info " +
                 "WHERE vote_id = :voteId " +
-                "GROUP BY choosed_member_id " +
+                "GROUP BY votee_id " +
                 "ORDER BY cnt DESC " +
                 "LIMIT 6";
 

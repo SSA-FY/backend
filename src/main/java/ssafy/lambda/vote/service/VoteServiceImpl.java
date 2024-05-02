@@ -52,14 +52,14 @@ public class VoteServiceImpl implements VoteService {
         Member choosedMember = memberService.findMemberById(chosenMemberId);
 
         // 이미 투표했는가
-        if (voteInfoRepository.existsByVoteAndMember(foundVote, member)) {
+        if (voteInfoRepository.existsByVoteAndVoter(foundVote, member)) {
             throw new IllegalArgumentException("The member already voted");
         }
 
         // 투표하기
         VoteInfo voteInfo = VoteInfo.builder()
-                                    .member(member)
-                                    .choosedMember(choosedMember)
+                                    .voter(member)
+                                    .votee(choosedMember)
                                     .vote(foundVote)
                                     .build();
 
@@ -74,7 +74,7 @@ public class VoteServiceImpl implements VoteService {
         Member member = memberService.findMemberById(memberId);
 
         // 투표했는가
-        VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndMember(foundVote, member)
+        VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndVoter(foundVote, member)
                                                    .orElseThrow(
                                                        () -> new IllegalArgumentException(
                                                            "user hasn't voted yet")
@@ -126,7 +126,7 @@ public class VoteServiceImpl implements VoteService {
                                        .orElseThrow(
                                            () -> new IllegalArgumentException("vote doesn't exist")
                                        );
-        if (foundVote.isProceeding() == false) {
+        if (foundVote.getIsProceeding() == false) {
             throw new IllegalArgumentException("vote is over");
         }
         return foundVote;
@@ -137,7 +137,7 @@ public class VoteServiceImpl implements VoteService {
     public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
         Member member = memberService.findMemberById(memberId);
         Team team = teamService.findTeamById(teamId);
-        return voteRepository.findVoteByMemberAndTeam(member, team);
+        return voteRepository.findVoteByVoterAndTeam(member, team);
     }
 
     /**
@@ -156,7 +156,7 @@ public class VoteServiceImpl implements VoteService {
 
         Member member = memberService.findMemberById(memberId);
         for (Long teamId : teamIds) {
-            Vote findResult = voteRepository.findInCompleteVoteByMemberAndTeam(member,
+            Vote findResult = voteRepository.findInCompleteVoteByVoterAndTeam(member,
                 teamService.findTeamById(teamId));
             if (findResult == null) {
 //                responseSortVoteDto.getCompletedTeams()
