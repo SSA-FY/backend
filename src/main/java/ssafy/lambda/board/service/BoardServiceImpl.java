@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.board.dto.ResponseCommentDto;
 import ssafy.lambda.board.entity.ExpiredVote;
 import ssafy.lambda.board.entity.VoteComment;
@@ -54,6 +55,7 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
+    @Transactional
     public void editComment(Long commentId, Long memberId, String content) {
         // TODO expiredVote 객체 넣기
         ExpiredVote expiredVote = null;
@@ -66,7 +68,7 @@ public class BoardServiceImpl implements BoardService {
             throw new IllegalArgumentException();
         }
         comment.setContent(content);
-        commentRepository.save(comment);
+        commentRepository.saveComment(comment);
     }
 
 

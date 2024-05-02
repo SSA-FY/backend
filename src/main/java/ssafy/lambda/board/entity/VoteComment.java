@@ -11,11 +11,12 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
+import ssafy.lambda.global.common.BaseEntity;
 import ssafy.lambda.member.entity.Member;
 
 @Entity
 @Getter
-public class VoteComment {
+public class VoteComment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

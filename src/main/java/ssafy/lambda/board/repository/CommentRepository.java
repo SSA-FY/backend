@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ssafy.lambda.board.entity.VoteComment;
 
-public interface CommentRepository extends JpaRepository<VoteComment, Long> {
+public interface CommentRepository extends JpaRepository<VoteComment, Long>, BoardRepositoryCustom {
 
     @Query("SELECT c.id as commentId, m.name as writer, c.content, c.createAt as time "
         + "FROM VoteComment c "
