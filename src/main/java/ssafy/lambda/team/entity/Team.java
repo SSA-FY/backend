@@ -43,6 +43,7 @@ public class Team {
     private List<Membership> memberships = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
     @JoinColumn(nullable = false, updatable = false, name = "manager_id")
     private Member manager;
 
