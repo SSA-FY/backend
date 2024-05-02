@@ -54,6 +54,23 @@ public class BoardServiceImpl implements BoardService {
 
 
     @Override
+    public void editComment(Long commentId, Long memberId, String content) {
+        // TODO expiredVote 객체 넣기
+        ExpiredVote expiredVote = null;
+        VoteComment comment = commentRepository.findById(commentId)
+                                               .orElseThrow(() -> new IllegalArgumentException(
+                                                   "Comment doesn't exist")
+                                               );
+        if (comment.getMember()
+                   .getMemberId() != memberId) {
+            throw new IllegalArgumentException();
+        }
+        comment.setContent(content);
+        commentRepository.save(comment);
+    }
+
+
+    @Override
     public void deleteComment(Long commentId) {
         VoteComment comment = commentRepository.findById(commentId)
                                                .orElseThrow(() -> new IllegalArgumentException(

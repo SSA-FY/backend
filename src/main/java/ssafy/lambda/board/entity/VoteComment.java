@@ -47,4 +47,8 @@ public class VoteComment {
         this.expiredVote = expiredVote;
         this.member = member;
     }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 }
