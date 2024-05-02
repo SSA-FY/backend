@@ -2,18 +2,26 @@ package ssafy.lambda.team.service;
 
 
 import java.util.List;
-import ssafy.lambda.team.dto.RequestTeamDto;
+import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.team.dto.RequestTeamCreateDto;
+import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
 import ssafy.lambda.team.entity.Team;
 
 public interface TeamService {
 
-    Team createTeam(RequestTeamDto requestTeamDto);
+    Team createTeam(RequestTeamCreateDto teamCreateDto, Member manager);
 
     Team findTeamById(Long teamId);
-
-    Team updateTeam(Long id, RequestTeamDto requestTeamDto);
 
     void deleteTeam(Long teamId);
 
     List<Team> findAllTeam();
+
+    Team findTeamByName(String teamName);
+
+    List<Team> findTeamByNameLike(String teamName);
+
+    void updateTeamDescription(RequestTeamDescriptionUpdateDto requestTeamDescriptionUpdateDto,
+        Member member);
+
 }

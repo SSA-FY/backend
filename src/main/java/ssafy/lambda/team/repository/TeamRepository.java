@@ -17,4 +17,8 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @Override
     @EntityGraph(attributePaths = {"memberships"})
     List<Team> findAll();
+
+    Optional<Team> findByTeamName(String name);
+
+    List<Team> findByTeamNameLike(String teamName);
 }
