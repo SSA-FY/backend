@@ -1,4 +1,4 @@
-package ssafy.lambda.vote.entity;
+package ssafy.lambda.board.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +20,7 @@ import ssafy.lambda.membership.entity.Membership;
 @Entity
 @Getter
 public class ExpiredVote {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expired_vote_id")

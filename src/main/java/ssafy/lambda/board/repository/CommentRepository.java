@@ -1,10 +1,10 @@
-package ssafy.lambda.vote.repository;
+package ssafy.lambda.board.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ssafy.lambda.vote.entity.VoteComment;
+import ssafy.lambda.board.entity.VoteComment;
 
 public interface CommentRepository extends JpaRepository<VoteComment, Long> {
 

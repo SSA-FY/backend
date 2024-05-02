@@ -1,4 +1,4 @@
-package ssafy.lambda.vote.dto;
+package ssafy.lambda.board.dto;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

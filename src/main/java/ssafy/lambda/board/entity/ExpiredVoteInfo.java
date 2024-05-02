@@ -1,4 +1,4 @@
-package ssafy.lambda.vote.entity;
+package ssafy.lambda.board.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +17,7 @@ import ssafy.lambda.member.entity.Member;
 @Entity
 @Getter
 public class ExpiredVoteInfo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expired_vote_info_id")
@@ -44,10 +45,11 @@ public class ExpiredVoteInfo {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected ExpiredVoteInfo(){}
+    protected ExpiredVoteInfo() {
+    }
 
 
-    //voteInfo를 그대로 가져오므로 All
+    // voteInfo를 그대로 가져오므로 All
     @Builder
     public ExpiredVoteInfo(Long id, Member choosedMember, LocalDateTime createAt, boolean isOpen,
         String opinion, ExpiredVote expiredVote, Member member) {
@@ -60,7 +62,7 @@ public class ExpiredVoteInfo {
         this.member = member;
     }
 
-    //만료된 투표도 Open상태 변경 가능.
+    // 만료된 투표도 Open상태 변경 가능.
     public void setOpen(boolean open) {
         isOpen = open;
     }
