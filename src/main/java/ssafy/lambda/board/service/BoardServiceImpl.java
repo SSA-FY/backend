@@ -58,11 +58,12 @@ public class BoardServiceImpl implements BoardService {
             throw new IllegalArgumentException("This member isn't a commenter of this comment ");
         }
         comment.setContent(content);
-        commentRepository.saveComment(comment);
+        commentRepository.save(comment);
     }
 
 
     @Override
+    @Transactional
     public void deleteComment(Long commentId) {
         BoardComment comment = commentRepository.findById(commentId)
                                                 .orElseThrow(() -> new IllegalArgumentException(

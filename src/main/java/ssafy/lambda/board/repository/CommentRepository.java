@@ -7,8 +7,7 @@ import org.springframework.data.repository.query.Param;
 import ssafy.lambda.board.dto.ResponseCommentDto;
 import ssafy.lambda.board.entity.BoardComment;
 
-public interface CommentRepository extends JpaRepository<BoardComment, Long>,
-    BoardRepositoryCustom {
+public interface CommentRepository extends JpaRepository<BoardComment, Long> {
 
     @Query(
         "SELECT new ssafy.lambda.board.dto.ResponseCommentDto(c.id,m.name, c.content, c.createdAt) "
