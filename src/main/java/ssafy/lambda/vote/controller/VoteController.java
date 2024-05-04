@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseCommentDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteStatusDto;
@@ -24,10 +22,9 @@ import ssafy.lambda.vote.service.VoteService;
 @Slf4j
 public class VoteController {
 
-    // @Autowired
     private final VoteService voteService;
 
-    @Operation(summary = "투표 생성", description = "유저가 새로운 투표를 만듭니다")
+    @Operation(summary = "투표 생성", description = "멤버가 새로운 투표를 만듭니다")
     @PostMapping("/vote")
     public ResponseEntity createVote(
         @RequestParam Long memberId,
@@ -42,35 +39,35 @@ public class VoteController {
     }
 
 
-    @Operation(summary = "투표하기", description = "유저가 투표를 합니다")
+    @Operation(summary = "투표하기", description = "멤버가 투표를 합니다")
     @PostMapping("/vote/{voteId}")
     public ResponseEntity createVote(
         @PathVariable Long voteId,
-        @RequestParam Long memberId,
-        @RequestParam Long choosedMemberId,
+        @RequestParam Long voterId,
+        @RequestParam Long voteeId,
         @RequestParam Long teamId
     ) {
-        log.info("doVote - team {}, vote {} : {} -> {}", teamId, voteId, memberId, choosedMemberId);
-        voteService.doVote(voteId, teamId, memberId, choosedMemberId);
+        log.info("doVote - team {}, vote {} : {} -> {}", teamId, voteId, voterId, voteeId);
+        voteService.doVote(voteId, teamId, voterId, voteeId);
         return ResponseEntity.ok()
                              .build();
     }
 
-    @Operation(summary = "한줄평 남기기", description = "유저가 투표한 유저에게 한줄평를 남깁니다")
+    @Operation(summary = "한줄평 남기기", description = "멤버가 투표한 멤버에게 한줄평를 남깁니다")
     @PostMapping("/vote/review/{voteId}")
     public ResponseEntity createReview(
-        @PathVariable Long voteId,
+        @PathVariable Long voteInfoId,
         @RequestParam Long memberId,
         @RequestBody String review
     ) {
-        log.info("review - member {}, vote {}  : {}", memberId, voteId, review);
-        voteService.review(memberId, voteId, review);
+        log.info("review - member {}, vote {}  : {}", memberId, voteInfoId, review);
+        voteService.review(memberId, voteInfoId, review);
         return ResponseEntity.ok()
                              .build();
     }
 
 
-    @Operation(summary = "투표 결과", description = "현재 투표의 결과로, 상위 6명 유저 정보를 반환합니다")
+    @Operation(summary = "투표 결과", description = "현재 투표의 결과로, 상위 6명 멤버 정보를 반환합니다")
     @GetMapping("/vote/{voteId}")
     public ResponseEntity<List<ResponseProfileWithPercentDto>> getVoteResult(
         @PathVariable Long voteId
@@ -81,13 +78,14 @@ public class VoteController {
                              .body(voteResult);
     }
 
-    @Operation(summary = "투표 리스트 가져오기", description = "유저가 선택한 그룹의 진행 중인 투표를 가져옵니다.")
+    @Operation(summary = "투표 리스트 가져오기", description = "멤버가 선택한 팀의 진행 중인 투표를 가져옵니다.")
     @GetMapping("/vote/list")
     public ResponseEntity<List<ResponseVoteDto>> getVoteList(
         @RequestParam Long memberId,
         @RequestParam Long teamId
     ) {
-        List<ResponseVoteDto> responseVoteDtoList = voteService.getUserVote(memberId, teamId);
+        List<ResponseVoteDto> responseVoteDtoList = voteService.getVoteListByMember(memberId,
+            teamId);
         log.info("member {}, team {} -> ListCount : {}", memberId, teamId,
             responseVoteDtoList.size());
 
@@ -106,41 +104,4 @@ public class VoteController {
                              .body(responseVoteStatusDto);
     }
 
-
-    @Operation(summary = "댓글 조회", description = "만료된 투표에 대한 댓글 목록을 반환합니다")
-    @GetMapping("/comment")
-    public ResponseEntity<List<ResponseCommentDto>> getComments(
-        @RequestParam Long voteId
-    ) {
-        log.info("getVoteResult - vote {} ", voteId);
-        List<ResponseCommentDto> voteResult = voteService.getComments(voteId);
-        return ResponseEntity.ok()
-                             .body(voteResult);
-    }
-
-    @Operation(summary = "댓글 작성", description = "만료된 투표에 대한 댓글을 작성합니다")
-    @PostMapping("/comment")
-    public ResponseEntity writeComment(
-        @RequestParam Long voteId,
-        @RequestParam Long memberId,
-        @RequestBody String content
-    ) {
-        log.info("writeComment - member {}, vote {}  : {}", memberId, voteId, content);
-        voteService.writeComment(voteId, memberId, content);
-        return ResponseEntity.ok()
-                             .build();
-    }
-
-
-    @Operation(summary = "댓글 삭제", description = "작성한 댓글을 삭제합니다")
-    @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity deleteComment(
-        @PathVariable Long commentId,
-        @RequestParam Long memberId
-    ) {
-        log.info("deleteComment - member {}, comment {}  : {}", memberId, commentId);
-        voteService.deleteComment(commentId);
-        return ResponseEntity.ok()
-                             .build();
-    }
 }

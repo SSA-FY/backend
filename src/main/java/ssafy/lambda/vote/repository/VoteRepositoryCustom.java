@@ -8,9 +8,9 @@ import ssafy.lambda.vote.entity.Vote;
 
 public interface VoteRepositoryCustom {
 
-    List<ResponseVoteDto> findVoteByMemberAndTeam(Member member, Team team);
+    List<ResponseVoteDto> findVoteByVoterAndTeam(Member voter, Team team);
 
-    Vote findInCompleteVoteByMemberAndTeam(Member member, Team team);
+    Vote findInCompleteVoteByVoterAndTeam(Member voter, Team team);
 
     List<Object[]> findVoteInfoByCnt(Long voteId);
 }
