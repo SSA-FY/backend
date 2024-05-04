@@ -33,11 +33,11 @@ public class TeamController {
     @GetMapping("/list")
     public ResponseEntity<List<ResponseTeamDto>> getTeams() {
         List<ResponseTeamDto> teams = teamService.findAllTeam()
-            .stream()
-            .map(ResponseTeamDto::new)
-            .toList();
+                                                 .stream()
+                                                 .map(ResponseTeamDto::new)
+                                                 .toList();
         return ResponseEntity.status(HttpStatus.OK)
-            .body(teams);
+                             .body(teams);
     }
 
     @Operation(summary = "그룹 조회", description = "그룹을 조회합니다")
@@ -45,7 +45,7 @@ public class TeamController {
     public ResponseEntity<ResponseTeamDto> getTeam(@PathVariable("id") Long id) {
         Team team = teamService.findTeamById(id);
         return ResponseEntity.status(HttpStatus.OK)
-            .body(new ResponseTeamDto(team));
+                             .body(new ResponseTeamDto(team));
     }
 
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다")
@@ -66,10 +66,14 @@ public class TeamController {
 
     @Operation(summary = "그룹 이름 검색", description = "그룹 이름으로 조회합니다.")
     @GetMapping
-    public ResponseEntity<ResponseTeamDto> getTeamByTeamName(
+    public ResponseEntity<List<ResponseTeamDto>> getTeamByTeamName(
         @RequestParam("teamName") String teamName) {
-        Team team = teamService.findTeamByName(teamName);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseTeamDto(team));
+        List<ResponseTeamDto> teamList = teamService.findTeamByNameLike(teamName)
+                                                    .stream()
+                                                    .map((team -> new ResponseTeamDto(team)))
+                                                    .toList();
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(teamList);
     }
 
 //    @Operation(summary = "그룹 소개 변경", description = "그룹 소개를 변경합니다.")
