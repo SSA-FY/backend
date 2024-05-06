@@ -56,7 +56,7 @@ public class TeamController {
     public ResponseEntity<Response> createTeam(@RequestBody RequestTeamCreateDto team) {
         // TODO : 요청 사용자는 Spring Security 에서 가져올 것
         Member member = memberService.findMemberById(1L);
-        Team createdTeam = teamService.createTeam(team, member);
+        teamService.createTeam(team, member);
         return Response.res(HttpStatus.CREATED, "팀 생성 성공");
     }
 

@@ -10,7 +10,7 @@ import ssafy.lambda.team.entity.Team;
 
 public interface TeamService {
 
-    Team createTeam(RequestTeamCreateDto teamCreateDto, Member manager);
+    void createTeam(RequestTeamCreateDto teamCreateDto, Member manager);
 
     Team findTeamById(Long teamId);
 

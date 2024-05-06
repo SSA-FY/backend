@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
 import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
@@ -18,11 +19,14 @@ import ssafy.lambda.team.repository.TeamRepository;
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
+    private final MembershipService membershipService;
 
-    public Team createTeam(RequestTeamCreateDto teamCreateDto, Member manager) {
+    @Transactional
+    public void createTeam(RequestTeamCreateDto teamCreateDto, Member manager) {
         Team team = teamCreateDto.toEntity();
         team.setManager(manager);
-        return teamRepository.save(team);
+        teamRepository.save(team);
+        membershipService.createMembership(manager, team, "관리자");
     }
 
     public Team findTeamById(Long teamId) {
