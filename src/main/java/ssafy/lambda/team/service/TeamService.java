@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.dto.RequestTeamDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.repository.TeamRepository;
@@ -45,4 +46,7 @@ public class TeamService {
         return teamRepository.findAll();
     }
 
+    public List<Team> findAllTeamByMemberId(Long memberId) {
+        return teamRepository.findAllByMemberId(memberId);
+    }
 }

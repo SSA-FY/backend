@@ -8,6 +8,11 @@ import ssafy.lambda.member.dto.RequestMemberDto;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.member.repository.MemberRepository;
+import ssafy.lambda.membership.entity.Membership;
+import ssafy.lambda.membership.service.MembershipService;
+import ssafy.lambda.team.entity.Team;
+import ssafy.lambda.team.repository.TeamRepository;
+import ssafy.lambda.team.service.TeamService;
 
 @Service
 @RequiredArgsConstructor
@@ -46,5 +51,9 @@ public class MemberService {
     @Transactional
     public List<Member> findAllMember() {
         return memberRepository.findAll();
+    }
+
+    public List<Member> findAllMemberByTeamId(Long teamId) {
+        return memberRepository.findAllByTeamId(teamId);
     }
 }
