@@ -32,7 +32,7 @@ public class TeamServiceImpl implements TeamService {
     public Team findTeamById(Long teamId) {
         return teamRepository.findById(teamId)
                              .orElseThrow(
-                                 () -> new IllegalArgumentException("not found: " + teamId));
+                                 () -> new TeamNotFoundException(teamId));
     }
 
     public void deleteTeam(Long teamId) {
@@ -63,7 +63,7 @@ public class TeamServiceImpl implements TeamService {
     public void updateTeamDescription(RequestTeamDescriptionUpdateDto requestDto, Member member) {
         Team team = findTeamById(requestDto.getTeamId());
         if (team.getManager()
-                .getMemberId() != member.getMemberId()) {
+                .equals(member)) {
             throw new TeamUnauthorizedException();
         }
         team.setDescription(requestDto.getDescription());
@@ -74,7 +74,7 @@ public class TeamServiceImpl implements TeamService {
     public void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member) {
         Team team = findTeamById(requestTeamNameUpdateDto.getTeamId());
         if (team.getManager()
-                .getMemberId() != member.getMemberId()) {
+                .equals(member)) {
             throw new TeamUnauthorizedException();
         }
         team.setTeamName(requestTeamNameUpdateDto.getTeamName());
