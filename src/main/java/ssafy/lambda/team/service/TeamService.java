@@ -1,52 +1,31 @@
 package ssafy.lambda.team.service;
 
+
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
-import ssafy.lambda.team.dto.RequestTeamDto;
+import ssafy.lambda.team.dto.RequestTeamCreateDto;
+import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
+import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
 import ssafy.lambda.team.entity.Team;
-import ssafy.lambda.team.repository.TeamRepository;
 
-@RequiredArgsConstructor
-@Service
-public class TeamService {
+public interface TeamService {
 
-    private final TeamRepository teamRepository;
+    void createTeam(RequestTeamCreateDto teamCreateDto, Member manager);
 
-    public Team createTeam(RequestTeamDto requestTeamDto) {
-        Team team = requestTeamDto.toEntity();
+    Team findTeamById(Long teamId);
 
-        return teamRepository.save(team);
-    }
+    void deleteTeam(Long teamId);
 
-    public Team findTeamById(Long teamId) {
-        return teamRepository.findById(teamId)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + teamId));
-    }
+    List<Team> findAllTeam();
 
-    @Transactional
-    public Team updateTeam(Long id, RequestTeamDto requestTeamDto) {
-        Team team = requestTeamDto.toEntity();
+    Team findTeamByName(String teamName);
 
-        Team updatedTeam = teamRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+    List<Team> findTeamByNameLike(String teamName);
 
-        updatedTeam.update(team.getTeamName(), team.getDescription());
+    void updateTeamDescription(RequestTeamDescriptionUpdateDto requestTeamDescriptionUpdateDto,
+        Member member);
 
-        return updatedTeam;
-    }
+    void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member);
 
-    public void deleteTeam(Long teamId) {
-        teamRepository.deleteById(teamId);
-    }
-
-    public List<Team> findAllTeam() {
-        return teamRepository.findAll();
-    }
-
-    public List<Team> findAllTeamByMemberId(Long memberId) {
-        return teamRepository.findAllByMemberId(memberId);
-    }
+    public List<Team> findAllTeamByMemberId(Long memberId);
 }

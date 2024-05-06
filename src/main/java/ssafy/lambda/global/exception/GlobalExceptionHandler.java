@@ -12,13 +12,25 @@ import ssafy.lambda.invitation.exception.InvitationNotFoundException;
 import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.exception.DuplicatedNicknameException;
+import ssafy.lambda.team.exception.TeamNotFoundException;
+import ssafy.lambda.team.exception.TeamUnauthorizedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<Response> handleNotFoundException(MemberNotFoundException e) {
+    public ResponseEntity<Response> handleMembersNotFoundException(MemberNotFoundException e) {
         return Response.res(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(TeamNotFoundException.class)
+    public ResponseEntity<Response> handleTeamNotFoundException(TeamNotFoundException e) {
+        return Response.res(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(TeamUnauthorizedException.class)
+    public ResponseEntity<Response> handleTeamUnauthorizedException(TeamUnauthorizedException e) {
+        return Response.res(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(DuplicatedInvitationException.class)
