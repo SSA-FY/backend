@@ -20,6 +20,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @EntityGraph(attributePaths = {"memberships"})
     List<Team> findAll();
 
-    @Query("SELECT t FROM Team t JOIN t.memberships WHERE memberships.member.id = :memberId")
+    @Query("SELECT t FROM Team t JOIN t.memberships ms WHERE ms.member.memberId = :memberId")
     List<Team> findAllByMemberId(Long memberId);
 }
