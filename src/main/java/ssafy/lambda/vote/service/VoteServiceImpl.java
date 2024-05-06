@@ -1,6 +1,5 @@
 package ssafy.lambda.vote.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,15 +12,11 @@ import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseCommentDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteStatusDto;
-import ssafy.lambda.vote.entity.ExpiredVote;
 import ssafy.lambda.vote.entity.Vote;
-import ssafy.lambda.vote.entity.VoteComment;
 import ssafy.lambda.vote.entity.VoteInfo;
-import ssafy.lambda.vote.repository.CommentRepository;
 import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
 
@@ -32,9 +27,8 @@ public class VoteServiceImpl implements VoteService {
 
     private final VoteRepository voteRepository;
     private final VoteInfoRepository voteInfoRepository;
-    private final CommentRepository commentRepository;
+    /////////////////////////////////////////////////////
     private final MembershipService membershipService;
-    // TODO findById 메서드 확인
     private final TeamService teamService;
     private final MemberService memberService;
 
@@ -50,22 +44,22 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public void doVote(Long voteId, Long teamId, Long memberId, Long chosenMemberId)
+    public void doVote(Long voteId, Long teamId, Long voterId, Long voteeId)
         throws IllegalArgumentException {
 
         Vote foundVote = validateVote(voteId);
-        Member member = memberService.findMemberById(memberId);
-        Member choosedMember = memberService.findMemberById(chosenMemberId);
+        Member voter = memberService.findMemberById(voterId);
+        Member votee = memberService.findMemberById(voteeId);
 
         // 이미 투표했는가
-        if (voteInfoRepository.existsByVoteAndMember(foundVote, member)) {
+        if (voteInfoRepository.existsByVoteAndVoter(foundVote, voter)) {
             throw new IllegalArgumentException("The member already voted");
         }
 
         // 투표하기
         VoteInfo voteInfo = VoteInfo.builder()
-                                    .member(member)
-                                    .choosedMember(choosedMember)
+                                    .voter(voter)
+                                    .votee(votee)
                                     .vote(foundVote)
                                     .build();
 
@@ -80,15 +74,15 @@ public class VoteServiceImpl implements VoteService {
         Member member = memberService.findMemberById(memberId);
 
         // 투표했는가
-        VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndMember(foundVote, member)
+        VoteInfo foundVoteInfo = voteInfoRepository.findByVoteAndVoter(foundVote, member)
                                                    .orElseThrow(
                                                        () -> new IllegalArgumentException(
-                                                           "user hasn't voted yet")
+                                                           "The member hasn't voted yet")
                                                    );
 
         // 이미 한줄평을 남겼는가
         if (foundVoteInfo.getOpinion() != null) {
-            throw new IllegalArgumentException("user already left a review");
+            throw new IllegalArgumentException("The member already left a review");
         }
 
         foundVoteInfo.setOpinion(review);
@@ -109,6 +103,8 @@ public class VoteServiceImpl implements VoteService {
                     Double percent = ((Number) row[2]).doubleValue();
 
                     // TODO 쿼리 최대 6번 날라감, 최적화 필요
+                    // MemberRepository에서 List<Member> findByIdIn(List<Long> memberIds); 메서드 선언 후
+                    // List<Long> topVoteeIds를 파라미터로 넘겨줘서 컬렉션 조회 1번으로 줄이기
                     Member choosedMember = memberService.findMemberById(memberId);
 
                     return new ResponseProfileWithPercentDto(
@@ -132,7 +128,7 @@ public class VoteServiceImpl implements VoteService {
                                        .orElseThrow(
                                            () -> new IllegalArgumentException("vote doesn't exist")
                                        );
-        if (foundVote.isProceeding() == false) {
+        if (foundVote.getIsProceeding() == false) {
             throw new IllegalArgumentException("vote is over");
         }
         return foundVote;
@@ -140,10 +136,10 @@ public class VoteServiceImpl implements VoteService {
 
 
     @Override
-    public List<ResponseVoteDto> getUserVote(Long memberId, Long teamId) {
+    public List<ResponseVoteDto> getVoteListByMember(Long memberId, Long teamId) {
         Member member = memberService.findMemberById(memberId);
         Team team = teamService.findTeamById(teamId);
-        return voteRepository.findVoteByMemberAndTeam(member, team);
+        return voteRepository.findVoteByVoterAndTeam(member, team);
     }
 
     /**
@@ -153,7 +149,7 @@ public class VoteServiceImpl implements VoteService {
      *
      * @param memberId
      * @param teamIds
-     * @return ResponseSortVoteDto(유저가 모든 투표에 참여한 팀리스트, 투표가 아직 남은 팀 리스트)
+     * @return ResponseSortVoteDto(멤버가 모든 투표에 참여한 팀리스트, 투표가 아직 남은 팀 리스트)
      */
     @Override
     public ResponseVoteStatusDto sortByVoteStatus(Long memberId, List<Long> teamIds) {
@@ -162,7 +158,7 @@ public class VoteServiceImpl implements VoteService {
 
         Member member = memberService.findMemberById(memberId);
         for (Long teamId : teamIds) {
-            Vote findResult = voteRepository.findInCompleteVoteByMemberAndTeam(member,
+            Vote findResult = voteRepository.findInCompleteVoteByVoterAndTeam(member,
                 teamService.findTeamById(teamId));
             if (findResult == null) {
 //                responseSortVoteDto.getCompletedTeams()
@@ -181,40 +177,4 @@ public class VoteServiceImpl implements VoteService {
         return responseVoteStatusDto;
     }
 
-    @Override
-    public List<ResponseCommentDto> getComments(Long expriedVoteId) {
-//        List<VoteComment> commentList = commentRepository.findByExpiredVoteId(expriedVoteId);
-
-        return commentRepository.findAllByVoteId(expriedVoteId)
-                                .stream()
-                                .map(
-                                    comment ->
-                                        new ResponseCommentDto(((Number) comment[0]).longValue(),
-                                            (String) comment[1],
-                                            (String) comment[2], (LocalDateTime) comment[3])
-                                )
-                                .toList();
-
-    }
-
-    @Override
-    public void writeComment(Long voteId, Long memberId, String content) {
-        Member member = memberService.findMemberById(memberId);
-        ExpiredVote expiredVote = null;
-        VoteComment comment = VoteComment.builder()
-                                         .content(content)
-                                         .member(member)
-                                         .expiredVote(expiredVote)
-                                         .build();
-        commentRepository.save(comment);
-    }
-
-    @Override
-    public void deleteComment(Long commentId) {
-        VoteComment comment = commentRepository.findById(commentId)
-                                               .orElseThrow(() -> new IllegalArgumentException(
-                                                   "Comment doesn't exist")
-                                               );
-        commentRepository.delete(comment);
-    }
 }

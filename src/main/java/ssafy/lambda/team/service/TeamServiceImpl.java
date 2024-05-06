@@ -75,4 +75,9 @@ public class TeamServiceImpl implements TeamService {
         }
         team.setTeamName(requestTeamNameUpdateDto.getTeamName());
     }
+
+    @Override
+    public List<Team> findAllTeamByMemberId(Long memberId) {
+        return teamRepository.findAllByMemberId(memberId);
+    }
 }

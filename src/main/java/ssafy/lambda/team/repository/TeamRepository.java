@@ -24,4 +24,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("select t from Team t where t.teamName like concat('%', :teamName, '%')")
     List<Team> findByTeamNameLike(@Param("teamName") String teamName);
+
+    @Query("SELECT t FROM Team t JOIN t.memberships ms WHERE ms.member.memberId = :memberId")
+    List<Team> findAllByMemberId(Long memberId);
 }

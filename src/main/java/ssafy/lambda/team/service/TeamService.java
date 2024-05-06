@@ -27,4 +27,5 @@ public interface TeamService {
 
     void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member);
 
+    public List<Team> findAllTeamByMemberId(Long memberId);
 }

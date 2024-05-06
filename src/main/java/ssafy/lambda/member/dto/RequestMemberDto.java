@@ -12,7 +12,6 @@ import ssafy.lambda.member.entity.SocialType;
 @Getter
 public class RequestMemberDto {
 
-    private Long memberId;
     private SocialType social;
     private String name;
     private Integer point;
@@ -21,7 +20,6 @@ public class RequestMemberDto {
 
     public Member toEntity() {
         return Member.builder()
-            .memberId(memberId)
             .social(social)
             .name(name)
             .point(point)

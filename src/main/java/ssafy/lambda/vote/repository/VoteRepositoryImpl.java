@@ -33,14 +33,14 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
 
 
     /**
-     * MemberShipList를 이용하여 해당 유저의 모든 VoteList반환
+     * MemberShipList를 이용하여 해당 멤버의 모든 VoteList반환
      * <p>
      *
      * @param
      * @return
      */
     @Override
-    public List<ResponseVoteDto> findVoteByMemberAndTeam(Member member, Team team) {
+    public List<ResponseVoteDto> findVoteByVoterAndTeam(Member voter, Team team) {
         QVote voteSub = new QVote("voteSub");
         return queryFactory.select(
                                new QResponseVoteDto(
@@ -48,16 +48,16 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
                                    vote.content.as("content"),
                                    vote.imgUrl.as("imgUrl"),
                                    new CaseBuilder().
-                                       when(voteInfo.member.eq(member))
+                                       when(voteInfo.voter.eq(voter))
                                        .then(true)
                                        .otherwise(false)))
                            .from(voteInfo)
                            .rightJoin(voteInfo.vote, vote)
-                           .on(voteInfo.member.eq(member))
+                           .on(voteInfo.voter.eq(voter))
                            .where(
                                isProceeding(),
                                vote.id.in(
-                                   //해당 유저의 선택 그룹에 대한 진행중인 모든 투표의 아이디를 가져온다.
+                                   //해당 멤버의 선택 팀에 대한 진행중인 모든 투표의 아이디를 가져온다.
                                    JPAExpressions.select(voteSub.id)
                                                  .from(voteSub)
                                                  .join(voteSub.membership, membership)
@@ -65,7 +65,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
                                                      teamEq(team)
                                                  ))
                            )
-                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.member).nullsFirst(),
+                           .orderBy(new OrderSpecifier(Order.ASC, voteInfo.voter).nullsFirst(),
                                new OrderSpecifier(Order.ASC, vote.expiredAt),
                                new OrderSpecifier(Order.ASC, vote.id))
                            .fetch();
@@ -75,12 +75,12 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
      * 현재 진행 중인 투표에 대해 멤버가 아직 투표하지 않은 투표를 가져오며, 이를 팀을 통해 해당 팀으로 필터링한다. 최적화 : 하나의 팀에 대해서를 모든 팀에 대해서
      * 1번 쿼리를 날릴 수 있도록
      *
-     * @param member
+     * @param voter
      * @param team
      * @return
      */
     @Override
-    public Vote findInCompleteVoteByMemberAndTeam(Member member, Team team) {
+    public Vote findInCompleteVoteByVoterAndTeam(Member voter, Team team) {
         BooleanExpression inMembership = vote.membership.in(
             JPAExpressions.select(membership)
                           .from(membership)
@@ -90,7 +90,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
         BooleanExpression notInVoteInfo = vote.notIn(
             JPAExpressions.select(voteInfo.vote)
                           .from(voteInfo)
-                          .where(voteInfo.member.eq(member))
+                          .where(voteInfo.voter.eq(voter))
         );
 
         return queryFactory
@@ -121,18 +121,17 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     public List<Object[]> findVoteInfoByCnt(Long voteId) {
 
         String sql =
-            "SELECT choosed_member_id, COUNT(*) as cnt, ROUND(COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
-                +
-                "FROM vote_info " +
-                "WHERE vote_id = :voteId " +
-                "GROUP BY choosed_member_id " +
-                "ORDER BY cnt DESC " +
-                "LIMIT 6";
+            " SELECT vi.votee.id, COUNT(*) as cnt, ROUND(1.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
+                + "FROM VoteInfo vi "
+                + "WHERE vi.vote.id = :voteId "
+                + "GROUP BY vi.votee.id "
+                + "ORDER BY cnt DESC LIMIT 6";
 
-        Query query = entityManager.createNativeQuery(sql);
+        Query query = entityManager.createQuery(sql);
         query.setParameter("voteId", voteId);
 
         List<Object[]> resultOfQuery = query.getResultList();
+
         return resultOfQuery;
     }
 }
