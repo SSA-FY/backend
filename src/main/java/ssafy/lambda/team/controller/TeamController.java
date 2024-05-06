@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,8 @@ import ssafy.lambda.global.response.Response;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
+import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
+import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
 import ssafy.lambda.team.dto.ResponseTeamDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
@@ -76,13 +79,25 @@ public class TeamController {
                              .body(teamList);
     }
 
-//    @Operation(summary = "그룹 소개 변경", description = "그룹 소개를 변경합니다.")
-//    @PatchMapping
-//    public ResponseEntity<Response> updateTeamDescription(@RequestBody
-//    RequestTeamDescriptionUpdateDto requestDto) {
-//         요청 멤버 확인은 Spring Security 적용시 Principal 에서 가져올 예정입니다.
-//        Member member =
-//        teamService.updateTeamDescription(requestDto, );
-//
-//    }
+    @Operation(summary = "그룹 소개 변경", description = "그룹 소개를 변경합니다.")
+    @PatchMapping("/description")
+    public ResponseEntity<Response> updateTeamDescription(@RequestBody
+    RequestTeamDescriptionUpdateDto requestDto) {
+//      TODO   요청 멤버 확인은 Spring Security 적용시 Principal 에서 가져오기
+        Member member = memberService.findMemberById(1L);
+        teamService.updateTeamDescription(requestDto, member);
+        return Response.res(HttpStatus.OK, "그룹 소개 변경 선공");
+    }
+
+    @Operation(summary = "팀명 변경", description = "팀명을 변경합니다.")
+    @PatchMapping("name")
+    public ResponseEntity<Response> updateTeamName(
+        @RequestBody RequestTeamNameUpdateDto requestDto) {
+//      TODO   요청 멤버 확인은 Spring Security 적용시 Principal 에서 가져오기
+        Member member = memberService.findMemberById(1L);
+        teamService.updateTeamName(requestDto, member);
+        return Response.res(HttpStatus.OK, "팀명 변경 성공");
+    }
+
+
 }

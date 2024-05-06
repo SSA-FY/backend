@@ -27,9 +27,11 @@ public class Team extends BaseEntity {
     private Long teamId;
 
     @Column
+    @Setter
     private String teamName;
 
     @Column
+    @Setter
     private String description;
 
     @Setter
@@ -56,8 +58,4 @@ public class Team extends BaseEntity {
         this.manager = manager;
     }
 
-    public void update(String teamName, String description) {
-        this.teamName = teamName;
-        this.description = description;
-    }
 }

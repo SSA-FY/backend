@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
+import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.exception.TeamNotFoundException;
 import ssafy.lambda.team.exception.TeamUnauthorizedException;
@@ -26,7 +27,8 @@ public class TeamServiceImpl implements TeamService {
 
     public Team findTeamById(Long teamId) {
         return teamRepository.findById(teamId)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + teamId));
+                             .orElseThrow(
+                                 () -> new IllegalArgumentException("not found: " + teamId));
     }
 
     public void deleteTeam(Long teamId) {
@@ -40,9 +42,10 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Team findTeamByName(String teamName) {
-        return teamRepository.findByTeamName(teamName).orElseThrow(
-            () -> new TeamNotFoundException(teamName)
-        );
+        return teamRepository.findByTeamName(teamName)
+                             .orElseThrow(
+                                 () -> new TeamNotFoundException(teamName)
+                             );
     }
 
     @Override
@@ -55,9 +58,21 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void updateTeamDescription(RequestTeamDescriptionUpdateDto requestDto, Member member) {
         Team team = findTeamById(requestDto.getTeamId());
-        if (team.getManager().getMemberId() != member.getMemberId()) {
+        if (team.getManager()
+                .getMemberId() != member.getMemberId()) {
             throw new TeamUnauthorizedException();
         }
-        team.update(team.getTeamName(), requestDto.getDescription());
+        team.setDescription(requestDto.getDescription());
+    }
+
+    @Transactional
+    @Override
+    public void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member) {
+        Team team = findTeamById(requestTeamNameUpdateDto.getTeamId());
+        if (team.getManager()
+                .getMemberId() != member.getMemberId()) {
+            throw new TeamUnauthorizedException();
+        }
+        team.setTeamName(requestTeamNameUpdateDto.getTeamName());
     }
 }
