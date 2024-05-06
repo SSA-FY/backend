@@ -22,6 +22,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findAll();
 
 
-    @Query("SELECT member from Member member LEFT JOIN member.memberships membership LEFT JOIN membership.team team where team.id = :teamId")
+    @Query("SELECT m FROM Member m JOIN m.memberships WHERE memberships.team.id = :teamId")
     List<Member> findAllByTeamId(Long teamId);
 }
