@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import ssafy.lambda.global.common.BaseEntity;
+import ssafy.lambda.member.entity.Member;
 
 @Entity
 @Getter
@@ -19,7 +20,11 @@ public class Notification extends BaseEntity {
     @Column(name = "title")
     private String title;
 
-    public Notification() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    protected Notification() {
     }
 
     @Builder
