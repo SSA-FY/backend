@@ -21,8 +21,8 @@ public class ExpiredVoteNotification extends Notification {
     }
 
     @Builder
-    public ExpiredVoteNotification(Long id, Member member, ExpiredVote expiredVote) {
-        super(id, member);
+    public ExpiredVoteNotification(Member member, ExpiredVote expiredVote) {
+        super(member);
         this.expiredVote = expiredVote;
     }
 }
