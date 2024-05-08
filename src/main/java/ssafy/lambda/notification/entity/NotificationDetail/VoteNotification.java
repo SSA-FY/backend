@@ -21,8 +21,8 @@ public class VoteNotification extends Notification {
     }
 
     @Builder
-    public VoteNotification(Long id, Member member, Vote vote) {
-        super(id, member);
+    public VoteNotification(Member member, Vote vote) {
+        super(member);
         this.vote = vote;
     }
 

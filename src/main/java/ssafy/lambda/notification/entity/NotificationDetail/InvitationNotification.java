@@ -20,8 +20,8 @@ public class InvitationNotification extends Notification {
     }
 
     @Builder
-    public InvitationNotification(Long id, Member member, Invitation invitation) {
-        super(id, member);
+    public InvitationNotification(Member member, Invitation invitation) {
+        super(member);
         this.invitation = invitation;
     }
 }
