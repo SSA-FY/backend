@@ -1,8 +1,10 @@
 package ssafy.lambda.notification.entity.NotificationDetail;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import ssafy.lambda.invitation.entity.Invitation;
+import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.notification.entity.Notification;
 
 @Entity
@@ -10,9 +12,16 @@ import ssafy.lambda.notification.entity.Notification;
 @DiscriminatorValue("Invitation")
 public class InvitationNotification extends Notification {
 
-//    초대 테이블 생성 필요
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "invitation_id")
-//    private Invitation invitation;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invitation_id")
+    private Invitation invitation;
 
+    protected InvitationNotification() {
+    }
+
+    @Builder
+    public InvitationNotification(Long id, Member member, Invitation invitation) {
+        super(id, member);
+        this.invitation = invitation;
+    }
 }

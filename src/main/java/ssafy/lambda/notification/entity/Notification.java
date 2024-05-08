@@ -17,9 +17,6 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
-    private String title;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -27,8 +24,7 @@ public class Notification extends BaseEntity {
     protected Notification() {
     }
 
-    @Builder
-    public Notification(String title) {
-        this.title = title;
+    public Notification(Long id, Member member) {
+        this.member = member;
     }
 }
