@@ -24,7 +24,7 @@ public class Notification extends BaseEntity {
     protected Notification() {
     }
 
-    public Notification(Long id, Member member) {
+    public Notification(Member member) {
         this.member = member;
     }
 }
