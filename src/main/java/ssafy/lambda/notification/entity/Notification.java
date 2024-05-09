@@ -10,7 +10,7 @@ import ssafy.lambda.member.entity.Member;
 @Getter
 @DiscriminatorColumn(name = "DTYPE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Notification extends BaseEntity {
+public abstract class Notification extends BaseEntity {
 
     @Id
     @Column(name = "notification_id")
