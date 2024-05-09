@@ -1,19 +1,20 @@
 package ssafy.lambda.notification.repository;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import ssafy.lambda.member.entity.Member;
-import ssafy.lambda.notification.dto.QResponseVoteNotification;
-import ssafy.lambda.notification.dto.ResponseExpiredVoteNotification;
-import ssafy.lambda.notification.dto.ResponseInvitionNotification;
-import ssafy.lambda.notification.dto.ResponseVoteNotification;
 import ssafy.lambda.notification.dto.item.QVoteInfoItem;
 import ssafy.lambda.notification.dto.item.VoteInfoItem;
+import ssafy.lambda.notification.entity.Notification;
+import ssafy.lambda.vote.entity.Vote;
 
 import java.util.List;
 
-import static ssafy.lambda.notification.entity.NotificationDetail.QVoteNotification.voteNotification;
-import static ssafy.lambda.vote.entity.QVote.vote;
+import static ssafy.lambda.notification.entity.QNotification.notification;
 import static ssafy.lambda.vote.entity.QVoteInfo.voteInfo;
 
 public class NotificationRepositoryImpl implements CustomNotificationRepository {
@@ -23,48 +24,41 @@ public class NotificationRepositoryImpl implements CustomNotificationRepository 
     public NotificationRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
-    
+
     /**
-     * 투표 받은 정보에 대한 알림 반환 메서드
+     * 페이징
+     *
      * @param member
      * @return
      */
     @Override
-    public List<ResponseVoteNotification> findVoteNotificationByMember(Member member) {
-        List<ResponseVoteNotification> votenotifications = queryFactory.select(new QResponseVoteNotification(vote.id, vote.content))
-                                                                       .from(voteNotification)
-                                                                       .join(vote)
-                                                                       .on(voteNotification.vote.eq(vote))
-                                                                       .where(voteNotification.member.eq(member))
-                                                                       .orderBy(voteNotification.updatedAt.asc())
-                                                                       .fetch();
-        votenotifications.forEach((voteNotificationItem) -> voteNotificationItem.setVoteInfoItems(findVoteInfoItemByVoteId(voteNotificationItem.getVoteId())));
-        return votenotifications;
+    public Page<Notification> findNotificationByMember(Member member, Pageable pageable) {
+        List<Notification> notifications = queryFactory.selectFrom(notification)
+                                                       .where(notification.member.eq(member))
+                                                       .offset(pageable.getOffset())
+                                                       .limit(pageable.getPageSize())
+                                                       .fetch();
+
+        JPAQuery<Long> count = queryFactory.select(notification.count())
+                                          .from(notification);
+
+        return PageableExecutionUtils.getPage(notifications, pageable, count::fetchOne);
     }
 
     /**
      * 투표 받은 알림에 대한 voteInfo 정보 반환 메서드
      * 정렬 : 공개 여부 우선, 한줄 평 길이 우선 null Last
-     * @param voteId
+     * @param
      * @return
      */
-    public List<VoteInfoItem> findVoteInfoItemByVoteId(Long voteId){
+    @Override
+    public List<VoteInfoItem> findVoteNotificationInfoByVoteAndMember(Vote vote, Member votee) {
         return queryFactory.select(new QVoteInfoItem(voteInfo.id, voteInfo.opinion, voteInfo.isOpen))
                            .from(voteInfo)
-                           .where(voteInfo.vote.id.eq(voteId))
+                           .where(voteInfo.vote.eq(vote), voteInfo.votee.eq(votee))
                            .orderBy(voteInfo.isOpen.asc(), voteInfo.opinion.length()
                                                                            .desc()
                                                                            .nullsLast())
                            .fetch();
-    }
-
-    @Override
-    public List<ResponseInvitionNotification> findInvitationNotificationByMember(Member member) {
-        return null;
-    }
-
-    @Override
-    public List<ResponseExpiredVoteNotification> findExpiredVoteNotificationByMember(Member member) {
-        return null;
     }
 }
