@@ -1,4 +1,4 @@
-package ssafy.lambda.global.response;
+package ssafy.lambda.global.response.dto;
 
 
 import lombok.Getter;
