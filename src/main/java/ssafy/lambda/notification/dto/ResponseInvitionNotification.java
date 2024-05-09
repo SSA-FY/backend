@@ -4,13 +4,17 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
 @Data
-public class ResponseInvitionNotification extends ResponseNotification{
+public class ResponseInvitionNotification{
+
+    private static final String TITLE = "누군가 나를 초대했어요!";
 
     private Long invitationId;
 
+    private String teamName;
+
     @QueryProjection
-    public ResponseInvitionNotification(Long invitationId, String content) {
-        super("그룹에 초대되었어요!", content);
+    public ResponseInvitionNotification(Long invitationId, String teamName) {
         this.invitationId = invitationId;
+        this.teamName = teamName;
     }
 }
