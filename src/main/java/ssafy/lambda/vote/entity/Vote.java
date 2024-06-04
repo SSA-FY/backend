@@ -38,9 +38,6 @@ public class Vote extends BaseEntity {
     private Membership membership;
 
     @Column
-    private Boolean isProceeding;
-
-    @Column
     private Instant expiredAt;
 
     @OneToMany(mappedBy = "vote")
@@ -56,12 +53,7 @@ public class Vote extends BaseEntity {
         this.content = content;
         this.imgUrl = imgUrl;
         this.membership = membership;
-        this.isProceeding = true;
         this.expiredAt = Instant.now()
                                 .plus(1, ChronoUnit.DAYS);
-    }
-
-    public Boolean getIsProceeding() {
-        return isProceeding;
     }
 }
