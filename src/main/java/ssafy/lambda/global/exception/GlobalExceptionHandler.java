@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ssafy.lambda.global.response.Response;
+import ssafy.lambda.global.response.dto.Response;
 import ssafy.lambda.invitation.exception.DuplicatedInvitationException;
 import ssafy.lambda.invitation.exception.InvalidInvitationException;
 import ssafy.lambda.invitation.exception.InvitationNotFoundException;
