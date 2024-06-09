@@ -1,9 +1,9 @@
 package ssafy.lambda.accesstoken.service;
 
-import static ssafy.lambda.config.security.jwt.JwtProperties.ACCESS_TOKEN_DURATION;
-import static ssafy.lambda.config.security.jwt.JwtProperties.REFRESH_TOKEN_COOKIE_NAME;
-import static ssafy.lambda.config.security.jwt.JwtProperties.REFRESH_TOKEN_DURATION;
-import static ssafy.lambda.config.security.oauth2.OAuth2AuthorizationRequestBasedOnCookieRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME;
+import static ssafy.lambda.global.security.jwt.JwtProperties.ACCESS_TOKEN_DURATION;
+import static ssafy.lambda.global.security.jwt.JwtProperties.REFRESH_TOKEN_COOKIE_NAME;
+import static ssafy.lambda.global.security.jwt.JwtProperties.REFRESH_TOKEN_DURATION;
+import static ssafy.lambda.global.security.oauth2.OAuth2AuthorizationRequestBasedOnCookieRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.WebUtils;
-import ssafy.lambda.commons.utils.CookieUtil;
-import ssafy.lambda.config.security.jwt.JwtProperties;
-import ssafy.lambda.config.security.jwt.TokenService;
+import ssafy.lambda.global.security.jwt.JwtProperties;
+import ssafy.lambda.global.security.jwt.TokenService;
+import ssafy.lambda.global.utils.CookieUtil;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 
@@ -70,9 +70,9 @@ public class AccessTokenService {
      */
     private Claims getClaims(String token) {
         return Jwts.parser()
-            .verifyWith(jwtProperties.getSecretKey())
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+                   .verifyWith(jwtProperties.getSecretKey())
+                   .build()
+                   .parseSignedClaims(token)
+                   .getPayload();
     }
 }
