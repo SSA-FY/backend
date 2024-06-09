@@ -9,13 +9,15 @@ public class ResponseMembershipDto {
     private final Long id;
     private final Long memberId;
     private final Long teamId;
+    private final String nickname;
 
     public ResponseMembershipDto(Membership membership) {
         this.id = membership.getId();
         this.memberId = membership.getMember()
-            .getMemberId();
+                                  .getMemberId();
         this.teamId = membership.getTeam()
-            .getTeamId();
+                                .getTeamId();
+        this.nickname = membership.getNickname();
 
     }
 }

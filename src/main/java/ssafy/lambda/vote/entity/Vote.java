@@ -9,44 +9,43 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
+import ssafy.lambda.global.common.BaseEntity;
 import ssafy.lambda.membership.entity.Membership;
 
 @Entity
 @Getter
-public class Vote {
+public class Vote extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "vote_id")
     private Long id;
 
-    @Column(name = "content")
+    @Column
     private String content;
 
-    @CreatedDate
-    @Column(name = "create_at")
-    private LocalDateTime createAt;
-
-    @Column(name = "expired_at")
-    private LocalDateTime expiredAt;
-
-    @Column(name = "is_proceeding", columnDefinition="boolean default true", nullable = false)
-    private boolean isProceeding;
-
-    @Column(name = "img_url")
+    @Column
     private String imgUrl;
-
-    @OneToMany(mappedBy = "vote")
-    List<VoteInfo> voteInfoList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membership_id")
     private Membership membership;
+
+    @Column
+    private Boolean isProceeding;
+
+    @Column
+    private Instant expiredAt;
+
+    @OneToMany(mappedBy = "vote")
+    List<VoteInfo> voteInfoList = new ArrayList<>();
+
 
     protected Vote() {
 
@@ -55,9 +54,14 @@ public class Vote {
     @Builder
     public Vote(String content, String imgUrl, Membership membership) {
         this.content = content;
-        this.createAt = LocalDateTime.now();
-        this.expiredAt = LocalDateTime.now().plusDays(7);
         this.imgUrl = imgUrl;
         this.membership = membership;
+        this.isProceeding = true;
+        this.expiredAt = Instant.now()
+                                .plus(1, ChronoUnit.DAYS);
+    }
+
+    public Boolean getIsProceeding() {
+        return isProceeding;
     }
 }

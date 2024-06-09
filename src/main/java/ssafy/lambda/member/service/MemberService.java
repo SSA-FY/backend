@@ -53,4 +53,8 @@ public class MemberService {
         return memberRepository.findByEmailAndSocial(id, social)
             .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
     }
+
+    public List<Member> findAllMemberByTeamId(Long teamId) {
+        return memberRepository.findAllByTeamId(teamId);
+    }
 }

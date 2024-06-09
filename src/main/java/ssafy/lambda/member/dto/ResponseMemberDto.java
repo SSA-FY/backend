@@ -11,12 +11,10 @@ public class ResponseMemberDto {
     private final Long memberId;
     private final String profileImgUrl;
     private final String email;
-    private final List<Membership> memberships;
 
     public ResponseMemberDto(Member member) {
         this.memberId = member.getMemberId();
         this.profileImgUrl = member.getProfileImgUrl();
         this.email = member.getEmail();
-        this.memberships = member.getMemberships();
     }
 }
