@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.WebUtils;
 import ssafy.lambda.accesstoken.dto.ResponseAccessTokenDto;
+import ssafy.lambda.accesstoken.exception.RefreshTokenNotFoundException;
 import ssafy.lambda.global.security.jwt.JwtProperties;
 import ssafy.lambda.global.security.jwt.TokenService;
 import ssafy.lambda.global.utils.CookieUtil;
@@ -43,6 +44,11 @@ public class AccessTokenService {
     public ResponseAccessTokenDto createAccessToken(HttpServletRequest request,
         HttpServletResponse response) {
         Cookie cookie = WebUtils.getCookie(request, REFRESH_TOKEN_COOKIE_NAME);
+
+        if (cookie == null) {
+            throw new RefreshTokenNotFoundException();
+        }
+
         String token = cookie.getValue();
 
         if (tokenService.validToken(token)) {
