@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ssafy.lambda.accesstoken.dto.ResponseAccessTokenDto;
 import ssafy.lambda.accesstoken.service.AccessTokenService;
 
 /**
@@ -29,9 +30,11 @@ public class AccessTokenController {
      */
     @Operation(summary = "Access Token 발급", description = "Access Token을 발급 받습니다.")
     @GetMapping
-    public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ResponseAccessTokenDto> create(HttpServletRequest request,
+        HttpServletResponse response) {
 
         return ResponseEntity.ok(accessTokenService.createAccessToken(request, response));
     }
+
 
 }

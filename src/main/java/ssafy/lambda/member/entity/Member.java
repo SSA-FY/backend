@@ -42,7 +42,7 @@ public class Member implements OAuth2User {
     private String name;
 
     @Column(unique = true)
-    private String id;
+    private String tag;
 
     @Column
     private Integer point;

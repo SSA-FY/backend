@@ -3,7 +3,6 @@ package ssafy.lambda.accesstoken.service;
 import static ssafy.lambda.global.security.jwt.JwtProperties.ACCESS_TOKEN_DURATION;
 import static ssafy.lambda.global.security.jwt.JwtProperties.REFRESH_TOKEN_COOKIE_NAME;
 import static ssafy.lambda.global.security.jwt.JwtProperties.REFRESH_TOKEN_DURATION;
-import static ssafy.lambda.global.security.oauth2.OAuth2AuthorizationRequestBasedOnCookieRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.WebUtils;
+import ssafy.lambda.accesstoken.dto.ResponseAccessTokenDto;
 import ssafy.lambda.global.security.jwt.JwtProperties;
 import ssafy.lambda.global.security.jwt.TokenService;
 import ssafy.lambda.global.utils.CookieUtil;
@@ -40,9 +40,10 @@ public class AccessTokenService {
      * @return Access Token
      */
     @Transactional
-    public String createAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = WebUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
-        String token = CookieUtil.deserialize(cookie, String.class);
+    public ResponseAccessTokenDto createAccessToken(HttpServletRequest request,
+        HttpServletResponse response) {
+        Cookie cookie = WebUtils.getCookie(request, REFRESH_TOKEN_COOKIE_NAME);
+        String token = cookie.getValue();
 
         if (tokenService.validToken(token)) {
             Claims claims = getClaims(token);
@@ -55,7 +56,16 @@ public class AccessTokenService {
                     (int) REFRESH_TOKEN_DURATION.toSeconds());
                 member.setRefreshToken(refreshToken);
 
-                return tokenService.generateToken(member, ACCESS_TOKEN_DURATION);
+                return ResponseAccessTokenDto.builder()
+                                             .token(tokenService.generateToken(member,
+                                                 ACCESS_TOKEN_DURATION))
+                                             .memberId(member.getMemberId())
+                                             .email(member.getEmail())
+                                             .social(member.getSocial())
+                                             .name(member.getName())
+                                             .tag(member.getTag())
+                                             .profileImgUrl(member.getProfileImgUrl())
+                                             .build();
             }
         }
 
