@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import ssafy.lambda.config.security.oauth2.userinfo.GoogleUserInfo;
 import ssafy.lambda.config.security.oauth2.userinfo.KakaoUserInfo;
+import ssafy.lambda.config.security.oauth2.userinfo.NaverUserInfo;
 import ssafy.lambda.config.security.oauth2.userinfo.OAuth2UserInfo;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.repository.MemberRepository;
@@ -36,23 +37,27 @@ public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
         OAuth2UserInfo oAuth2UserInfo = null;
 
         switch (userRequest.getClientRegistration()
-            .getRegistrationId()) {
+                           .getRegistrationId()) {
             case "google":
                 oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
                 break;
             case "kakao":
                 oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
                 break;
+            case "naver":
+                oAuth2UserInfo = new NaverUserInfo(oAuth2User.getAttributes());
+                break;
             default:
                 throw new OAuth2AuthenticationException("Provider Not Found");
         }
 
         Member member = memberRepository.findByEmailAndSocial(oAuth2UserInfo.getEmail(),
-                oAuth2UserInfo.getSocial())
-            .orElse(Member.builder()
-                .email(oAuth2UserInfo.getEmail())
-                .social(oAuth2UserInfo.getSocial())
-                .build());
+                                            oAuth2UserInfo.getSocial())
+                                        .orElse(Member.builder()
+                                                      .email(oAuth2UserInfo.getEmail())
+                                                      .social(oAuth2UserInfo.getSocial())
+                                                      .build());
+
         member.setName(oAuth2UserInfo.getName());
 
         memberRepository.save(member);
