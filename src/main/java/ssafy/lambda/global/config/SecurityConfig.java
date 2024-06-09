@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsUtils;
 import ssafy.lambda.global.security.jwt.TokenAuthenticationFilter;
 import ssafy.lambda.global.security.jwt.TokenService;
 import ssafy.lambda.global.security.oauth2.OAuth2AuthorizationRequestBasedOnCookieRepository;
@@ -64,7 +65,8 @@ public class SecurityConfig {
                     new AntPathRequestMatcher("/token"),
                     new AntPathRequestMatcher("/api"),
                     new AntPathRequestMatcher("/swagger-ui/**"),
-                    new AntPathRequestMatcher("/api-docs/**")
+                    new AntPathRequestMatcher("/api-docs/**"),
+                    CorsUtils::isPreFlightRequest
                 )
                 .permitAll()
                 .anyRequest()
