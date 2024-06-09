@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.global.security.jwt.TokenService;
 import ssafy.lambda.global.utils.CookieUtil;
@@ -21,11 +20,13 @@ import ssafy.lambda.member.service.MemberService;
  * oauth2 성공시 Handler
  */
 @RequiredArgsConstructor
-@Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${config.frontend}")
     private String frontend;
+
+    @Value("${minio.url}")
+    private String storage;
 
     private final TokenService tokenService;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
@@ -55,7 +56,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         clearAuthenticationAttributes(request, response);
 
-        getRedirectStrategy().sendRedirect(request, response, frontend);
+        if (member.getMemberId() == null) {
+            member.setProfileImgUrl(
+                storage + "/lambda/NoImg.png");
+            getRedirectStrategy().sendRedirect(request, response, frontend + "/signup");
+        } else {
+            getRedirectStrategy().sendRedirect(request, response, frontend + "/group");
+        }
     }
 
     /**

@@ -50,6 +50,7 @@ public class Member implements OAuth2User {
     @Column
     private LocalDateTime createdAt;
 
+    @Setter
     @Column
     private String profileImgUrl;
 
@@ -67,21 +68,22 @@ public class Member implements OAuth2User {
     }
 
     @Builder
-    public Member(UUID memberId, SocialType social, String name, Integer point,
+    public Member(UUID memberId, SocialType social, String name, String tag, Integer point,
         String profileImgUrl, String email) {
         this.memberId = memberId;
         this.social = social;
         this.name = name;
+        this.tag = tag;
         this.point = point;
         this.createdAt = LocalDateTime.now();
         this.profileImgUrl = profileImgUrl;
         this.email = email;
     }
 
-    public void update(String name, Integer point,
+    public void update(String name, String tag,
         String profileImgUrl) {
         this.name = name;
-        this.point = point;
+        this.tag = tag;
         this.profileImgUrl = profileImgUrl;
     }
 

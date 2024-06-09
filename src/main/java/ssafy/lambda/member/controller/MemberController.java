@@ -10,9 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ssafy.lambda.global.annotation.ApiErrorResponse;
 import ssafy.lambda.global.response.ApiError;
 import ssafy.lambda.global.response.dto.Response;
@@ -63,10 +64,16 @@ public class MemberController {
     @ApiErrorResponse({ApiError.MemberNotFound})
     @PutMapping
     public ResponseEntity<ResponseMemberDto> update(Authentication authentication,
-        @RequestBody RequestMemberDto requestMemberDto) {
+        @RequestPart("dto") RequestMemberDto requestMemberDto,
+        @RequestPart(value = "img", required = false) MultipartFile img) {
+
         UUID memberId = UUID.fromString(authentication.getName());
-        Member updatedMember = memberService.updateMember(memberId, requestMemberDto);
-        return Response.res(HttpStatus.OK, "멤버 정보 갱신 성공");
+
+        Member updatedMember = memberService.updateMember(memberId,
+            requestMemberDto, img);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(new ResponseMemberDto(updatedMember));
     }
 
     @Operation(summary = "멤버 삭제", description = "멤버를 삭제합니다")
