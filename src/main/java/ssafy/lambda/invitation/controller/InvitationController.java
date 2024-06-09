@@ -1,5 +1,6 @@
 package ssafy.lambda.invitation.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import ssafy.lambda.invitation.service.InvitationService;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.team.service.TeamService;
 
+@SecurityRequirement(name = "token")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("invitation")

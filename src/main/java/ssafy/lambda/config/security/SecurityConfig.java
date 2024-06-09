@@ -59,10 +59,16 @@ public class SecurityConfig {
 
         // API 접속 허용 로직
         http.authorizeHttpRequests(
-            auth -> auth.requestMatchers(new AntPathRequestMatcher("/**"))
-                .authenticated()
+            auth -> auth
+                .requestMatchers(
+                    new AntPathRequestMatcher("/token"),
+                    new AntPathRequestMatcher("/api"),
+                    new AntPathRequestMatcher("/swagger-ui/**"),
+                    new AntPathRequestMatcher("/api-docs/**")
+                )
+                .permitAll()
                 .anyRequest()
-                .permitAll());
+                .authenticated());
 
         return http.build();
     }

@@ -1,6 +1,7 @@
 package ssafy.lambda.membership.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import ssafy.lambda.membership.dto.ResponseMembershipDto;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.ResponseTeamDto;
 
+@SecurityRequirement(name = "token")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/membership")

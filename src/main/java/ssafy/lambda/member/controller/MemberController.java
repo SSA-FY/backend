@@ -1,6 +1,7 @@
 package ssafy.lambda.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import ssafy.lambda.member.dto.ResponseMemberDto;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 
+@SecurityRequirement(name = "token")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")

@@ -1,6 +1,7 @@
 package ssafy.lambda.vote.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteStatusDto;
 import ssafy.lambda.vote.service.VoteService;
 
+@SecurityRequirement(name = "token")
 @RestController
 @RequiredArgsConstructor
 @Slf4j

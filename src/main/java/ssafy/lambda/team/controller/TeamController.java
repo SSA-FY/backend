@@ -1,6 +1,7 @@
 package ssafy.lambda.team.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import ssafy.lambda.team.dto.ResponseTeamDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 
+@SecurityRequirement(name = "token")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/team")

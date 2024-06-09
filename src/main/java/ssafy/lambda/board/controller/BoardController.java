@@ -1,6 +1,7 @@
 package ssafy.lambda.board.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ssafy.lambda.board.dto.ResponseCommentDto;
 import ssafy.lambda.board.service.BoardService;
 
+@SecurityRequirement(name = "token")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
