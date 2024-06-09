@@ -2,10 +2,12 @@ package ssafy.lambda.membership.service;
 
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.member.repository.MemberRepository;
 import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
@@ -39,7 +41,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Transactional
-    public Membership findMembershipByMemberIdAndTeamId(Long memberId, Long teamId) {
+    public Membership findMembershipByMemberIdAndTeamId(UUID memberId, Long teamId) {
         return membershipRepository.findByMemberIdAndTeamId(memberId, teamId)
                                    .orElseThrow(() -> new IllegalArgumentException(
                                        "Membership not found with memberId " + memberId
@@ -53,15 +55,14 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipRepository.findByTeam(team);
     }
 
-    public List<Membership> findMembershipByMemberId(Long memberId) {
+    public List<Membership> findMembershipByMemberId(UUID memberId) {
         Member member = memberRepository.findById(memberId)
-                                        .orElseThrow(() -> new IllegalArgumentException(
-                                            "Member not found with id " + memberId));
+                                        .orElseThrow(() -> new MemberNotFoundException(memberId));
         return membershipRepository.findByMember(member);
     }
 
-    public void deleteMembership(Long id) {
-        membershipRepository.deleteById(id);
+    public void deleteMembership(Long membershipId) {
+        membershipRepository.deleteById(membershipId);
     }
 
     public List<Membership> findAllMembership() {
@@ -72,7 +73,7 @@ public class MembershipServiceImpl implements MembershipService {
     public void updateNickname(Member member, Team team, String newNickname) {
         Membership membership = membershipRepository.findByMemberAndTeam(member, team)
                                                     .orElseThrow(
-                                                        () -> new MembershipNotFoundException());
+                                                        MembershipNotFoundException::new);
         if (duplicatedNicknameCheck(team, newNickname)) {
             throw new DuplicatedNicknameException(newNickname);
         }

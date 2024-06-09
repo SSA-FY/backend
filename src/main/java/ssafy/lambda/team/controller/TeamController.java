@@ -2,9 +2,11 @@ package ssafy.lambda.team.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,8 +26,8 @@ import ssafy.lambda.team.dto.ResponseTeamDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/team")
 public class TeamController {
 
@@ -44,18 +46,20 @@ public class TeamController {
     }
 
     @Operation(summary = "그룹 조회", description = "그룹을 조회합니다")
-    @GetMapping("{id}")
-    public ResponseEntity<ResponseTeamDto> getTeam(@PathVariable("id") Long id) {
-        Team team = teamService.findTeamById(id);
+    @GetMapping("{teamId}")
+    public ResponseEntity<ResponseTeamDto> getTeam(@PathVariable("teamId") Long teamId) {
+        Team team = teamService.findTeamById(teamId);
         return ResponseEntity.status(HttpStatus.OK)
                              .body(new ResponseTeamDto(team));
     }
 
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다")
     @PostMapping
-    public ResponseEntity<Response> createTeam(@RequestBody RequestTeamCreateDto team) {
-        // TODO : 요청 사용자는 Spring Security 에서 가져올 것
-        Member member = memberService.findMemberById(1L);
+    public ResponseEntity<Response> createTeam(Authentication authentication,
+        @RequestBody RequestTeamCreateDto team) {
+        UUID memberId = UUID.fromString(authentication.getName());
+
+        Member member = memberService.findMemberById(memberId);
         teamService.createTeam(team, member);
         return Response.res(HttpStatus.CREATED, "팀 생성 성공");
     }
@@ -81,20 +85,21 @@ public class TeamController {
 
     @Operation(summary = "그룹 소개 변경", description = "그룹 소개를 변경합니다.")
     @PatchMapping("/description")
-    public ResponseEntity<Response> updateTeamDescription(@RequestBody
-    RequestTeamDescriptionUpdateDto requestDto) {
-//      TODO   요청 멤버 확인은 Spring Security 적용시 Principal 에서 가져오기
-        Member member = memberService.findMemberById(1L);
+    public ResponseEntity<Response> updateTeamDescription(Authentication authentication,
+        @RequestBody
+        RequestTeamDescriptionUpdateDto requestDto) {
+        UUID memberId = UUID.fromString(authentication.getName());
+        Member member = memberService.findMemberById(memberId);
         teamService.updateTeamDescription(requestDto, member);
         return Response.res(HttpStatus.OK, "그룹 소개 변경 선공");
     }
 
     @Operation(summary = "팀명 변경", description = "팀명을 변경합니다.")
     @PatchMapping("name")
-    public ResponseEntity<Response> updateTeamName(
+    public ResponseEntity<Response> updateTeamName(Authentication authentication,
         @RequestBody RequestTeamNameUpdateDto requestDto) {
-//      TODO   요청 멤버 확인은 Spring Security 적용시 Principal 에서 가져오기
-        Member member = memberService.findMemberById(1L);
+        UUID memberId = UUID.fromString(authentication.getName());
+        Member member = memberService.findMemberById(memberId);
         teamService.updateTeamName(requestDto, member);
         return Response.res(HttpStatus.OK, "팀명 변경 성공");
     }

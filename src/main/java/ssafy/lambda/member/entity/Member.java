@@ -15,9 +15,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -29,8 +31,9 @@ import ssafy.lambda.membership.entity.Membership;
 public class Member implements OAuth2User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(length = 16)
+    private UUID memberId;
 
     @Enumerated(EnumType.STRING)
     private SocialType social;
@@ -62,7 +65,7 @@ public class Member implements OAuth2User {
     }
 
     @Builder
-    public Member(Long memberId, SocialType social, String name, Integer point,
+    public Member(UUID memberId, SocialType social, String name, Integer point,
         String profileImgUrl, String email) {
         this.memberId = memberId;
         this.social = social;

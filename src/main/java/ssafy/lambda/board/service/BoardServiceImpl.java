@@ -1,6 +1,7 @@
 package ssafy.lambda.board.service;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void writeComment(Long expiredVoteId, Long memberId, String content) {
+    public void writeComment(Long expiredVoteId, UUID memberId, String content) {
         Member member = memberService.findMemberById(memberId);
         // TODO expiredVote 객체 넣기
         ExpiredVote expiredVote = null;
@@ -46,7 +47,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public void editComment(Long commentId, Long memberId, String content) {
+    public void editComment(Long commentId, UUID memberId, String content) {
         // TODO expiredVote 객체 넣기
         ExpiredVote expiredVote = null;
         BoardComment comment = commentRepository.findById(commentId)

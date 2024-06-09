@@ -10,6 +10,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +47,7 @@ public class AccessTokenService {
         if (tokenService.validToken(token)) {
             Claims claims = getClaims(token);
 
-            Member member = memberService.findMemberById(Long.parseLong(claims.getSubject()));
+            Member member = memberService.findMemberById(UUID.fromString(claims.getSubject()));
 
             if (token.equals(member.getRefreshToken())) {
                 String refreshToken = tokenService.generateToken(member, REFRESH_TOKEN_DURATION);
