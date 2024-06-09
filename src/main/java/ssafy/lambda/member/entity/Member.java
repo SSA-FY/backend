@@ -8,7 +8,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +29,7 @@ import ssafy.lambda.membership.entity.Membership;
 
 @Getter
 @Entity
+@Table(name = "member", indexes = @Index(name = "email_social", columnList = "email, social"))
 public class Member implements OAuth2User {
 
     @Id
@@ -35,6 +38,7 @@ public class Member implements OAuth2User {
     private UUID memberId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "social", nullable = false)
     private SocialType social;
 
     @Setter
@@ -54,7 +58,7 @@ public class Member implements OAuth2User {
     @Column
     private String profileImgUrl;
 
-    @Column
+    @Column(name = "email", nullable = false)
     private String email;
 
     @OneToMany(mappedBy = "member", orphanRemoval = true)
