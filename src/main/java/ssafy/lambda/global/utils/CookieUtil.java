@@ -1,4 +1,4 @@
-package ssafy.lambda.commons.utils;
+package ssafy.lambda.global.utils;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,7 +64,7 @@ public class CookieUtil {
      */
     public static String serialize(Object obj) {
         return Base64.getUrlEncoder()
-            .encodeToString(SerializationUtils.serialize(obj));
+                     .encodeToString(SerializationUtils.serialize(obj));
     }
 
     /**
@@ -78,7 +78,7 @@ public class CookieUtil {
         return cls.cast(
             SerializationUtils.deserialize(
                 Base64.getUrlDecoder()
-                    .decode(cookie.getValue())
+                      .decode(cookie.getValue())
             )
         );
     }

@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security;
+package ssafy.lambda.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,11 +8,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import ssafy.lambda.config.security.jwt.TokenAuthenticationFilter;
-import ssafy.lambda.config.security.jwt.TokenService;
-import ssafy.lambda.config.security.oauth2.OAuth2AuthorizationRequestBasedOnCookieRepository;
-import ssafy.lambda.config.security.oauth2.OAuth2MemberCustomService;
-import ssafy.lambda.config.security.oauth2.OAuth2SuccessHandler;
+import ssafy.lambda.global.security.jwt.TokenAuthenticationFilter;
+import ssafy.lambda.global.security.jwt.TokenService;
+import ssafy.lambda.global.security.oauth2.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import ssafy.lambda.global.security.oauth2.OAuth2MemberCustomService;
+import ssafy.lambda.global.security.oauth2.OAuth2SuccessHandler;
 import ssafy.lambda.member.service.MemberService;
 
 //@EnableWebSecurity(debug = true)

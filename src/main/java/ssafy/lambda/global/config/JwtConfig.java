@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.jwt;
+package ssafy.lambda.global.config;
 
 import java.time.Duration;
 import javax.crypto.SecretKey;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties("jwt")
-public class JwtProperties {
+public class JwtConfig {
 
     // JWT 발급자
     private String issuer;

@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.oauth2.userinfo;
+package ssafy.lambda.global.security.oauth2.userinfo;
 
 import ssafy.lambda.member.entity.SocialType;
 

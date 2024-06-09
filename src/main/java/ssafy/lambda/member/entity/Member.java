@@ -19,7 +19,6 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -41,6 +40,9 @@ public class Member implements OAuth2User {
     @Setter
     @Column
     private String name;
+
+    @Column(unique = true)
+    private String id;
 
     @Column
     private Integer point;

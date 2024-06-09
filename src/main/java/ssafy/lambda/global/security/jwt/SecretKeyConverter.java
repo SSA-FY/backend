@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.jwt;
+package ssafy.lambda.global.security.jwt;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

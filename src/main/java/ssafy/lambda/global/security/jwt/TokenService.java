@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.jwt;
+package ssafy.lambda.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+import ssafy.lambda.global.config.JwtConfig;
 import ssafy.lambda.member.entity.Member;
 
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ import ssafy.lambda.member.entity.Member;
 public class TokenService {
 
     // JWT 설정
-    private final JwtProperties jwtProperties;
+    private final JwtConfig jwtConfig;
 
     // JWT 생성
     public String generateToken(Member member, Duration expiredAt) {
@@ -32,23 +33,23 @@ public class TokenService {
         Date now = new Date();
 
         return Jwts.builder()
-            .header()
-            .add("typ", "JWT")
-            .and()
-            .issuer(jwtProperties.getIssuer())
-            .issuedAt(now)
-            .expiration(expiry)
-            .subject(member.getMemberId()
-                .toString())
-            .signWith(jwtProperties.getSecretKey())
-            .compact();
+                   .header()
+                   .add("typ", "JWT")
+                   .and()
+                   .issuer(jwtConfig.getIssuer())
+                   .issuedAt(now)
+                   .expiration(expiry)
+                   .subject(member.getMemberId()
+                                  .toString())
+                   .signWith(jwtConfig.getSecretKey())
+                   .compact();
     }
 
     // JWT 유효성 검사
     public boolean validToken(String token) {
         try {
             Jwts.parser()
-                .verifyWith(jwtProperties.getSecretKey())
+                .verifyWith(jwtConfig.getSecretKey())
                 .build()
                 .parseSignedClaims(token);
             return true;
@@ -65,15 +66,15 @@ public class TokenService {
 
         return new UsernamePasswordAuthenticationToken(
             new User(claims.getSubject
-                (), "", authorities), token, authorities);
+                               (), "", authorities), token, authorities);
     }
 
     // JWT Claims 추출
     private Claims getClaims(String token) {
         return Jwts.parser()
-            .verifyWith(jwtProperties.getSecretKey())
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+                   .verifyWith(jwtConfig.getSecretKey())
+                   .build()
+                   .parseSignedClaims(token)
+                   .getPayload();
     }
 }

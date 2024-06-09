@@ -25,7 +25,7 @@ public class MemberService {
 
     public Member findMemberById(UUID memberId) {
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new MemberNotFoundException(memberId));
+                               .orElseThrow(() -> new MemberNotFoundException(memberId));
 
     }
 
@@ -33,12 +33,12 @@ public class MemberService {
     public Member updateMember(UUID memberId, RequestMemberDto requestMemberDto) {
         Member member = requestMemberDto.toEntity();
 
-        Member updatedMember = memberRepository.findById(memberId)
-            .orElseThrow(() -> new MemberNotFoundException(memberId));
+//        Member updatedMember = memberRepository.findById(memberId)
+//            .orElseThrow(() -> new MemberNotFoundException(memberId));
+//
+//        updatedMember.update(member.getName(), member.getPoint(), member.getProfileImgUrl());
 
-        updatedMember.update(member.getName(), member.getPoint(), member.getProfileImgUrl());
-
-        return updatedMember;
+        return member;
     }
 
     public void deleteMemberById(UUID memberId) {
@@ -52,7 +52,7 @@ public class MemberService {
 
     public Member findMemberByEmailAndSocial(String email, SocialType social) {
         return memberRepository.findByEmailAndSocial(email, social)
-            .orElseThrow(() -> new MemberNotFoundException(email));
+                               .orElseThrow(() -> new MemberNotFoundException(email));
     }
 
     public List<Member> findAllMemberByTeamId(Long teamId) {

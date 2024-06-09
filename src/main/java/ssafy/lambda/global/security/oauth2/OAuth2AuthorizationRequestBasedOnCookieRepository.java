@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.oauth2;
+package ssafy.lambda.global.security.oauth2;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.web.util.WebUtils;
-import ssafy.lambda.commons.utils.CookieUtil;
+import ssafy.lambda.global.utils.CookieUtil;
 
 /**
  * Authorization Code를 이용한 oauth2 방식에서 요청 정보를 저장하는 Repository

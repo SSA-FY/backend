@@ -1,4 +1,4 @@
-package ssafy.lambda.config.security.oauth2;
+package ssafy.lambda.global.security.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,10 +7,10 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import ssafy.lambda.config.security.oauth2.userinfo.GoogleUserInfo;
-import ssafy.lambda.config.security.oauth2.userinfo.KakaoUserInfo;
-import ssafy.lambda.config.security.oauth2.userinfo.NaverUserInfo;
-import ssafy.lambda.config.security.oauth2.userinfo.OAuth2UserInfo;
+import ssafy.lambda.global.security.oauth2.userinfo.GoogleUserInfo;
+import ssafy.lambda.global.security.oauth2.userinfo.KakaoUserInfo;
+import ssafy.lambda.global.security.oauth2.userinfo.NaverUserInfo;
+import ssafy.lambda.global.security.oauth2.userinfo.OAuth2UserInfo;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.repository.MemberRepository;
 

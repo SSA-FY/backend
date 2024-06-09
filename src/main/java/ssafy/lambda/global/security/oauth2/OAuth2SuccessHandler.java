@@ -1,7 +1,7 @@
-package ssafy.lambda.config.security.oauth2;
+package ssafy.lambda.global.security.oauth2;
 
-import static ssafy.lambda.config.security.jwt.JwtProperties.REFRESH_TOKEN_COOKIE_NAME;
-import static ssafy.lambda.config.security.jwt.JwtProperties.REFRESH_TOKEN_DURATION;
+import static ssafy.lambda.global.config.JwtConfig.REFRESH_TOKEN_COOKIE_NAME;
+import static ssafy.lambda.global.config.JwtConfig.REFRESH_TOKEN_DURATION;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ssafy.lambda.commons.utils.CookieUtil;
-import ssafy.lambda.config.security.jwt.TokenService;
+import ssafy.lambda.global.security.jwt.TokenService;
+import ssafy.lambda.global.utils.CookieUtil;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 

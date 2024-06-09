@@ -1,7 +1,7 @@
-package ssafy.lambda.config.security.jwt;
+package ssafy.lambda.global.security.jwt;
 
-import static ssafy.lambda.config.security.jwt.JwtProperties.HEADER_AUTHORIZATION;
-import static ssafy.lambda.config.security.jwt.JwtProperties.TOKEN_PREFIX;
+import static ssafy.lambda.global.config.JwtConfig.HEADER_AUTHORIZATION;
+import static ssafy.lambda.global.config.JwtConfig.TOKEN_PREFIX;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,7 +32,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (tokenService.validToken(token)) {
             Authentication authentication = tokenService.getAuthentication(token);
             SecurityContextHolder.getContext()
-                .setAuthentication(authentication);
+                                 .setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
