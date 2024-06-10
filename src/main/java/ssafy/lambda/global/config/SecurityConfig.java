@@ -62,6 +62,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
             auth -> auth
                 .requestMatchers(
+                    // 개발용
+                    new AntPathRequestMatcher("/token/refresh"),
                     new AntPathRequestMatcher("/token"),
                     new AntPathRequestMatcher("/api"),
                     new AntPathRequestMatcher("/swagger-ui/**"),

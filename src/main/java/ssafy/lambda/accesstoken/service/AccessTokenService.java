@@ -78,6 +78,28 @@ public class AccessTokenService {
         return null;
     }
 
+    // 개발용
+
+    /**
+     * 개발용 Refresh Token 발급
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @return Access Token
+     */
+    @Transactional
+    public void createRefreshTokenDev(HttpServletRequest request,
+        HttpServletResponse response) {
+
+        Member member = memberService.findMemberById(
+            UUID.fromString("fcdf61a1-f3ed-4d7f-8321-bf5c00688225"));
+
+        String refreshToken = tokenService.generateToken(member, REFRESH_TOKEN_DURATION);
+        CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
+            (int) REFRESH_TOKEN_DURATION.toSeconds());
+        member.setRefreshToken(refreshToken);
+    }
+
     /**
      * Token Claims 추출
      *

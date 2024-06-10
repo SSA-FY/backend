@@ -17,7 +17,7 @@ import ssafy.lambda.accesstoken.service.AccessTokenService;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/token")
+@RequestMapping("token")
 public class AccessTokenController {
 
     private final AccessTokenService accessTokenService;
@@ -41,5 +41,25 @@ public class AccessTokenController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                  .build();
         }
+    }
+
+    // 개발용
+
+    /**
+     * 개발용 Refresh Token 발급
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @return ResponseEntity
+     */
+    @Operation(summary = "개발용 Refresh Token 제공", description = "개발용 Refresh Token을 제공 받습니다.")
+    @GetMapping("refresh")
+    public ResponseEntity<Void> createDev(HttpServletRequest request,
+        HttpServletResponse response) {
+
+        accessTokenService.createRefreshTokenDev(request, response);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                             .build();
     }
 }
