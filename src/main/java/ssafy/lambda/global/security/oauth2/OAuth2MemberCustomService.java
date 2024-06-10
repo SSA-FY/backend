@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import ssafy.lambda.global.config.MinioConfig;
 import ssafy.lambda.global.security.oauth2.userinfo.GoogleUserInfo;
 import ssafy.lambda.global.security.oauth2.userinfo.KakaoUserInfo;
 import ssafy.lambda.global.security.oauth2.userinfo.NaverUserInfo;
@@ -21,6 +22,8 @@ import ssafy.lambda.member.repository.MemberRepository;
 @RequiredArgsConstructor
 @Service
 public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
+
+    private final MinioConfig minioConfig;
 
     private final MemberRepository memberRepository;
 
@@ -56,6 +59,9 @@ public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
                                         .orElse(Member.builder()
                                                       .email(oAuth2UserInfo.getEmail())
                                                       .social(oAuth2UserInfo.getSocial())
+                                                      .point(0)
+                                                      .profileImgUrl(minioConfig.getUrl()
+                                                          + "/member/NoProfile.png")
                                                       .build());
 
         member.setName(oAuth2UserInfo.getName());

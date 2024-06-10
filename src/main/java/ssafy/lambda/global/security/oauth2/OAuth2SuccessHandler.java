@@ -25,9 +25,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${config.frontend}")
     private String frontend;
 
-    @Value("${minio.url}")
-    private String storage;
-
     private final TokenService tokenService;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
     private final MemberService memberService;
@@ -57,8 +54,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         clearAuthenticationAttributes(request, response);
 
         if (member.getMemberId() == null) {
-            member.setProfileImgUrl(
-                storage + "/lambda/NoImg.png");
             getRedirectStrategy().sendRedirect(request, response, frontend + "/signup");
         } else {
             getRedirectStrategy().sendRedirect(request, response, frontend + "/group");
