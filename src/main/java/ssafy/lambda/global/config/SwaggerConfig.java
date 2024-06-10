@@ -70,8 +70,5 @@ public class SwaggerConfig {
             apiResponse.setContent(content);
             apiResponses.addApiResponse(String.valueOf(key), apiResponse);
         });
-
-
     }
-
 }

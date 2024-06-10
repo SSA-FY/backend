@@ -1,9 +1,12 @@
 package ssafy.lambda.invitation.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +22,7 @@ import ssafy.lambda.invitation.service.InvitationService;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.team.service.TeamService;
 
+@SecurityRequirement(name = "token")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("invitation")
@@ -46,8 +50,12 @@ public class InvitationController {
 
     @PostMapping
     public ResponseEntity<Response> createInvitation(
-        @RequestBody RequestCreateInvitationDto requestCreateInvitationDto) {
+        Authentication authentication,
+        @RequestBody RequestCreateInvitationDto requestCreateInvitationDto
+    ) {
         //TODO security 로 MemberID 가져와서 해당 팀에 초대권한이 있는 사람인지 체크
+        UUID memberId = UUID.fromString(authentication.getName());
+
         invitationService.createInvitation(requestCreateInvitationDto.getMemberId(),
             requestCreateInvitationDto.getTeamId());
         return Response.res(HttpStatus.CREATED, "초대가 생성되었습니다.");

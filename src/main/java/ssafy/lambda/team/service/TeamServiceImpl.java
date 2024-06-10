@@ -1,6 +1,7 @@
 package ssafy.lambda.team.service;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +82,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<Team> findAllTeamByMemberId(Long memberId) {
+    public List<Team> findAllTeamByMemberId(UUID memberId) {
         return teamRepository.findAllByMemberId(memberId);
     }
 }

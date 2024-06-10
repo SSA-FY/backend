@@ -2,6 +2,7 @@ package ssafy.lambda.team.service;
 
 
 import java.util.List;
+import java.util.UUID;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
@@ -27,5 +28,5 @@ public interface TeamService {
 
     void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member);
 
-    public List<Team> findAllTeamByMemberId(Long memberId);
+    public List<Team> findAllTeamByMemberId(UUID memberId);
 }

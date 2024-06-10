@@ -1,56 +1,94 @@
 package ssafy.lambda.member.service;
 
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ssafy.lambda.member.dto.RequestMemberDto;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import ssafy.lambda.global.config.MinioConfig;
+import ssafy.lambda.member.dto.RequestMemberUpdateDto;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.member.entity.SocialType;
+import ssafy.lambda.member.exception.ImageUploadException;
 import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.member.repository.MemberRepository;
-import ssafy.lambda.membership.entity.Membership;
-import ssafy.lambda.membership.service.MembershipService;
-import ssafy.lambda.team.entity.Team;
-import ssafy.lambda.team.repository.TeamRepository;
-import ssafy.lambda.team.service.TeamService;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final MinioConfig minioConfig;
+    private final MinioClient minioClient;
+
     private final MemberRepository memberRepository;
 
-    public Member createMember(RequestMemberDto requestMemberDto) {
-        Member member = requestMemberDto.toEntity();
+    public Member createMember(RequestMemberUpdateDto requestMemberUpdateDto) {
+        Member member = requestMemberUpdateDto.toEntity();
 
         return memberRepository.save(member);
     }
 
-    public Member findMemberById(Long id) {
-        return memberRepository.findById(id)
-            .orElseThrow(() -> new MemberNotFoundException(id));
+    public Member findMemberById(UUID memberId) {
+        return memberRepository.findById(memberId)
+                               .orElseThrow(() -> new MemberNotFoundException(memberId));
 
     }
 
     @Transactional
-    public Member updateMember(Long id, RequestMemberDto requestMemberDto) {
-        Member member = requestMemberDto.toEntity();
+    public Member updateMember(UUID memberId, RequestMemberUpdateDto requestMemberUpdateDto,
+        MultipartFile img) {
+        String url = minioConfig.getUrl() + "/member/NoProfile.png";
 
-        Member updatedMember = memberRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+        if (img != null) {
+            String filename =
+                memberId + "." + StringUtils.getFilenameExtension(img.getOriginalFilename());
 
-        updatedMember.update(member.getName(), member.getPoint(), member.getProfileImgUrl());
+            try {
+                minioClient.putObject(
+                    PutObjectArgs.builder()
+                                 .bucket("member")
+                                 .object(filename)
+                                 .stream(
+                                     img.getInputStream(), img.getSize(), -1)
+                                 .contentType(img.getContentType())
+                                 .build());
+                url = minioConfig.getUrl() + "/member/" + filename;
+            } catch (Exception e) {
+                throw new ImageUploadException();
+            }
+        }
+
+        Member updatedMember = memberRepository.findById(memberId)
+                                               .orElseThrow(
+                                                   () -> new MemberNotFoundException(memberId));
+
+        updatedMember.update(requestMemberUpdateDto.name(), requestMemberUpdateDto.tag(),
+            url);
 
         return updatedMember;
     }
 
-    public void deleteMemberById(Long id) {
-        memberRepository.deleteById(id);
+    public Boolean existsMemberByTag(String tag) {
+        return memberRepository.existsByTag(tag);
+
+    }
+
+    public void deleteMemberById(UUID memberId) {
+        memberRepository.deleteById(memberId);
     }
 
     @Transactional
     public List<Member> findAllMember() {
         return memberRepository.findAll();
+    }
+
+    public Member findMemberByEmailAndSocial(String email, SocialType social) {
+        return memberRepository.findByEmailAndSocial(email, social)
+                               .orElseThrow(() -> new MemberNotFoundException(email, social));
     }
 
     public List<Member> findAllMemberByTeamId(Long teamId) {

@@ -22,7 +22,7 @@ public class Membership extends BaseEntity {
     @Id
     @Column(name = "membership_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long MembershipId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

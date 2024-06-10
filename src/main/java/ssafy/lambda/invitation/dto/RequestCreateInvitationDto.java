@@ -1,5 +1,6 @@
 package ssafy.lambda.invitation.dto;
 
+import java.util.UUID;
 import lombok.Data;
 import lombok.Getter;
 
@@ -7,6 +8,6 @@ import lombok.Getter;
 @Getter
 public class RequestCreateInvitationDto {
 
-    private Long memberId;
+    private UUID memberId;
     private Long teamId;
 }

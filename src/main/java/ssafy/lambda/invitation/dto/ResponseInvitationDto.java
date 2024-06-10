@@ -1,6 +1,7 @@
 package ssafy.lambda.invitation.dto;
 
 import java.time.Instant;
+import java.util.UUID;
 import lombok.Data;
 import ssafy.lambda.invitation.entity.Invitation;
 
@@ -9,7 +10,7 @@ public class ResponseInvitationDto {
 
     private Long invitationId;
 
-    private Long memberId;
+    private UUID memberId;
 
     private Long teamId;
 

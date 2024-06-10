@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class VoteServiceImpl implements VoteService {
     private final MemberService memberService;
 
     @Override
-    public void createVote(Long memberId, Long teamId, RequestVoteDto requestVoteDto) {
+    public void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto) {
         Vote vote = Vote.builder()
                         .content(requestVoteDto.getContent())
                         .imgUrl(requestVoteDto.getBackgroundUrl())
@@ -45,7 +46,7 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public void doVote(Long voteId, Long teamId, Long voterId, Long voteeId)
+    public void doVote(Long voteId, Long teamId, UUID voterId, UUID voteeId)
         throws IllegalArgumentException {
 
         Vote foundVote = validateVote(voteId);
@@ -69,7 +70,7 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public void review(Long memberId, Long voteId, String review) {
+    public void review(UUID memberId, Long voteId, String review) {
 
         Vote foundVote = validateVote(voteId);
         Member member = memberService.findMemberById(memberId);
@@ -99,7 +100,7 @@ public class VoteServiceImpl implements VoteService {
             .stream()
             .map(
                 row -> {
-                    Long memberId = ((Number) row[0]).longValue();
+                    UUID memberId = (UUID) row[0];
                     //                Long cnt = ((Number) ob[1]).longValue();
                     Double percent = ((Number) row[2]).doubleValue();
 
@@ -137,7 +138,7 @@ public class VoteServiceImpl implements VoteService {
 
 
     @Override
-    public List<ResponseVoteDto> getVoteListByMember(Long memberId, Long teamId) {
+    public List<ResponseVoteDto> getVoteListByMember(UUID memberId, Long teamId) {
         Member member = memberService.findMemberById(memberId);
         Team team = teamService.findTeamById(teamId);
         return voteRepository.findVoteByVoterAndTeam(member, team);
@@ -153,7 +154,7 @@ public class VoteServiceImpl implements VoteService {
      * @return ResponseSortVoteDto(멤버가 모든 투표에 참여한 팀리스트, 투표가 아직 남은 팀 리스트)
      */
     @Override
-    public ResponseVoteStatusDto sortByVoteStatus(Long memberId, List<Long> teamIds) {
+    public ResponseVoteStatusDto sortByVoteStatus(UUID memberId, List<Long> teamIds) {
         ResponseVoteStatusDto responseVoteStatusDto = new ResponseVoteStatusDto();
         List<Object[]> inCompleteVotes = new ArrayList<>();
 

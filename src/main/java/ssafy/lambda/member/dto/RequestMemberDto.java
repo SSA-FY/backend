@@ -1,30 +1,24 @@
 package ssafy.lambda.member.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.UUID;
+import lombok.Builder;
 import ssafy.lambda.member.entity.Member;
-import ssafy.lambda.member.entity.SocialType;
 
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-public class RequestMemberDto {
-
-    private SocialType social;
-    private String name;
-    private Integer point;
-    private String profileImgUrl;
-    private String email;
+@Builder
+public record RequestMemberDto(
+    UUID memberId,
+    String name,
+    String tag,
+    String profileImgUrl
+) {
 
     public Member toEntity() {
         return Member.builder()
-            .social(social)
-            .name(name)
-            .point(point)
-            .profileImgUrl(profileImgUrl)
-            .email(email)
-            .build();
+                     .memberId(memberId)
+                     .name(name)
+                     .tag(tag)
+                     .profileImgUrl(profileImgUrl)
+                     .build();
     }
 }
