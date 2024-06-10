@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -18,8 +19,9 @@ import ssafy.lambda.global.annotation.ApiErrorResponse;
 import ssafy.lambda.global.response.ApiError;
 import ssafy.lambda.global.response.dto.Response;
 import ssafy.lambda.global.response.dto.ResponseData;
-import ssafy.lambda.member.dto.RequestMemberDto;
+import ssafy.lambda.member.dto.RequestMemberUpdateDto;
 import ssafy.lambda.member.dto.ResponseMemberDto;
+import ssafy.lambda.member.dto.ResponseMemberUpdateDto;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 
@@ -60,20 +62,33 @@ public class MemberController {
 //        return Response.res(HttpStatus.CREATED, "멤버 등록 성공");
 //    }
 
+    @Operation(summary = "Tag 조회", description = "Tag 정보를 조회합니다")
+    @ApiErrorResponse({ApiError.MemberNotFound})
+    @GetMapping("{tag}")
+    public ResponseEntity<Boolean> checkTag(@PathVariable("tag") String tag) {
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(memberService.existsMemberByTag(tag));
+    }
+
     @Operation(summary = "멤버 갱신", description = "멤버 정보를 갱신합니다")
     @ApiErrorResponse({ApiError.MemberNotFound})
     @PutMapping
-    public ResponseEntity<ResponseMemberDto> update(Authentication authentication,
-        @RequestPart("dto") RequestMemberDto requestMemberDto,
+    public ResponseEntity<ResponseMemberUpdateDto> update(Authentication authentication,
+        @RequestPart("dto") RequestMemberUpdateDto requestMemberUpdateDto,
         @RequestPart(value = "img", required = false) MultipartFile img) {
 
         UUID memberId = UUID.fromString(authentication.getName());
 
         Member updatedMember = memberService.updateMember(memberId,
-            requestMemberDto, img);
+            requestMemberUpdateDto, img);
 
         return ResponseEntity.status(HttpStatus.OK)
-                             .body(new ResponseMemberDto(updatedMember));
+                             .body(ResponseMemberUpdateDto.builder()
+                                                          .name(updatedMember.getName())
+                                                          .tag(updatedMember.getTag())
+                                                          .profileImgUrl(
+                                                              updatedMember.getProfileImgUrl())
+                                                          .build());
     }
 
     @Operation(summary = "멤버 삭제", description = "멤버를 삭제합니다")

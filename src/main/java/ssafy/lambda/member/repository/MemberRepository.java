@@ -25,4 +25,6 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
 
     @Query("SELECT m FROM Member m JOIN m.memberships ms WHERE ms.team.teamId = :teamId")
     List<Member> findAllByTeamId(Long teamId);
+
+    Boolean existsByTag(String tag);
 }

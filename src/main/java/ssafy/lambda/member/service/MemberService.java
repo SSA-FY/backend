@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ssafy.lambda.global.config.MinioConfig;
-import ssafy.lambda.member.dto.RequestMemberDto;
+import ssafy.lambda.member.dto.RequestMemberUpdateDto;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.exception.ImageUploadException;
@@ -26,8 +26,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Member createMember(RequestMemberDto requestMemberDto) {
-        Member member = requestMemberDto.toEntity();
+    public Member createMember(RequestMemberUpdateDto requestMemberUpdateDto) {
+        Member member = requestMemberUpdateDto.toEntity();
 
         return memberRepository.save(member);
     }
@@ -39,7 +39,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member updateMember(UUID memberId, RequestMemberDto requestMemberDto,
+    public Member updateMember(UUID memberId, RequestMemberUpdateDto requestMemberUpdateDto,
         MultipartFile img) {
         String url = minioConfig.getUrl() + "/member/NoProfile.png";
 
@@ -66,10 +66,15 @@ public class MemberService {
                                                .orElseThrow(
                                                    () -> new MemberNotFoundException(memberId));
 
-        updatedMember.update(requestMemberDto.name(), requestMemberDto.tag(),
+        updatedMember.update(requestMemberUpdateDto.name(), requestMemberUpdateDto.tag(),
             url);
 
         return updatedMember;
+    }
+
+    public Boolean existsMemberByTag(String tag) {
+        return memberRepository.existsByTag(tag);
+
     }
 
     public void deleteMemberById(UUID memberId) {
@@ -83,7 +88,7 @@ public class MemberService {
 
     public Member findMemberByEmailAndSocial(String email, SocialType social) {
         return memberRepository.findByEmailAndSocial(email, social)
-                               .orElseThrow(() -> new MemberNotFoundException(email));
+                               .orElseThrow(() -> new MemberNotFoundException(email, social));
     }
 
     public List<Member> findAllMemberByTeamId(Long teamId) {
