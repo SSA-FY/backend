@@ -21,6 +21,6 @@ public class JwtConfig {
     public static final String HEADER_AUTHORIZATION = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofMinutes(15);
-    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofHours(12);
+    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofHours(1);
+    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofMinutes(15);
 }

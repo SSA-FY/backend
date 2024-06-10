@@ -1,8 +1,8 @@
 package ssafy.lambda.accesstoken.service;
 
-import static ssafy.lambda.global.security.jwt.JwtProperties.ACCESS_TOKEN_DURATION;
-import static ssafy.lambda.global.security.jwt.JwtProperties.REFRESH_TOKEN_COOKIE_NAME;
-import static ssafy.lambda.global.security.jwt.JwtProperties.REFRESH_TOKEN_DURATION;
+import static ssafy.lambda.global.config.JwtConfig.ACCESS_TOKEN_DURATION;
+import static ssafy.lambda.global.config.JwtConfig.REFRESH_TOKEN_COOKIE_NAME;
+import static ssafy.lambda.global.config.JwtConfig.REFRESH_TOKEN_DURATION;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.WebUtils;
 import ssafy.lambda.accesstoken.dto.ResponseAccessTokenDto;
 import ssafy.lambda.accesstoken.exception.RefreshTokenNotFoundException;
-import ssafy.lambda.global.security.jwt.JwtProperties;
+import ssafy.lambda.global.config.JwtConfig;
 import ssafy.lambda.global.security.jwt.TokenService;
 import ssafy.lambda.global.utils.CookieUtil;
 import ssafy.lambda.member.entity.Member;
@@ -30,7 +30,7 @@ import ssafy.lambda.member.service.MemberService;
 public class AccessTokenService {
 
     private final TokenService tokenService;
-    private final JwtProperties jwtProperties;
+    private final JwtConfig jwtConfig;
     private final MemberService memberService;
 
     /**
@@ -86,7 +86,7 @@ public class AccessTokenService {
      */
     private Claims getClaims(String token) {
         return Jwts.parser()
-                   .verifyWith(jwtProperties.getSecretKey())
+                   .verifyWith(jwtConfig.getSecretKey())
                    .build()
                    .parseSignedClaims(token)
                    .getPayload();
