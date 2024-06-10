@@ -36,9 +36,6 @@ public class ExpiredVote {
     private Membership membership;
 
     @Column
-    private Boolean isProceeding;
-
-    @Column
     private Instant expiredAt;
 
     @Column
@@ -63,13 +60,12 @@ public class ExpiredVote {
      * 것임에 주의한다. 자체적인 createdAt는 존재하지 않아 BaseEntity를 상속받지 않는다.
      */
     @Builder
-    public ExpiredVote(String content, String imgUrl, Membership membership, Boolean isProceeding,
+    public ExpiredVote(String content, String imgUrl, Membership membership,
         Instant expiredAt, Instant createdAt, Instant updatedAt, Long voteId,
         List<ExpiredVoteInfo> expiredVoteInfoList) {
         this.content = content;
         this.imgUrl = imgUrl;
         this.membership = membership;
-        this.isProceeding = isProceeding;
         this.expiredAt = expiredAt;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

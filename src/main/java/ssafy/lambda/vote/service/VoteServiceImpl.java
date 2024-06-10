@@ -1,5 +1,6 @@
 package ssafy.lambda.vote.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -128,7 +129,7 @@ public class VoteServiceImpl implements VoteService {
                                        .orElseThrow(
                                            () -> new IllegalArgumentException("vote doesn't exist")
                                        );
-        if (foundVote.getIsProceeding() == false) {
+        if (foundVote.getExpiredAt().isBefore(Instant.now())) {
             throw new IllegalArgumentException("vote is over");
         }
         return foundVote;

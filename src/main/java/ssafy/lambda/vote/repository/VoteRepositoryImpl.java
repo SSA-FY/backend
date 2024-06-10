@@ -13,6 +13,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+
+import java.time.Instant;
 import java.util.List;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.entity.Team;
@@ -114,7 +116,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     }
 
     public BooleanExpression isProceeding() {
-        return vote.isProceeding.isTrue();
+        return vote.expiredAt.before(Instant.now());
     }
 
 
