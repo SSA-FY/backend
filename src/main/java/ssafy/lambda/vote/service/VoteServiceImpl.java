@@ -46,7 +46,7 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public void doVote(Long voteId, Long teamId, UUID voterId, UUID voteeId)
+    public void doVote(Long voteId, UUID voterId, UUID voteeId)
         throws IllegalArgumentException {
 
         Vote foundVote = validateVote(voteId);

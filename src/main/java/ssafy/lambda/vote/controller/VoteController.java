@@ -49,12 +49,11 @@ public class VoteController {
     public ResponseEntity createVote(
         Authentication authentication,
         @PathVariable Long voteId,
-        @RequestParam UUID voteeId,
-        @RequestParam Long teamId
+        @RequestParam UUID voteeId
     ) {
         UUID voterId = UUID.fromString(authentication.getName());
-        log.info("doVote - team {}, vote {} : {} -> {}", teamId, voteId, voterId, voteeId);
-        voteService.doVote(voteId, teamId, voterId, voteeId);
+        log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeId);
+        voteService.doVote(voteId, voterId, voteeId);
         return ResponseEntity.ok()
                              .build();
     }

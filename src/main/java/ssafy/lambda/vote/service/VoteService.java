@@ -11,7 +11,7 @@ public interface VoteService {
 
     void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto);
 
-    void doVote(Long voteId, Long teamId, UUID voterId, UUID voteeId);
+    void doVote(Long voteId, UUID voterId, UUID voteeId);
 
     void review(UUID memberId, Long voteInfoId, String review);
 
