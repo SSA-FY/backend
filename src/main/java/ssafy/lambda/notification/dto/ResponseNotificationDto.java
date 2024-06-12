@@ -41,25 +41,25 @@ public class ResponseNotificationDto {
     /**
      * 투표알림에 필요한 정보를 채워주는 DTO 생성 메서드
      * @param voteId
-     * @param voteTitle
+     * @param content
      * @param voteInfoItems
      * @return
      */
-    public static ResponseNotificationDto NotificationToVoteDto(Long voteId, String voteTitle, List<VoteInfoItem> voteInfoItems) {
+    public static ResponseNotificationDto NotificationToVoteDto(Long voteId, String content, List<VoteInfoItem> voteInfoItems) {
         return ResponseNotificationDto.builder()
-                                      .voteNotification(new ResponseVoteNotification(voteId, voteTitle, voteInfoItems))
+                                      .voteNotification(new ResponseVoteNotification(voteId, content, voteInfoItems))
                                       .build();
     }
 
     /**
      * 투표 결과에 필요한 정보를 채워주는 DTO 생성 메서드
      * @param expiredVoteId
-     * @param expiredVoteTitle
+     * @param content
      * @return
      */
-    public static ResponseNotificationDto NotificationToExpiredVoteDto(Long expiredVoteId, String expiredVoteTitle){
+    public static ResponseNotificationDto NotificationToExpiredVoteDto(Long expiredVoteId, String content){
         return ResponseNotificationDto.builder()
-                                      .expiredVoteNotification(new ResponseExpiredVoteNotification(expiredVoteId, expiredVoteTitle))
+                                      .expiredVoteNotification(new ResponseExpiredVoteNotification(expiredVoteId, content))
                                       .build();
 
     }
@@ -67,12 +67,12 @@ public class ResponseNotificationDto {
     /**
      * 초대 알림에 필요한 정보를 채워주는 DTO 생성 메서드
      * @param invitationId
-     * @param invitationTeam
+     * @param teamName
      * @return
      */
-    public static ResponseNotificationDto NotificationToInvitationDto(Long invitationId, String invitationTeam){
+    public static ResponseNotificationDto NotificationToInvitationDto(Long invitationId, String teamName){
         return ResponseNotificationDto.builder()
-                                      .invitionNotification(new ResponseInvitionNotification(invitationId, invitationTeam))
+                                      .invitionNotification(new ResponseInvitionNotification(invitationId, teamName))
                                       .build();
     }
 
