@@ -74,11 +74,22 @@ public class NotificationServiceImpl implements NotificationService {
                                         .getContent(),
                         notificationRepository.findVoteNotificationInfoByVoteAndMember(voteNotification.getVote(), voteNotification.getMember()));
             } else if (notification instanceof ExpiredVoteNotification) {
-                return null;
-            } else if (notification instanceof InvitationNotification) {
-                return null;
+                ExpiredVoteNotification expiredVoteNotification = (ExpiredVoteNotification) notification;
+                return ResponseNotificationDto.NotificationToExpiredVoteDto(
+                        expiredVoteNotification.getExpiredVote()
+                                               .getId(),
+                        expiredVoteNotification.getExpiredVote()
+                                               .getContent()
+                );
             } else {
-                return null;
+                InvitationNotification invitationNotification = (InvitationNotification) notification;
+                return ResponseNotificationDto.NotificationToInvitationDto(
+                        invitationNotification.getInvitation()
+                                              .getId(),
+                        invitationNotification.getInvitation()
+                                              .getTeam()
+                                              .getTeamName()
+                );
             }
         });
 
