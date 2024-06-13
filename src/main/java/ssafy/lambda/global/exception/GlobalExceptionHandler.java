@@ -12,6 +12,7 @@ import ssafy.lambda.invitation.exception.InvitationNotFoundException;
 import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.exception.DuplicatedNicknameException;
+import ssafy.lambda.notification.exception.NotificationNotFoundException;
 import ssafy.lambda.team.exception.TeamNotFoundException;
 import ssafy.lambda.team.exception.TeamUnauthorizedException;
 
@@ -66,4 +67,15 @@ public class GlobalExceptionHandler {
         return Response.res(HttpStatus.CONFLICT, e.getMessage());
     }
 
+    @ExceptionHandler(UnauthorizedMemberException.class)
+    public ResponseEntity<Response> handleUnauthorizedMemberException(
+            UnauthorizedMemberException e) {
+        return Response.res(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<Response> handleNotificationNotFoundException(
+            NotificationNotFoundException e) {
+        return Response.res(HttpStatus.NOT_FOUND, e.getMessage());
+    }
 }
