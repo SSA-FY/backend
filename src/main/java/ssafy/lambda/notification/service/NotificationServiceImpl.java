@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.board.entity.ExpiredVote;
+import ssafy.lambda.global.exception.UnauthorizedMemberException;
 import ssafy.lambda.invitation.entity.Invitation;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.notification.dto.ResponseNotificationDto;
@@ -13,6 +14,7 @@ import ssafy.lambda.notification.entity.Notification;
 import ssafy.lambda.notification.entity.NotificationDetail.ExpiredVoteNotification;
 import ssafy.lambda.notification.entity.NotificationDetail.InvitationNotification;
 import ssafy.lambda.notification.entity.NotificationDetail.VoteNotification;
+import ssafy.lambda.notification.exception.NotificationNotFoundException;
 import ssafy.lambda.notification.repository.NotificationRepository;
 import ssafy.lambda.vote.entity.Vote;
 
@@ -94,6 +96,25 @@ public class NotificationServiceImpl implements NotificationService {
         });
 
         return notificationDtos.getContent();
+    }
+
+    /**
+     * 요청한 멤버에 대한 알림이 맞는 경우만 삭제하는 서비스
+     * @param member
+     * @param notificationId
+     * @return
+     */
+    @Override
+    public boolean deleteNotification(Member member, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                                                          .orElseThrow(NotificationNotFoundException::new);
+        Member notiMember = notification.getMember();
+
+        if (!notiMember.equals(member)) {
+            throw new UnauthorizedMemberException();
+        }
+        notificationRepository.delete(notification);
+        return true;
     }
 
 }

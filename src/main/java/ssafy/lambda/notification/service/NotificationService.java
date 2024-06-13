@@ -8,6 +8,7 @@ import ssafy.lambda.notification.dto.ResponseNotificationDto;
 import ssafy.lambda.vote.entity.Vote;
 
 import java.util.List;
+import java.util.Locale;
 
 public interface NotificationService {
     void createVoteNotification(Member member, Vote vote);
@@ -17,4 +18,6 @@ public interface NotificationService {
     void createInvitationNotification(Member member, Invitation invitation);
 
     List<ResponseNotificationDto> getNotificationListByMember(Member member, Pageable pageable);
+
+    boolean deleteNotification(Member member, Long notificationId);
 }
