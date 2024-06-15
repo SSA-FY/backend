@@ -26,18 +26,21 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
+    @Override
     public Member createMember(RequestMemberUpdateDto requestMemberUpdateDto) {
         Member member = requestMemberUpdateDto.toEntity();
 
         return memberRepository.save(member);
     }
 
+    @Override
     public Member findMemberById(UUID memberId) {
         return memberRepository.findById(memberId)
                                .orElseThrow(() -> new MemberNotFoundException(memberId));
 
     }
 
+    @Override
     @Transactional
     public Member updateMember(UUID memberId, RequestMemberUpdateDto requestMemberUpdateDto,
         MultipartFile img) {
@@ -72,25 +75,36 @@ public class MemberServiceImpl implements MemberService {
         return updatedMember;
     }
 
+    @Override
     public Boolean existsMemberByTag(String tag) {
         return memberRepository.existsByTag(tag);
     }
 
+    @Override
     public void deleteMemberById(UUID memberId) {
         memberRepository.deleteById(memberId);
     }
 
+    @Override
     @Transactional
     public List<Member> findAllMember() {
         return memberRepository.findAll();
     }
 
+    @Override
     public Member findMemberByEmailAndSocial(String email, SocialType social) {
         return memberRepository.findByEmailAndSocial(email, social)
                                .orElseThrow(() -> new MemberNotFoundException(email, social));
     }
 
+    @Override
     public List<Member> findAllMemberByTeamId(Long teamId) {
         return memberRepository.findAllByTeamId(teamId);
+    }
+
+    @Override
+    public Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                               .orElseThrow(() -> new MemberNotFoundException(email));
     }
 }

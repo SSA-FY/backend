@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,6 +79,14 @@ public class MemberController {
         UUID memberId = UUID.fromString(authentication.getName());
         memberService.deleteMemberById(memberId);
         return Response.res(HttpStatus.OK, "멤버 삭제 성공");
+    }
+
+    @Operation(summary = "회원 찾기", description = "이메일로 회원을 검색합니다.")
+    @ApiErrorResponse({ApiError.MemberNotFound})
+    @GetMapping("/search")
+    public ResponseEntity<ResponseMemberDto> findMemberByEmail(@RequestParam String email) {
+        Member member = memberService.findMemberByEmail(email);
+        return ResponseData.res(HttpStatus.OK, "멤버 찾기 성공", new ResponseMemberDto(member));
     }
 
 }
