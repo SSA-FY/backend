@@ -33,16 +33,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-//    @Operation(summary = "멤버 목록 조회", description = "멤버 목록을 조회합니다")
-//    @GetMapping
-//    public ResponseEntity<List<ResponseMemberDto>> getMembers() {
-//        List<ResponseMemberDto> members = memberService.findAllMember()
-//                                                       .stream()
-//                                                       .map(ResponseMemberDto::new)
-//                                                       .toList();
-//        return ResponseData.res(HttpStatus.CREATED, "멤버 리스트 반환", members);
-//    }
-
     @Operation(summary = "멤버 조회", description = "멤버 정보를 조회합니다")
     @ApiErrorResponse({ApiError.MemberNotFound})
     @GetMapping
@@ -51,16 +41,6 @@ public class MemberController {
         Member member = memberService.findMemberById(memberId);
         return ResponseData.res(HttpStatus.OK, "멤버 정보 조회", new ResponseMemberDto(member));
     }
-
-//    @Operation(summary = "멤버 등록", description = "새로운 멤버를 등록합니다")
-//    @ApiErrorResponse({ApiError.MemberNotFound,
-//        ApiError.ExampleCreated})
-//    @PostMapping
-//    public ResponseEntity<ResponseMemberDto> register(
-//        @RequestBody RequestMemberDto requestMemberDto) {
-//        Member savedMember = memberService.createMember(requestMemberDto);
-//        return Response.res(HttpStatus.CREATED, "멤버 등록 성공");
-//    }
 
     @Operation(summary = "Tag 조회", description = "Tag 정보를 조회합니다")
     @ApiErrorResponse({ApiError.MemberNotFound})
@@ -99,4 +79,5 @@ public class MemberController {
         memberService.deleteMemberById(memberId);
         return Response.res(HttpStatus.OK, "멤버 삭제 성공");
     }
+
 }
