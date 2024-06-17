@@ -55,13 +55,14 @@ public class TeamController {
                              .body(new ResponseTeamDto(team));
     }
 
-    @Operation(summary = "그룹 생성", description = "그룹을 생성합니다")
+    @Operation(summary = "팀 생성", description = "팀을 생성합니다")
     @PostMapping
     public ResponseEntity<Response> createTeam(Authentication authentication,
         @RequestBody RequestTeamCreateDto team) {
         UUID memberId = UUID.fromString(authentication.getName());
 
         Member member = memberService.findMemberById(memberId);
+        System.out.println(member.getName() + " this is id " + memberId);
         teamService.createTeam(team, member);
         return Response.res(HttpStatus.CREATED, "팀 생성 성공");
     }
@@ -73,13 +74,13 @@ public class TeamController {
         return Response.res(HttpStatus.OK, "그룹 삭제 성공");
     }
 
-    @Operation(summary = "그룹 이름 검색", description = "그룹 이름으로 조회합니다.")
+    @Operation(summary = "팀 이름 검색", description = "팀 이름으로 조회합니다.")
     @GetMapping
     public ResponseEntity<List<ResponseTeamDto>> getTeamByTeamName(
         @RequestParam("teamName") String teamName) {
         List<ResponseTeamDto> teamList = teamService.findTeamByNameLike(teamName)
                                                     .stream()
-                                                    .map((team -> new ResponseTeamDto(team)))
+                                                    .map(ResponseTeamDto::new)
                                                     .toList();
         return ResponseEntity.status(HttpStatus.OK)
                              .body(teamList);
