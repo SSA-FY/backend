@@ -107,4 +107,9 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findByEmail(email)
                                .orElseThrow(() -> new MemberNotFoundException(email));
     }
+
+    @Override
+    public List<Member> findMemberByTagLike(String tag) {
+        return memberRepository.findByTagLike(tag);
+    }
 }

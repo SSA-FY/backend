@@ -27,4 +27,6 @@ public interface MemberService {
     List<Member> findAllMemberByTeamId(Long teamId);
 
     Member findMemberByEmail(String email);
+
+    List<Member> findMemberByTagLike(String tag);
 }

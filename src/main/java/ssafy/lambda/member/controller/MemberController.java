@@ -2,6 +2,7 @@ package ssafy.lambda.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -83,10 +84,23 @@ public class MemberController {
 
     @Operation(summary = "회원 찾기", description = "이메일로 회원을 검색합니다.")
     @ApiErrorResponse({ApiError.MemberNotFound})
-    @GetMapping("/search")
+    @GetMapping("/email")
     public ResponseEntity<ResponseMemberDto> findMemberByEmail(@RequestParam String email) {
         Member member = memberService.findMemberByEmail(email);
         return ResponseData.res(HttpStatus.OK, "멤버 찾기 성공", new ResponseMemberDto(member));
     }
+
+    @Operation(summary = "아이디 검색", description = "@ID 로 회원을 검색합니다.")
+    @GetMapping("/search")
+    public ResponseEntity<List<ResponseMemberDto>> findMemberByTag(@RequestParam String tag) {
+        List<ResponseMemberDto> memberList = memberService.findMemberByTagLike(tag)
+                                                          .stream()
+                                                          .map(member -> new ResponseMemberDto(
+                                                              member))
+                                                          .toList();
+
+        return ResponseData.res(HttpStatus.OK, "멤버 목록", memberList);
+    }
+
 
 }

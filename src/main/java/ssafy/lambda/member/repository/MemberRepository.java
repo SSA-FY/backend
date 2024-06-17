@@ -29,4 +29,6 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
     Boolean existsByTag(String tag);
 
     Optional<Member> findByEmail(String email);
+
+    List<Member> findByTagLike(String tag);
 }
