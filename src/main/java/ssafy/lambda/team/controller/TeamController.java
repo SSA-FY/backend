@@ -36,7 +36,7 @@ public class TeamController {
     private final TeamService teamService;
     private final MemberService memberService;
 
-    @Operation(summary = "그룹 목록 조회", description = "그룹 목록을 조회합니다")
+    @Operation(summary = "팀 목록 조회", description = "팀 목록을 조회합니다")
     @GetMapping("/list")
     public ResponseEntity<List<ResponseTeamDto>> getTeams() {
         List<ResponseTeamDto> teams = teamService.findAllTeam()
@@ -47,7 +47,7 @@ public class TeamController {
                              .body(teams);
     }
 
-    @Operation(summary = "그룹 조회", description = "그룹을 조회합니다")
+    @Operation(summary = "팀 조회", description = "팀을 조회합니다")
     @GetMapping("{teamId}")
     public ResponseEntity<ResponseTeamDto> getTeam(@PathVariable("teamId") Long teamId) {
         Team team = teamService.findTeamById(teamId);
@@ -66,7 +66,7 @@ public class TeamController {
         return Response.res(HttpStatus.CREATED, "팀 생성 성공");
     }
 
-    @Operation(summary = "그룹 삭제", description = "그룹을 삭제합니다")
+    @Operation(summary = "팀 삭제", description = "팀을 삭제합니다")
     @DeleteMapping("{id}")
     public ResponseEntity<Response> deleteTeam(@PathVariable("id") Long id) {
         teamService.deleteTeam(id);
@@ -85,7 +85,7 @@ public class TeamController {
                              .body(teamList);
     }
 
-    @Operation(summary = "그룹 소개 변경", description = "그룹 소개를 변경합니다.")
+    @Operation(summary = "팀 소개 변경", description = "팀 소개를 변경합니다.")
     @PatchMapping("/description")
     public ResponseEntity<Response> updateTeamDescription(Authentication authentication,
         @RequestBody
