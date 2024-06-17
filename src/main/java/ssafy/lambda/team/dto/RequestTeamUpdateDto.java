@@ -12,4 +12,5 @@ public class RequestTeamUpdateDto {
     @NotBlank(message = "팀명은 비워둘 수 없습니다.")
     String teamName;
     String description;
+    String imgUrl;
 }

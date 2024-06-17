@@ -14,6 +14,7 @@ public class ResponseTeamDto {
     private final Integer participants;
     private final String managerName;
     private final String managerTag;
+    private final String imgUrl;
 
     public ResponseTeamDto(Team team) {
         this.teamId = team.getTeamId();
@@ -25,5 +26,6 @@ public class ResponseTeamDto {
                                .getName();
         this.managerTag = team.getManager()
                               .getTag();
+        this.imgUrl = team.getImgUrl();
     }
 }

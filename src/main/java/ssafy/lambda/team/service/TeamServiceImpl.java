@@ -77,6 +77,7 @@ public class TeamServiceImpl implements TeamService {
         }
         team.setTeamName(requestTeamUpdateDto.getTeamName());
         team.setDescription(requestTeamUpdateDto.getDescription());
+        team.setImgUrl(requestTeamUpdateDto.getImgUrl());
     }
 
     @Override
