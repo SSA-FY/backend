@@ -12,6 +12,8 @@ public class ResponseTeamDto {
     private final String description;
     private final Instant createdAt;
     private final Integer participants;
+    private final String managerName;
+    private final String managerTag;
 
     public ResponseTeamDto(Team team) {
         this.teamId = team.getTeamId();
@@ -19,5 +21,9 @@ public class ResponseTeamDto {
         this.description = team.getDescription();
         this.createdAt = team.getCreatedAt();
         this.participants = team.getParticipants();
+        this.managerName = team.getManager()
+                               .getName();
+        this.managerTag = team.getManager()
+                              .getTag();
     }
 }
