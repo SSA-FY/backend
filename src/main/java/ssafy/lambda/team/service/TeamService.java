@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.UUID;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
-import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
-import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.entity.Team;
 
@@ -23,11 +21,6 @@ public interface TeamService {
     Team findTeamByName(String teamName);
 
     List<Team> findTeamByNameLike(String teamName);
-
-    void updateTeamDescription(RequestTeamDescriptionUpdateDto requestTeamDescriptionUpdateDto,
-        Member member);
-
-    void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member);
 
     public List<Team> findAllTeamByMemberId(UUID memberId);
 

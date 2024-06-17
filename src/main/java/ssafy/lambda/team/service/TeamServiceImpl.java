@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
-import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
-import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.exception.DuplicatedTeamNameException;
@@ -63,31 +61,6 @@ public class TeamServiceImpl implements TeamService {
     public List<Team> findTeamByNameLike(String teamName) {
         List<Team> teams = teamRepository.findByTeamNameLike(teamName);
         return teams;
-    }
-
-    @Transactional
-    @Override
-    public void updateTeamDescription(RequestTeamDescriptionUpdateDto requestDto, Member member) {
-        Team team = findTeamById(requestDto.getTeamId());
-        if (team.getManager()
-                .equals(member)) {
-            throw new TeamUnauthorizedException();
-        }
-        team.setDescription(requestDto.getDescription());
-    }
-
-    @Transactional
-    @Override
-    public void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member) {
-        if (teamRepository.findByTeamName(requestTeamNameUpdateDto.getTeamName()) != null) {
-            throw new DuplicatedTeamNameException(requestTeamNameUpdateDto.getTeamName());
-        }
-        Team team = findTeamById(requestTeamNameUpdateDto.getTeamId());
-        if (team.getManager()
-                .equals(member)) {
-            throw new TeamUnauthorizedException();
-        }
-        team.setTeamName(requestTeamNameUpdateDto.getTeamName());
     }
 
     @Transactional
