@@ -12,6 +12,7 @@ import ssafy.lambda.invitation.exception.InvitationNotFoundException;
 import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.exception.DuplicatedNicknameException;
+import ssafy.lambda.team.exception.DuplicatedTeamNameException;
 import ssafy.lambda.team.exception.TeamNotFoundException;
 import ssafy.lambda.team.exception.TeamUnauthorizedException;
 
@@ -63,6 +64,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicatedNicknameException.class)
     public ResponseEntity<Response> handleDuplicatedNicknameException(
         DuplicatedNicknameException e) {
+        return Response.res(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicatedTeamNameException.class)
+    public ResponseEntity<Response> handleDuplicatedTeamNameException(
+        DuplicatedTeamNameException e
+    ) {
         return Response.res(HttpStatus.CONFLICT, e.getMessage());
     }
 

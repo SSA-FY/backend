@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ssafy.lambda.global.annotation.ApiErrorResponse;
+import ssafy.lambda.global.response.ApiError;
 import ssafy.lambda.global.response.dto.Response;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
@@ -56,6 +58,7 @@ public class TeamController {
     }
 
     @Operation(summary = "팀 생성", description = "팀을 생성합니다")
+    @ApiErrorResponse({ApiError.DuplicatedTeamName})
     @PostMapping
     public ResponseEntity<Response> createTeam(Authentication authentication,
         @RequestBody RequestTeamCreateDto team) {
