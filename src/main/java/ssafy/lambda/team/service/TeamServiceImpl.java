@@ -10,6 +10,7 @@ import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
 import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
+import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.exception.DuplicatedTeamNameException;
 import ssafy.lambda.team.exception.TeamNotFoundException;
@@ -25,7 +26,8 @@ public class TeamServiceImpl implements TeamService {
 
     @Transactional
     public void createTeam(RequestTeamCreateDto teamCreateDto, Member manager) {
-        if (teamRepository.findByTeamName(teamCreateDto.getTeamName()) != null) {
+        if (teamRepository.findByTeamName(teamCreateDto.getTeamName())
+                          .isPresent()) {
             throw new DuplicatedTeamNameException(teamCreateDto.getTeamName());
         }
         Team team = teamCreateDto.toEntity();
@@ -86,6 +88,22 @@ public class TeamServiceImpl implements TeamService {
             throw new TeamUnauthorizedException();
         }
         team.setTeamName(requestTeamNameUpdateDto.getTeamName());
+    }
+
+    @Transactional
+    @Override
+    public void updateTeam(RequestTeamUpdateDto requestTeamUpdateDto, Member member) {
+        if (teamRepository.findByTeamName(requestTeamUpdateDto.getTeamName())
+                          .isPresent()) {
+            throw new DuplicatedTeamNameException(requestTeamUpdateDto.getTeamName());
+        }
+        Team team = findTeamById(requestTeamUpdateDto.getTeamId());
+        if (team.getManager()
+                .equals(member)) {
+            throw new TeamUnauthorizedException();
+        }
+        team.setTeamName(requestTeamUpdateDto.getTeamName());
+        team.setDescription(requestTeamUpdateDto.getDescription());
     }
 
     @Override

@@ -23,8 +23,7 @@ import ssafy.lambda.global.response.dto.Response;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
-import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
-import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
+import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.dto.ResponseTeamDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
@@ -50,6 +49,7 @@ public class TeamController {
     }
 
     @Operation(summary = "팀 조회", description = "팀을 조회합니다")
+    @ApiErrorResponse(ApiError.DuplicatedTeamName)
     @GetMapping("{teamId}")
     public ResponseEntity<ResponseTeamDto> getTeam(@PathVariable("teamId") Long teamId) {
         Team team = teamService.findTeamById(teamId);
@@ -78,6 +78,7 @@ public class TeamController {
     }
 
     @Operation(summary = "팀 이름 검색", description = "팀 이름으로 조회합니다.")
+    @ApiErrorResponse(ApiError.DuplicatedTeamName)
     @GetMapping
     public ResponseEntity<List<ResponseTeamDto>> getTeamByTeamName(
         @RequestParam("teamName") String teamName) {
@@ -89,26 +90,15 @@ public class TeamController {
                              .body(teamList);
     }
 
-    @Operation(summary = "팀 소개 변경", description = "팀 소개를 변경합니다.")
-    @PatchMapping("/description")
-    public ResponseEntity<Response> updateTeamDescription(Authentication authentication,
+    @Operation(summary = "팀 정보 변경", description = "팀 정보를 변경합니다.")
+    @PatchMapping("")
+    public ResponseEntity<Response> updateTeam(Authentication authentication,
         @RequestBody
-        RequestTeamDescriptionUpdateDto requestDto) {
+        RequestTeamUpdateDto requestDto) {
         UUID memberId = UUID.fromString(authentication.getName());
         Member member = memberService.findMemberById(memberId);
-        teamService.updateTeamDescription(requestDto, member);
-        return Response.res(HttpStatus.OK, "그룹 소개 변경 선공");
+        teamService.updateTeam(requestDto, member);
+        return Response.res(HttpStatus.OK, "그룹 정보 변경 선공");
     }
-
-    @Operation(summary = "팀명 변경", description = "팀명을 변경합니다.")
-    @PatchMapping("name")
-    public ResponseEntity<Response> updateTeamName(Authentication authentication,
-        @RequestBody RequestTeamNameUpdateDto requestDto) {
-        UUID memberId = UUID.fromString(authentication.getName());
-        Member member = memberService.findMemberById(memberId);
-        teamService.updateTeamName(requestDto, member);
-        return Response.res(HttpStatus.OK, "팀명 변경 성공");
-    }
-
 
 }
