@@ -10,15 +10,12 @@ import ssafy.lambda.member.entity.Member;
 @Getter
 @DiscriminatorColumn(name = "DTYPE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Notification extends BaseEntity {
+public abstract class Notification extends BaseEntity {
 
     @Id
     @Column(name = "notification_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "title")
-    private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -27,8 +24,7 @@ public class Notification extends BaseEntity {
     protected Notification() {
     }
 
-    @Builder
-    public Notification(String title) {
-        this.title = title;
+    public Notification(Member member) {
+        this.member = member;
     }
 }
