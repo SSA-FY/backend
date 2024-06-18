@@ -32,7 +32,7 @@ public class VoteController {
     @PostMapping("/vote")
     public ResponseEntity createVote(
         Authentication authentication,
-        @RequestParam Long teamId,
+        @RequestParam(name = "teamId") Long teamId,
         @RequestBody RequestVoteDto requestVoteDto
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
@@ -48,8 +48,8 @@ public class VoteController {
     @PostMapping("/vote/{voteId}")
     public ResponseEntity createVote(
         Authentication authentication,
-        @PathVariable Long voteId,
-        @RequestParam UUID voteeId
+        @PathVariable(name = "voteId") Long voteId,
+        @RequestParam(name = "voteeId") UUID voteeId
     ) {
         UUID voterId = UUID.fromString(authentication.getName());
         log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeId);
@@ -59,10 +59,10 @@ public class VoteController {
     }
 
     @Operation(summary = "한줄평 남기기", description = "멤버가 투표한 멤버에게 한줄평를 남깁니다")
-    @PostMapping("/vote/review/{voteId}")
+    @PostMapping("/vote/review/{voteInfoId}")
     public ResponseEntity createReview(
         Authentication authentication,
-        @PathVariable Long voteInfoId,
+        @PathVariable(name = "voteInfoId") Long voteInfoId,
         @RequestBody String review
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
@@ -77,7 +77,7 @@ public class VoteController {
     @Operation(summary = "투표 결과", description = "현재 투표의 결과로, 상위 6명 멤버 정보를 반환합니다")
     @GetMapping("/vote/{voteId}")
     public ResponseEntity<List<ResponseProfileWithPercentDto>> getVoteResult(
-        @PathVariable Long voteId
+        @PathVariable(name = "voteId") Long voteId
     ) {
         log.info("voteResult - vote {} ");
         List<ResponseProfileWithPercentDto> voteResult = voteService.voteResult(voteId);
@@ -89,7 +89,7 @@ public class VoteController {
     @GetMapping("/vote/list")
     public ResponseEntity<List<ResponseVoteDto>> getVoteList(
         Authentication authentication,
-        @RequestParam Long teamId
+        @RequestParam(name = "teamId") Long teamId
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
@@ -105,7 +105,7 @@ public class VoteController {
     @GetMapping("/vote/sortList")
     public ResponseEntity<ResponseVoteStatusDto> teamSortList(
         Authentication authentication,
-        @RequestParam Long teamId
+        @RequestParam(name = "teamId") Long teamId
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
