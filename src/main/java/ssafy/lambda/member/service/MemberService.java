@@ -16,6 +16,7 @@ import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.exception.ImageUploadException;
 import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.member.repository.MemberRepository;
+import ssafy.lambda.point.service.PointService;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class MemberService {
     private final MinioClient minioClient;
 
     private final MemberRepository memberRepository;
+    private final PointService pointService;
 
     public Member createMember(RequestMemberUpdateDto requestMemberUpdateDto) {
         Member member = requestMemberUpdateDto.toEntity();
@@ -93,5 +95,16 @@ public class MemberService {
 
     public List<Member> findAllMemberByTeamId(Long teamId) {
         return memberRepository.findAllByTeamId(teamId);
+    }
+
+    @Transactional
+    public Member changePoint(UUID memberId, String description, Long amount) {
+        Member member = memberRepository.findById(memberId)
+                                        .orElseThrow(
+                                            () -> new MemberNotFoundException(memberId));
+        member.setPoint(member.getPoint() + amount);
+        pointService.create(member, description, amount);
+
+        return member;
     }
 }
