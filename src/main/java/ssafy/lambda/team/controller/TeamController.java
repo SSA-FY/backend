@@ -20,9 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import ssafy.lambda.global.annotation.ApiErrorResponse;
 import ssafy.lambda.global.response.ApiError;
 import ssafy.lambda.global.response.dto.Response;
-import ssafy.lambda.member.dto.ResponseMemberDto;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
+import ssafy.lambda.membership.dto.RequestChangeNicknameDto;
+import ssafy.lambda.membership.dto.ResponseMembershipDto;
 import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
@@ -108,14 +109,25 @@ public class TeamController {
     @Operation(summary = "팀내 멤버 리스트", description = "팀에 포함된 멤버 리스트를 반환합니다.")
     @ApiErrorResponse({ApiError.TeamNotFound})
     @GetMapping("/member")
-    public ResponseEntity<List<ResponseMemberDto>> getMember(String teamName) {
+    public ResponseEntity<List<ResponseMembershipDto>> getMember(String teamName) {
         Long teamId = teamService.findTeamByName(teamName)
                                  .getTeamId();
         List<Membership> membershipByTeamId = membershipService.findMembershipByTeamId(teamId);
-        List<ResponseMemberDto> responseMembers = membershipByTeamId.stream()
-                                                                    .map(ResponseMemberDto::new)
-                                                                    .toList();
+        List<ResponseMembershipDto> responseMembers = membershipByTeamId.stream()
+                                                                        .map(
+                                                                            ResponseMembershipDto::new)
+                                                                        .toList();
         return ResponseEntity.ok(responseMembers);
+    }
+
+    @Operation(summary = "팀 내 닉네임 변경", description = "팀 내 보여지는 닉네임을 변경합니다.")
+    @PatchMapping("nickname")
+    public ResponseEntity changeNickname(Authentication authentication,
+        RequestChangeNicknameDto nicknameDto) {
+        UUID memberId = UUID.fromString(authentication.getName());
+        teamService.changeNickname(nicknameDto, memberId);
+        return ResponseEntity.ok()
+                             .build();
     }
 
 }

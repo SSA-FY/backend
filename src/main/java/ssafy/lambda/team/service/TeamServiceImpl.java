@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.membership.dto.RequestChangeNicknameDto;
+import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
@@ -83,5 +85,14 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Team> findAllTeamByMemberId(UUID memberId) {
         return teamRepository.findAllByMemberId(memberId);
+    }
+
+    @Override
+    @Transactional
+    public void changeNickname(RequestChangeNicknameDto requestChangeNicknameDto, UUID memberId) {
+        Team team = findTeamByName(requestChangeNicknameDto.getTeamName());
+        Membership membership = membershipService.findMembershipByMemberIdAndTeamId(
+            memberId, team.getTeamId());
+        membership.setNickname(requestChangeNicknameDto.getNickname());
     }
 }
