@@ -32,4 +32,6 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
 
     @Query("SELECT m FROM Member m WHERE m.tag LIKE CONCAT('%', :tag, '%')")
     List<Member> findByTagLike(String tag);
+
+    Optional<Member> findByTag(String tag);
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ssafy.lambda.global.annotation.ApiErrorResponse;
+import ssafy.lambda.global.exception.UnauthorizedMemberException;
 import ssafy.lambda.global.response.ApiError;
 import ssafy.lambda.global.response.dto.Response;
 import ssafy.lambda.member.entity.Member;
@@ -27,6 +28,7 @@ import ssafy.lambda.membership.dto.ResponseMembershipDto;
 import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
+import ssafy.lambda.team.dto.RequestTeamManagerChangeDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.dto.ResponseTeamDto;
 import ssafy.lambda.team.entity.Team;
@@ -121,11 +123,31 @@ public class TeamController {
     }
 
     @Operation(summary = "팀 내 닉네임 변경", description = "팀 내 보여지는 닉네임을 변경합니다.")
-    @PatchMapping("nickname")
+    @PatchMapping("/nickname")
     public ResponseEntity changeNickname(Authentication authentication,
         RequestChangeNicknameDto nicknameDto) {
         UUID memberId = UUID.fromString(authentication.getName());
         teamService.changeNickname(nicknameDto, memberId);
+        return ResponseEntity.ok()
+                             .build();
+    }
+
+    @Operation(summary = "팀 관리자 변경", description = "팀의 관리자를 변경합니다.")
+    @PatchMapping("/manager")
+    public ResponseEntity changerManager(Authentication authentication,
+        RequestTeamManagerChangeDto requestTeamManagerChangeDto) {
+        UUID memberId = UUID.fromString(authentication.getName());
+        Member member = memberService.findMemberById(memberId);
+        Team team = teamService.findTeamByName(requestTeamManagerChangeDto.getTeamName());
+        Member newManager = memberService.findMemberByTag(
+            requestTeamManagerChangeDto.getNewTeamManagerTag());
+        // 팀의 관리자만 해당 요청을 보낼 수 있음
+        if (!team.getManager()
+                 .getMemberId()
+                 .equals(memberId)) {
+            throw new UnauthorizedMemberException();
+        }
+        teamService.changeManger(newManager, team);
         return ResponseEntity.ok()
                              .build();
     }

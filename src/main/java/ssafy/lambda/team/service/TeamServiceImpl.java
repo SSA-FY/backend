@@ -95,4 +95,11 @@ public class TeamServiceImpl implements TeamService {
             memberId, team.getTeamId());
         membership.setNickname(requestChangeNicknameDto.getNickname());
     }
+
+    @Transactional
+    public void changeManger(Member newManager, Team team) {
+        membershipService.findMembershipByMemberIdAndTeamId(newManager.getMemberId(),
+            team.getTeamId());
+        team.setManager(newManager);
+    }
 }

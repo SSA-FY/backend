@@ -28,4 +28,6 @@ public interface TeamService {
     void updateTeam(RequestTeamUpdateDto requestTeamUpdateDto, Member member);
 
     void changeNickname(RequestChangeNicknameDto requestChangeNicknameDto, UUID memberId);
+
+    void changeManger(Member newManager, Team team);
 }
