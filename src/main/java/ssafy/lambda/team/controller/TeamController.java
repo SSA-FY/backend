@@ -73,8 +73,21 @@ public class TeamController {
         return Response.res(HttpStatus.OK, "그룹 삭제 성공");
     }
 
+    @Operation(summary = "멤버가 속한 팀 검색", description = "멤버가 속한 팀을 조회합니다.")
+    @GetMapping()
+    public ResponseEntity<List<ResponseTeamDto>> getTeamByMemberId(Authentication authentication) {
+        UUID memberId = UUID.fromString(authentication.getName());
+
+        List<ResponseTeamDto> teamList = teamService.findAllTeamByMemberId(memberId)
+                                                    .stream()
+                                                    .map((ResponseTeamDto::new))
+                                                    .toList();
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(teamList);
+    }
+
     @Operation(summary = "그룹 이름 검색", description = "그룹 이름으로 조회합니다.")
-    @GetMapping
+    @GetMapping("name")
     public ResponseEntity<List<ResponseTeamDto>> getTeamByTeamName(
         @RequestParam("teamName") String teamName) {
         List<ResponseTeamDto> teamList = teamService.findTeamByNameLike(teamName)
@@ -105,6 +118,4 @@ public class TeamController {
         teamService.updateTeamName(requestDto, member);
         return Response.res(HttpStatus.OK, "팀명 변경 성공");
     }
-
-
 }
