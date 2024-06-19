@@ -54,7 +54,11 @@ public class AccessTokenService {
         if (tokenService.validToken(token)) {
             Claims claims = getClaims(token);
 
-            Member member = memberService.findMemberById(UUID.fromString(claims.getSubject()));
+            UUID memberId = UUID.fromString(claims.getSubject());
+
+            Member member = memberService.findMemberById(memberId);
+
+            memberService.changePoint(memberId, "출석 체크", 100L);
 
             if (token.equals(member.getRefreshToken())) {
                 String refreshToken = tokenService.generateToken(member, REFRESH_TOKEN_DURATION);
@@ -70,6 +74,7 @@ public class AccessTokenService {
                                              .social(member.getSocial())
                                              .name(member.getName())
                                              .tag(member.getTag())
+                                             .point(member.getPoint())
                                              .profileImgUrl(member.getProfileImgUrl())
                                              .build();
             }
