@@ -30,4 +30,6 @@ public interface TeamService {
     void changeNickname(RequestChangeNicknameDto requestChangeNicknameDto, UUID memberId);
 
     void changeManger(Member newManager, Team team);
+
+    void exitTeam(String teamName, Member member);
 }

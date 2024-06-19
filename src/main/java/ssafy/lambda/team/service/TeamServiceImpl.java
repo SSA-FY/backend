@@ -13,6 +13,7 @@ import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.exception.DuplicatedTeamNameException;
+import ssafy.lambda.team.exception.ExitTeamException;
 import ssafy.lambda.team.exception.TeamNotFoundException;
 import ssafy.lambda.team.exception.TeamUnauthorizedException;
 import ssafy.lambda.team.repository.TeamRepository;
@@ -101,5 +102,26 @@ public class TeamServiceImpl implements TeamService {
         membershipService.findMembershipByMemberIdAndTeamId(newManager.getMemberId(),
             team.getTeamId());
         team.setManager(newManager);
+    }
+
+    @Override
+    @Transactional
+    public void exitTeam(String teamName, Member member) {
+        Team team = findTeamByName(teamName);
+        // 관리자는 다른 팀원이 있을경우 나갈 수 없음
+        if (team.getManager()
+                .equals(member) && team.getMemberships()
+                                       .size() != 1) {
+            throw new ExitTeamException();
+        }
+        Membership membership = membershipService.findMembershipByMemberIdAndTeamId(
+            member.getMemberId(), team.getTeamId());
+        membershipService.deleteMembership(membership.getMembershipId());
+        System.out.println(team.getMemberships()
+                               .size() + " participate ");
+        if (team.getMemberships()
+                .size() == 1) {
+            deleteTeam(team.getTeamId());
+        }
     }
 }

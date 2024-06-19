@@ -152,4 +152,15 @@ public class TeamController {
                              .build();
     }
 
+    @Operation(summary = "팀 나가기", description = "팀을 나갑니다. 관리자는 1명 이상의 다른 팀원이 있을경우 나갈 수 없습니다.")
+    @DeleteMapping()
+    public ResponseEntity exitTeam(Authentication authentication, String teamName) {
+        UUID memberId = UUID.fromString(authentication.getName());
+        Member member = memberService.findMemberById(memberId);
+        teamService.exitTeam(teamName, member);
+        return ResponseEntity.ok()
+                             .build();
+
+    }
+
 }
