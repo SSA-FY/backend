@@ -13,8 +13,10 @@ import ssafy.lambda.team.entity.Team;
 
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
+    @Query("SELECT m FROM Membership m JOIN FETCH m.member JOIN FETCH m.team WHERE m.member = :member")
     List<Membership> findByMember(Member member);
 
+    @Query("SELECT m FROM Membership m JOIN FETCH m.member WHERE m.team = :team")
     List<Membership> findByTeam(Team team);
 
     Optional<Membership> findByMemberAndTeam(Member member, Team team);

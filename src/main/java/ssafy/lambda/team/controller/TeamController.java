@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import ssafy.lambda.global.annotation.ApiErrorResponse;
 import ssafy.lambda.global.response.ApiError;
 import ssafy.lambda.global.response.dto.Response;
+import ssafy.lambda.member.dto.ResponseMemberDto;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
+import ssafy.lambda.membership.entity.Membership;
+import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.dto.ResponseTeamDto;
@@ -36,6 +39,7 @@ public class TeamController {
 
     private final TeamService teamService;
     private final MemberService memberService;
+    private final MembershipService membershipService;
 
     @Operation(summary = "팀 목록 조회", description = "팀 목록을 조회합니다")
     @GetMapping("/list")
@@ -99,6 +103,19 @@ public class TeamController {
         Member member = memberService.findMemberById(memberId);
         teamService.updateTeam(requestDto, member);
         return Response.res(HttpStatus.OK, "그룹 정보 변경 선공");
+    }
+
+    @Operation(summary = "팀내 멤버 리스트", description = "팀에 포함된 멤버 리스트를 반환합니다.")
+    @ApiErrorResponse({ApiError.TeamNotFound})
+    @GetMapping("/member")
+    public ResponseEntity<List<ResponseMemberDto>> getMember(String teamName) {
+        Long teamId = teamService.findTeamByName(teamName)
+                                 .getTeamId();
+        List<Membership> membershipByTeamId = membershipService.findMembershipByTeamId(teamId);
+        List<ResponseMemberDto> responseMembers = membershipByTeamId.stream()
+                                                                    .map(ResponseMemberDto::new)
+                                                                    .toList();
+        return ResponseEntity.ok(responseMembers);
     }
 
 }
