@@ -20,4 +20,13 @@ public class ResponseMemberDto {
         this.name = member.getName();
         this.tag = member.getTag();
     }
+
+    public ResponseMemberDto(Membership membership) {
+        Member member = membership.getMember();
+        this.memberId = member.getMemberId();
+        this.profileImgUrl = member.getProfileImgUrl();
+        this.email = member.getEmail();
+        this.name = member.getName();
+        this.tag = member.getTag();
+    }
 }

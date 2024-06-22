@@ -4,9 +4,9 @@ package ssafy.lambda.team.service;
 import java.util.List;
 import java.util.UUID;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.membership.dto.RequestChangeNicknameDto;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
-import ssafy.lambda.team.dto.RequestTeamDescriptionUpdateDto;
-import ssafy.lambda.team.dto.RequestTeamNameUpdateDto;
+import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.entity.Team;
 
 public interface TeamService {
@@ -23,10 +23,13 @@ public interface TeamService {
 
     List<Team> findTeamByNameLike(String teamName);
 
-    void updateTeamDescription(RequestTeamDescriptionUpdateDto requestTeamDescriptionUpdateDto,
-        Member member);
-
-    void updateTeamName(RequestTeamNameUpdateDto requestTeamNameUpdateDto, Member member);
-
     public List<Team> findAllTeamByMemberId(UUID memberId);
+
+    void updateTeam(RequestTeamUpdateDto requestTeamUpdateDto, Member member);
+
+    void changeNickname(RequestChangeNicknameDto requestChangeNicknameDto, UUID memberId);
+
+    void changeManger(Member newManager, Team team);
+
+    void exitTeam(String teamName, Member member);
 }

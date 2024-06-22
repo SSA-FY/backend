@@ -38,6 +38,10 @@ public class Team extends BaseEntity {
     @Column
     private Integer participants;
 
+    @Setter
+    @Column
+    private String imgUrl;
+
     @OneToMany(mappedBy = "team", orphanRemoval = true)
     private List<Membership> memberships = new ArrayList<>();
 
@@ -50,12 +54,13 @@ public class Team extends BaseEntity {
     }
 
     @Builder
-    public Team(Long teamId, String teamName, String description, Member manager) {
+    public Team(Long teamId, String teamName, String description, Member manager, String imgUrl) {
         this.teamId = teamId;
         this.teamName = teamName;
         this.description = description;
         this.participants = 0;
         this.manager = manager;
+        this.imgUrl = imgUrl;
     }
 
 }

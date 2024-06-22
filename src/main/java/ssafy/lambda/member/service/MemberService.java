@@ -29,4 +29,6 @@ public interface MemberService {
     Member findMemberByEmail(String email);
 
     List<Member> findMemberByTagLike(String tag);
+
+    Member findMemberByTag(String tag);
 }

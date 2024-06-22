@@ -112,4 +112,10 @@ public class MemberServiceImpl implements MemberService {
     public List<Member> findMemberByTagLike(String tag) {
         return memberRepository.findByTagLike(tag);
     }
+
+    @Override
+    public Member findMemberByTag(String tag) {
+        return memberRepository.findByTag(tag)
+                               .orElseThrow(() -> new MemberNotFoundException());
+    }
 }

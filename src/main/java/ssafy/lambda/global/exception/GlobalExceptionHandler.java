@@ -13,6 +13,8 @@ import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.exception.DuplicatedNicknameException;
 import ssafy.lambda.notification.exception.NotificationNotFoundException;
+import ssafy.lambda.team.exception.DuplicatedTeamNameException;
+import ssafy.lambda.team.exception.ExitTeamException;
 import ssafy.lambda.team.exception.TeamNotFoundException;
 import ssafy.lambda.team.exception.TeamUnauthorizedException;
 
@@ -67,15 +69,27 @@ public class GlobalExceptionHandler {
         return Response.res(HttpStatus.CONFLICT, e.getMessage());
     }
 
+    @ExceptionHandler(DuplicatedTeamNameException.class)
+    public ResponseEntity<Response> handleDuplicatedTeamNameException(
+        DuplicatedTeamNameException e
+    ) {
+        return Response.res(HttpStatus.CONFLICT, e.getMessage());
+    }
+
     @ExceptionHandler(UnauthorizedMemberException.class)
     public ResponseEntity<Response> handleUnauthorizedMemberException(
-            UnauthorizedMemberException e) {
+        UnauthorizedMemberException e) {
         return Response.res(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler(NotificationNotFoundException.class)
     public ResponseEntity<Response> handleNotificationNotFoundException(
-            NotificationNotFoundException e) {
+        NotificationNotFoundException e) {
         return Response.res(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(ExitTeamException.class)
+    public ResponseEntity<Response> handleExitTeamException(ExitTeamException e) {
+        return Response.res(HttpStatus.CONFLICT, e.getMessage());
     }
 }
