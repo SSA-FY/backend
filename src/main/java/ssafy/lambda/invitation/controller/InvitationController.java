@@ -51,13 +51,15 @@ public class InvitationController {
     @PostMapping
     public ResponseEntity<Response> createInvitation(
         Authentication authentication,
-        @RequestBody RequestCreateInvitationDto requestCreateInvitationDto
+        @RequestBody List<RequestCreateInvitationDto> requestCreateInvitationDto
     ) {
         //TODO security 로 MemberID 가져와서 해당 팀에 초대권한이 있는 사람인지 체크
         UUID memberId = UUID.fromString(authentication.getName());
-
-        invitationService.createInvitation(requestCreateInvitationDto.getMemberId(),
-            requestCreateInvitationDto.getTeamId());
+        requestCreateInvitationDto
+            .forEach((invitation) -> {
+                invitationService.createInvitation(invitation.getMemberId(),
+                    invitation.getTeamId());
+            });
         return Response.res(HttpStatus.CREATED, "초대가 생성되었습니다.");
     }
 
