@@ -34,6 +34,7 @@ public class LambdaApplication {
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
                     .allowedOriginPatterns(frontend)
+                    .exposedHeaders("Location")
                     .allowCredentials(true)
                     .allowedMethods(
                         HttpMethod.HEAD.name(),
