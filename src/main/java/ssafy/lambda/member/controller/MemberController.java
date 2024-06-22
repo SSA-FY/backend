@@ -2,6 +2,7 @@ package ssafy.lambda.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,16 +35,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-//    @Operation(summary = "멤버 목록 조회", description = "멤버 목록을 조회합니다")
-//    @GetMapping
-//    public ResponseEntity<List<ResponseMemberDto>> getMembers() {
-//        List<ResponseMemberDto> members = memberService.findAllMember()
-//                                                       .stream()
-//                                                       .map(ResponseMemberDto::new)
-//                                                       .toList();
-//        return ResponseData.res(HttpStatus.CREATED, "멤버 리스트 반환", members);
-//    }
-
     @Operation(summary = "멤버 조회", description = "멤버 정보를 조회합니다")
     @ApiErrorResponse({ApiError.MemberNotFound})
     @GetMapping
@@ -51,16 +43,6 @@ public class MemberController {
         Member member = memberService.findMemberById(memberId);
         return ResponseData.res(HttpStatus.OK, "멤버 정보 조회", new ResponseMemberDto(member));
     }
-
-//    @Operation(summary = "멤버 등록", description = "새로운 멤버를 등록합니다")
-//    @ApiErrorResponse({ApiError.MemberNotFound,
-//        ApiError.ExampleCreated})
-//    @PostMapping
-//    public ResponseEntity<ResponseMemberDto> register(
-//        @RequestBody RequestMemberDto requestMemberDto) {
-//        Member savedMember = memberService.createMember(requestMemberDto);
-//        return Response.res(HttpStatus.CREATED, "멤버 등록 성공");
-//    }
 
     @Operation(summary = "Tag 조회", description = "Tag 정보를 조회합니다")
     @ApiErrorResponse({ApiError.MemberNotFound})
@@ -99,4 +81,26 @@ public class MemberController {
         memberService.deleteMemberById(memberId);
         return Response.res(HttpStatus.OK, "멤버 삭제 성공");
     }
+
+    @Operation(summary = "회원 찾기", description = "이메일로 회원을 검색합니다.")
+    @ApiErrorResponse({ApiError.MemberNotFound})
+    @GetMapping("/email")
+    public ResponseEntity<ResponseMemberDto> findMemberByEmail(@RequestParam String email) {
+        Member member = memberService.findMemberByEmail(email);
+        return ResponseData.res(HttpStatus.OK, "멤버 찾기 성공", new ResponseMemberDto(member));
+    }
+
+    @Operation(summary = "아이디 검색", description = "@ID 로 회원을 검색합니다.")
+    @GetMapping("/search")
+    public ResponseEntity<List<ResponseMemberDto>> findMemberByTag(@RequestParam String tag) {
+        List<ResponseMemberDto> memberList = memberService.findMemberByTagLike(tag)
+                                                          .stream()
+                                                          .map(member -> new ResponseMemberDto(
+                                                              member))
+                                                          .toList();
+
+        return ResponseData.res(HttpStatus.OK, "멤버 목록", memberList);
+    }
+
+
 }

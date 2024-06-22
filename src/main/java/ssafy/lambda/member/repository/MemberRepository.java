@@ -27,4 +27,9 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
     List<Member> findAllByTeamId(Long teamId);
 
     Boolean existsByTag(String tag);
+
+    Optional<Member> findByEmail(String email);
+
+    @Query("SELECT m FROM Member m WHERE m.tag LIKE CONCAT('%', :tag, '%')")
+    List<Member> findByTagLike(String tag);
 }
