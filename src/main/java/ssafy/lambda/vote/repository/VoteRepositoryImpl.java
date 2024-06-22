@@ -116,7 +116,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     }
 
     public BooleanExpression isProceeding() {
-        return vote.expiredAt.before(Instant.now());
+        return vote.expiredAt.after(Instant.now());
     }
 
 

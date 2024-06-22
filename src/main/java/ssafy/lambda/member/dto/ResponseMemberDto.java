@@ -3,7 +3,6 @@ package ssafy.lambda.member.dto;
 import java.util.UUID;
 import lombok.Getter;
 import ssafy.lambda.member.entity.Member;
-import ssafy.lambda.membership.entity.Membership;
 
 @Getter
 public class ResponseMemberDto {
