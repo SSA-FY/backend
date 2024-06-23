@@ -10,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ssafy.lambda.board.dto.MemberWithPercenCntDto;
+import ssafy.lambda.board.dto.ResponseBoardDetailDto;
+import ssafy.lambda.board.dto.ResponseBoardSummaryDto;
 import ssafy.lambda.board.dto.ResponseCommentDto;
 import ssafy.lambda.board.entity.BoardComment;
 import ssafy.lambda.board.entity.ExpiredVote;
@@ -33,6 +36,76 @@ public class BoardServiceImpl implements BoardService {
 
     /////////////////////////////////////////////////////
 
+    @Override
+    public List<ResponseBoardSummaryDto> getBoardList(Long teamId, UUID memberId, Long page) {
+        Membership membership = membershipService.findMembershipByMemberIdAndTeamId(memberId,
+            teamId);
+        Pageable pageable = PageRequest.of(page.intValue(), 10);
+        List<ExpiredVote> boardList = boardRepository.findAllByTeamId(teamId, pageable);
+
+        return boardList.stream()
+                        .map(ev ->
+                            {
+                                ResponseBoardSummaryDto dto = ResponseBoardSummaryDto.builder()
+                                                                                     .boardId(
+                                                                                         ev.getId())
+                                                                                     .content(
+                                                                                         ev.getContent())
+                                                                                     .createdAt(
+                                                                                         ev.getCreatedAt())
+                                                                                     .build();
+                                boardRepository.findTopMemberByBoard(ev.getId())
+                                               .stream()
+                                               .forEach(
+                                                   row -> {
+                                                       dto.addMember((String) row[1]);
+                                                   });
+                                ;
+                                return dto;
+                            }
+                        )
+                        .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseBoardDetailDto getBoardDetail(Long expiredVoteId, Long page) {
+        // 1. 유효성 검증
+        ExpiredVote expiredVote = getExpriedVote(expiredVoteId);
+        Long teamId = expiredVote.getMembership()
+                                 .getTeam()
+                                 .getTeamId();
+        // 2. dto 생성
+        Long totalCnt = boardRepository.getCntByBoard(expiredVoteId);
+        ResponseBoardDetailDto dto = ResponseBoardDetailDto.builder()
+                                                           .boardId(expiredVoteId)
+                                                           .content(expiredVote.getContent())
+                                                           .totalCnt(totalCnt)
+                                                           .build();
+        // 3. entity -> dto 변경
+        boardRepository.findMemberCntByBoard(expiredVoteId, page)
+                       .stream()
+                       .forEach(row -> {
+
+                           Membership membership = membershipService.findMembershipByMemberIdAndTeamId(
+                               (UUID) row[0], teamId);
+                           dto.addMember(MemberWithPercenCntDto.builder()
+                                                               .memberTag(
+                                                                   (String) row[1])
+                                                               .memberName(
+                                                                   membership.getNickname())
+                                                               .profileImgUrl(
+                                                                   (String) row[2])
+                                                               .voteCnt(
+                                                                   ((Number) row[3]).longValue())
+                                                               .totalCnt(
+                                                                   totalCnt)
+                                                               .build());
+                       });
+        return dto;
+    }
+
+    /////////////////////////////////////////////////////
 
     @Override
     @Transactional(readOnly = true)
@@ -74,7 +147,7 @@ public class BoardServiceImpl implements BoardService {
                                            .commenter(member)
                                            .expiredVote(expiredVote)
                                            .build();
-        // 3. 저장
+        // 저장
         commentRepository.save(comment);
     }
 
