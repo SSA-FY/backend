@@ -2,11 +2,12 @@ package ssafy.lambda.vote.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import ssafy.lambda.global.response.dto.ResponseData;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
+import ssafy.lambda.vote.dto.RequestReviewDto;
 import ssafy.lambda.vote.dto.RequestVoteDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
-import ssafy.lambda.vote.dto.ResponseVoteStatusDto;
 import ssafy.lambda.vote.service.VoteService;
 
 @SecurityRequirement(name = "token")
@@ -33,14 +36,15 @@ public class VoteController {
     @Operation(summary = "투표 생성", description = "멤버가 새로운 투표를 만듭니다")
     @PostMapping("/vote")
     public ResponseEntity createVote(
-            Authentication authentication,
-            @RequestParam(name = "teamId") Long teamId,
-            @RequestBody RequestVoteDto requestVoteDto
+        Authentication authentication,
+        @RequestParam(name = "teamId") Long teamId,
+        @RequestPart(name = "content") RequestVoteDto requestVoteDto,
+        @RequestPart(name = "img", required = false) MultipartFile img
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
-        log.info("createVote - team {}, memberId {} : {}", teamId, memberId,
-                requestVoteDto.toString());
-        voteService.createVote(memberId, teamId, requestVoteDto);
+        log.info("createVote - team {}, memberId {} : {}, img : {}", teamId, memberId,
+            requestVoteDto.toString(), img);
+        voteService.createVote(memberId, teamId, requestVoteDto, img);
         return ResponseEntity.ok()
                              .build();
     }
@@ -57,7 +61,11 @@ public class VoteController {
         log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeId);
         Long voteInfoId = voteService.doVote(voteId, voterId, voteeId);
         log.info("voteInfoId = {}", voteInfoId);
-        return ResponseData.res(HttpStatus.CREATED, "VoteInfoId", voteInfoId);
+        URI uri = UriComponentsBuilder.fromPath(String.valueOf(voteInfoId))
+                                      .buildAndExpand()
+                                      .toUri();
+        return ResponseEntity.created(uri)
+                             .build();
     }
 
     @Operation(summary = "한줄평 남기기", description = "멤버가 투표한 멤버에게 한줄평를 남깁니다")
@@ -65,12 +73,13 @@ public class VoteController {
     public ResponseEntity createReview(
             Authentication authentication,
             @PathVariable(name = "voteInfoId") Long voteInfoId,
-            @RequestBody String review
+            @RequestBody RequestReviewDto requestReviewDto
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
-        log.info("review - member {}, vote {}  : {}", memberId, voteInfoId, review);
-        voteService.review(memberId, voteInfoId, review);
+        log.info("review - member {}, voteInfoId {}. voteId {} : {}", memberId, voteInfoId,
+            requestReviewDto.getVoteId(), requestReviewDto.getReview());
+        voteService.review(memberId, voteInfoId, requestReviewDto);
         return ResponseEntity.ok()
                              .build();
     }
@@ -81,7 +90,7 @@ public class VoteController {
     public ResponseEntity<List<ResponseProfileWithPercentDto>> getVoteResult(
             @PathVariable(name = "voteId") Long voteId
     ) {
-        log.info("voteResult - vote {} ");
+        log.info("voteResult - vote {}");
         List<ResponseProfileWithPercentDto> voteResult = voteService.voteResult(voteId);
         return ResponseEntity.ok()
                              .body(voteResult);
@@ -103,18 +112,4 @@ public class VoteController {
         return ResponseEntity.ok()
                              .body(responseVoteDtoList);
     }
-
-    @GetMapping("/vote/sortList")
-    public ResponseEntity<ResponseVoteStatusDto> teamSortList(
-            Authentication authentication,
-            @RequestParam(name = "teamId") Long teamId
-    ) {
-        UUID memberId = UUID.fromString(authentication.getName());
-
-        ResponseVoteStatusDto responseVoteStatusDto = voteService.sortByVoteStatus(null, null);
-
-        return ResponseEntity.ok()
-                             .body(responseVoteStatusDto);
-    }
-
 }
