@@ -27,27 +27,28 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @Operation(summary = "댓글 조회", description = "만료된 투표에 대한 댓글 목록을 반환합니다")
-    @GetMapping("/comment")
+    @Operation(summary = "댓글 조회", description = "만료된 투표(보드)에 대한 댓글 목록을 반환합니다<br>페이지 별 20개의 댓글을 반환합니다")
+    @GetMapping("/comment/{boardId}")
     public ResponseEntity<List<ResponseCommentDto>> getComments(
-        @RequestParam Long expiredVoteId
+        @PathVariable(name = "boardId") Long boardId,
+        @RequestParam(defaultValue = "0") Long page
     ) {
-        log.info("getVoteResult - vote {} ", expiredVoteId);
-        List<ResponseCommentDto> voteResult = boardService.getCommentList(expiredVoteId);
+//        log.info("getCommentList - vote {} ", boardId);
+        List<ResponseCommentDto> commentList = boardService.getCommentList(boardId, page);
         return ResponseEntity.ok()
-                             .body(voteResult);
+                             .body(commentList);
     }
 
-    @Operation(summary = "댓글 작성", description = "만료된 투표에 대한 댓글을 작성합니다")
-    @PostMapping("/comment")
+    @Operation(summary = "댓글 작성", description = "만료된 투표(보드)에 대한 댓글을 작성합니다")
+    @PostMapping("/comment/{boardId}")
     public ResponseEntity writeComment(
         Authentication authentication,
-        @RequestParam Long expiredVoteId,
+        @PathVariable(name = "boardId") Long boardId,
         @RequestBody String content
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
-        log.info("writeComment - member {}, vote {}  : {}", memberId, expiredVoteId, content);
-        boardService.writeComment(expiredVoteId, memberId, content);
+//        log.info("writeComment - member {}, vote {}  : {}", memberId, boardId, content);
+        boardService.writeComment(boardId, memberId, content);
         return ResponseEntity.ok()
                              .build();
     }
@@ -56,11 +57,11 @@ public class BoardController {
     @PutMapping("/comment/{commentId}")
     public ResponseEntity editComment(
         Authentication authentication,
-        @PathVariable Long commentId,
+        @PathVariable(name = "commentId") Long commentId,
         @RequestBody String content
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
-        log.info("editComment - member {}, comment {}  : {}", memberId, commentId, content);
+//        log.info("editComment - member {}, comment {}  : {}", memberId, commentId, content);
         boardService.editComment(commentId, memberId, content);
         return ResponseEntity.ok()
                              .build();
@@ -70,11 +71,11 @@ public class BoardController {
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity deleteComment(
         Authentication authentication,
-        @PathVariable Long commentId
+        @PathVariable(name = "commentId") Long commentId
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
-        log.info("deleteComment - member {}, comment {}  : {}", memberId, commentId);
-        boardService.deleteComment(commentId);
+//        log.info("deleteComment - member {}, comment {}  : {}", memberId, commentId);
+        boardService.deleteComment(commentId, memberId);
         return ResponseEntity.ok()
                              .build();
     }

@@ -6,12 +6,12 @@ import ssafy.lambda.board.dto.ResponseCommentDto;
 
 public interface BoardService {
 
-    List<ResponseCommentDto> getCommentList(Long expiredVoteId);
+    List<ResponseCommentDto> getCommentList(Long expiredVoteId, Long page);
 
     void writeComment(Long expiredVoteId, UUID memberId, String content);
 
     void editComment(Long commentId, UUID memberId, String content);
 
-    void deleteComment(Long commentId);
+    void deleteComment(Long commentId, UUID memberId);
 
 }
