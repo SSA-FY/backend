@@ -59,7 +59,7 @@ public class OAuth2MemberCustomService extends DefaultOAuth2UserService {
                                         .orElse(Member.builder()
                                                       .email(oAuth2UserInfo.getEmail())
                                                       .social(oAuth2UserInfo.getSocial())
-                                                      .point(0)
+                                                      .point(0L)
                                                       .profileImgUrl(minioConfig.getUrl()
                                                           + "/member/NoProfile.png")
                                                       .build());

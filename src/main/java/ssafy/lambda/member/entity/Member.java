@@ -48,8 +48,9 @@ public class Member implements OAuth2User {
     @Column(unique = true)
     private String tag;
 
+    @Setter
     @Column
-    private Integer point;
+    private Long point;
 
     @Column
     private LocalDateTime createdAt;
@@ -72,7 +73,7 @@ public class Member implements OAuth2User {
     }
 
     @Builder
-    public Member(UUID memberId, SocialType social, String name, String tag, Integer point,
+    public Member(UUID memberId, SocialType social, String name, String tag, Long point,
         String profileImgUrl, String email) {
         this.memberId = memberId;
         this.social = social;

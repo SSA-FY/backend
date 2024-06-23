@@ -5,8 +5,13 @@ import lombok.Builder;
 import ssafy.lambda.member.entity.SocialType;
 
 @Builder
-public record ResponseAccessTokenDto(String token, UUID memberId, String email, SocialType social,
+public record ResponseAccessTokenDto(String token,
+                                     UUID memberId,
+                                     String email,
+                                     SocialType social,
                                      String name,
-                                     String tag, String profileImgUrl) {
+                                     String tag,
+                                     Long point,
+                                     String profileImgUrl) {
 
 }

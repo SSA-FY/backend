@@ -31,4 +31,6 @@ public interface MemberService {
     List<Member> findMemberByTagLike(String tag);
 
     Member findMemberByTag(String tag);
+
+    Member changePoint(UUID memberId, String description, Long amount);
 }
