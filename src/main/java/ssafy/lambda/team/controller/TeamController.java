@@ -31,6 +31,7 @@ import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamManagerChangeDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.dto.ResponseTeamDto;
+import ssafy.lambda.team.dto.ResponseTeamGetDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 
@@ -86,12 +87,12 @@ public class TeamController {
 
     @Operation(summary = "멤버가 속한 팀 검색", description = "멤버가 속한 팀을 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<ResponseTeamDto>> getTeamByMemberId(Authentication authentication) {
+    public ResponseEntity<List<ResponseTeamGetDto>> getTeamByMemberId(Authentication authentication) {
         UUID memberId = UUID.fromString(authentication.getName());
 
-        List<ResponseTeamDto> teamList = teamService.findAllTeamByMemberId(memberId)
+        List<ResponseTeamGetDto> teamList = teamService.findAllTeamByMemberId(memberId)
                                                     .stream()
-                                                    .map((ResponseTeamDto::new))
+                                                    .map((ResponseTeamGetDto::new))
                                                     .toList();
         return ResponseEntity.status(HttpStatus.OK)
                              .body(teamList);
