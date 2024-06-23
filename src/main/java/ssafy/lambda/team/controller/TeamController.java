@@ -84,9 +84,22 @@ public class TeamController {
         return Response.res(HttpStatus.OK, "그룹 삭제 성공");
     }
 
+    @Operation(summary = "멤버가 속한 팀 검색", description = "멤버가 속한 팀을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<List<ResponseTeamDto>> getTeamByMemberId(Authentication authentication) {
+        UUID memberId = UUID.fromString(authentication.getName());
+
+        List<ResponseTeamDto> teamList = teamService.findAllTeamByMemberId(memberId)
+                                                    .stream()
+                                                    .map((ResponseTeamDto::new))
+                                                    .toList();
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(teamList);
+    }
+
     @Operation(summary = "팀 이름 검색", description = "팀 이름으로 조회합니다.")
     @ApiErrorResponse(ApiError.DuplicatedTeamName)
-    @GetMapping
+    @GetMapping("name")
     public ResponseEntity<List<ResponseTeamDto>> getTeamByTeamName(
         @RequestParam("teamName") String teamName) {
         List<ResponseTeamDto> teamList = teamService.findTeamByNameLike(teamName)
@@ -98,7 +111,7 @@ public class TeamController {
     }
 
     @Operation(summary = "팀 정보 변경", description = "팀 정보를 변경합니다.")
-    @PatchMapping("")
+    @PatchMapping
     public ResponseEntity<Response> updateTeam(Authentication authentication,
         @RequestBody
         RequestTeamUpdateDto requestDto) {
@@ -153,7 +166,7 @@ public class TeamController {
     }
 
     @Operation(summary = "팀 나가기", description = "팀을 나갑니다. 관리자는 1명 이상의 다른 팀원이 있을경우 나갈 수 없습니다.")
-    @DeleteMapping()
+    @DeleteMapping
     public ResponseEntity exitTeam(Authentication authentication, String teamName) {
         UUID memberId = UUID.fromString(authentication.getName());
         Member member = memberService.findMemberById(memberId);
