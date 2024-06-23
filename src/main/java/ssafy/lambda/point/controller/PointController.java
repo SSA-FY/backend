@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ssafy.lambda.point.dto.ResponseGetPointDto;
 import ssafy.lambda.point.service.PointService;
 
-/**
- * Access Token 발급 Contoller
- */
 @SecurityRequirement(name = "token")
 @RequiredArgsConstructor
 @RestController
@@ -26,14 +23,7 @@ public class PointController {
 
     private final PointService pointService;
 
-    /**
-     * Access Token 발급
-     *
-     * @param request  HttpServletRequest
-     * @param response HttpServletResponse
-     * @return ResponseEntity
-     */
-    @Operation(summary = "Access Token 발급", description = "Access Token을 발급 받습니다.")
+    @Operation(summary = "Point 내역 조회", description = "Point 내역을 조회합니다.")
     @GetMapping
     public ResponseEntity<Map<String, List<ResponseGetPointDto>>> getPoint(
         Authentication authentication) {
