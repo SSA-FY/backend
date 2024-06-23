@@ -17,6 +17,7 @@ public enum ApiError {
         "멤버를 찾지 못했을때 생기는 오류입니다. id 로 멤버를 검색했지만 찾지 못했을 경우 발생합니다."),
     TeamNotFound(HttpStatus.NOT_FOUND, "팀 찾기 오륲", "팀을 찾지 못했습니다. name -> {teamName}",
         "팀을 찾지 못했습니다."),
+    DuplicatedTeamName(HttpStatus.CONFLICT, "팀 명 설정 오류", "중복된 팀 명 :  + teamName", "팀명이 중복되었습니다."),
     NotificationNotFound(HttpStatus.NOT_FOUND, "알림 오류", "존재하지 않는 알림입니다.",
             "존재하지 않는 알림입니다."),
     UnauthorizedMember(HttpStatus.FORBIDDEN, "권한 오류", "권한이 존재하지 않습니다",
