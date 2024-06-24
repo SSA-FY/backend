@@ -13,7 +13,7 @@ public interface VoteService {
 
     void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto, MultipartFile img);
 
-    Long doVote(Long voteId, UUID voterId, UUID voteeId);
+    Long doVote(Long voteId, UUID voterId, String tag);
 
     void review(UUID memberId, Long voteInfoId, RequestReviewDto requestReviewDto);
 

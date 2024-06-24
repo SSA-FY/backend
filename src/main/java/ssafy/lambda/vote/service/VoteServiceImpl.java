@@ -80,12 +80,12 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public Long doVote(Long voteId, UUID voterId, UUID voteeId)
+    public Long doVote(Long voteId, UUID voterId, String tag)
         throws IllegalArgumentException {
 
         Vote foundVote = validateVote(voteId);
         Member voter = memberService.findMemberById(voterId);
-        Member votee = memberService.findMemberById(voteeId);
+        Member votee = memberService.findMemberByTag(tag);
 
         // 이미 투표했는가
         if (voteInfoRepository.existsByVoteAndVoter(foundVote, voter)) {
