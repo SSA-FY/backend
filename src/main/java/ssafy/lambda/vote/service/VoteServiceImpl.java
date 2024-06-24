@@ -15,6 +15,7 @@ import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.exception.ImageUploadException;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.membership.service.MembershipService;
+import ssafy.lambda.notification.service.NotificationService;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 import ssafy.lambda.vote.dto.RequestReviewDto;
@@ -39,6 +40,7 @@ public class VoteServiceImpl implements VoteService {
     private final MembershipService membershipService;
     private final TeamService teamService;
     private final MemberService memberService;
+    private final NotificationService notificationService;
 
     @Override
     public void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto,
@@ -97,7 +99,12 @@ public class VoteServiceImpl implements VoteService {
                                     .vote(foundVote)
                                     .build();
 
+        //투표한 정보 저장
         voteInfoRepository.save(voteInfo);
+        //투표한 사람에게 마일리지 적립
+        memberService.changePoint(voterId, "투표 완료 : " + foundVote.getContent(), 100L);
+        //투표 받은 사람에게 알림 생성
+        notificationService.createVoteNotification(votee, foundVote);
         return voteInfo.getId();
     }
 
@@ -121,6 +128,7 @@ public class VoteServiceImpl implements VoteService {
 
         foundVoteInfo.setOpinion(requestReviewDto.getReview());
         voteInfoRepository.save(foundVoteInfo);
+        memberService.changePoint(memberId, "한줄 평 : " + foundVote.getContent(), 50L);
     }
 
 
