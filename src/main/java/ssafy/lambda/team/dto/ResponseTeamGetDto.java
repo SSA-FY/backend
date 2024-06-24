@@ -12,6 +12,7 @@ public class ResponseTeamGetDto {
     private final String description;
     private final Instant createdAt;
     private final Integer participants;
+    private final String imgUrl;
 
     public ResponseTeamGetDto(Team team) {
         this.teamId = team.getTeamId();
@@ -19,5 +20,6 @@ public class ResponseTeamGetDto {
         this.description = team.getDescription();
         this.createdAt = team.getCreatedAt();
         this.participants = team.getParticipants();
+        this.imgUrl = team.getImgUrl();
     }
 }
