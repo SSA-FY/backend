@@ -55,11 +55,11 @@ public class VoteController {
     public ResponseEntity createVote(
             Authentication authentication,
             @PathVariable(name = "voteId") Long voteId,
-            @RequestParam(name = "voteeId") UUID voteeId
+            @RequestParam(name = "voteeTag") String voteeTag
     ) {
         UUID voterId = UUID.fromString(authentication.getName());
-        log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeId);
-        Long voteInfoId = voteService.doVote(voteId, voterId, voteeId);
+        log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeTag);
+        Long voteInfoId = voteService.doVote(voteId, voterId, voteeTag);
         log.info("voteInfoId = {}", voteInfoId);
         URI uri = UriComponentsBuilder.fromPath(String.valueOf(voteInfoId))
                                       .buildAndExpand()
