@@ -22,6 +22,10 @@ public enum ApiError {
             "존재하지 않는 알림입니다."),
     UnauthorizedMember(HttpStatus.FORBIDDEN, "권한 오류", "권한이 존재하지 않습니다",
             "멤버 자신의 데이터가 아닌 다른 멤버의 데이터에 접근하는 경우 발생합니다. (URL로 요청 시 발생 가능)"),
+    VoteInfoNotFoundException(HttpStatus.NOT_FOUND, "투표 정보 찾기 오류", "투표 정보가 존재하지 않습니다.",
+        "투표 정보가 존재하지 않습니다."),
+    NotEnoughPointException(HttpStatus.FORBIDDEN, "포인트 부족", "사용하고자 하는 기능에 대한 포인트가 부족합니다",
+        "포인트가 부족할 때 사용하려고 할 때 발생하는 예외")
     ;
 
     private final HttpStatus status;
