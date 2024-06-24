@@ -22,4 +22,6 @@ public interface VoteService {
     List<ResponseVoteDto> getVoteListByMember(UUID memberId, Long teamId);
 
     List<Team> sortedTeamByVoteWhether(UUID memberId, List<Team> teamList);
+
+    void openVoteInfo(UUID memberId, Long voteInfoId);
 }

@@ -8,14 +8,18 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ssafy.lambda.global.config.MinioConfig;
+import ssafy.lambda.global.exception.UnauthorizedMemberException;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.exception.ImageUploadException;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.notification.service.NotificationService;
+import ssafy.lambda.point.NotEnoughPointException;
+import ssafy.lambda.point.service.PointService;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 import ssafy.lambda.vote.dto.RequestReviewDto;
@@ -24,6 +28,7 @@ import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
+import ssafy.lambda.vote.exception.VoteInfoNotFoundException;
 import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
 
@@ -42,7 +47,11 @@ public class VoteServiceImpl implements VoteService {
     private final MemberService memberService;
     private final NotificationService notificationService;
 
+    private final PointService pointService;
+    private static final long OPEN_POINT = 500;
+
     @Override
+    @Transactional
     public void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto,
         MultipartFile img) {
 
@@ -80,6 +89,7 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
+    @Transactional
     public Long doVote(Long voteId, UUID voterId, String tag)
         throws IllegalArgumentException {
 
@@ -109,6 +119,7 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
+    @Transactional
     public void review(UUID memberId, Long voteInfoId, RequestReviewDto requestReviewDto) {
 
         Vote foundVote = validateVote(requestReviewDto.getVoteId());
@@ -188,5 +199,28 @@ public class VoteServiceImpl implements VoteService {
     public List<Team> sortedTeamByVoteWhether(UUID memberId, List<Team> teamList) {
         Member member = memberService.findMemberById(memberId);
         return voteRepository.findByMemberAndVoteWhether(member, teamList);
+    }
+
+    @Override
+    @Transactional
+    public void openVoteInfo(UUID memberId, Long voteInfoId) {
+        Member member = memberService.findMemberById(memberId);
+
+        VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId)
+                                              .orElseThrow(VoteInfoNotFoundException::new);
+        if(voteInfo.getVotee() != member) {
+            //자기가 받은 투표가 아닌데 열려고 하는 경우
+            throw new UnauthorizedMemberException();
+        }
+        //포인트 확인 (500 보다 작으면 열 수 없다.)
+        if (member.getPoint() < OPEN_POINT) {
+            throw new NotEnoughPointException();
+        }
+
+        //포인트 사용
+        memberService.changePoint(memberId, "투표 정보 확인", -OPEN_POINT);
+        //공개 여부 변경
+        voteInfo.setOpen(true);
+        voteInfoRepository.save(voteInfo);
     }
 }
