@@ -34,7 +34,7 @@ public class BoardController {
     public ResponseEntity<List<ResponseBoardSummaryDto>> getBoards(
         Authentication authentication,
         @PathVariable(name = "teamId") Long teamId,
-        @RequestParam(defaultValue = "0") Long page
+        @RequestParam(defaultValue = "0", name = "page") Long page
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
         List boardList = boardService.getBoardList(teamId, memberId, page);
@@ -46,7 +46,7 @@ public class BoardController {
     @GetMapping("/board/{boardId}")
     public ResponseEntity<ResponseBoardDetailDto> getBoards(
         @PathVariable(name = "boardId") Long boardId,
-        @RequestParam(defaultValue = "0") Long page
+        @RequestParam(defaultValue = "0", name = "page") Long page
     ) {
         ResponseBoardDetailDto boardDetail = boardService.getBoardDetail(boardId, page);
         return ResponseEntity.ok()
@@ -60,7 +60,7 @@ public class BoardController {
     @GetMapping("/comment/{boardId}")
     public ResponseEntity<List<ResponseCommentDto>> getComments(
         @PathVariable(name = "boardId") Long boardId,
-        @RequestParam(defaultValue = "0") Long page
+        @RequestParam(defaultValue = "0", name = "page") Long page
     ) {
 //        log.info("getCommentList - vote {} ", boardId);
         List<ResponseCommentDto> commentList = boardService.getCommentList(boardId, page);
