@@ -8,6 +8,7 @@ import ssafy.lambda.vote.dto.RequestReviewDto;
 import ssafy.lambda.vote.dto.RequestVoteDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
+import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
 
 public interface VoteService {
 
@@ -24,4 +25,6 @@ public interface VoteService {
     List<Team> sortedTeamByVoteWhether(UUID memberId, List<Team> teamList);
 
     void openVoteInfo(UUID memberId, Long voteInfoId);
+
+    ResponseVoteWithVoteInfoListDto getVoteInfoToMeList(UUID memberId, Long voteId);
 }

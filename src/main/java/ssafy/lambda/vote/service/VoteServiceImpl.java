@@ -19,16 +19,18 @@ import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.notification.service.NotificationService;
 import ssafy.lambda.point.NotEnoughPointException;
-import ssafy.lambda.point.service.PointService;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 import ssafy.lambda.vote.dto.RequestReviewDto;
 import ssafy.lambda.vote.dto.RequestVoteDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
+import ssafy.lambda.vote.dto.ResponseVoteInfoToMeDto;
+import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
 import ssafy.lambda.vote.exception.VoteInfoNotFoundException;
+import ssafy.lambda.vote.exception.VoteNotFoundException;
 import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
 
@@ -46,8 +48,6 @@ public class VoteServiceImpl implements VoteService {
     private final TeamService teamService;
     private final MemberService memberService;
     private final NotificationService notificationService;
-
-    private final PointService pointService;
     private static final long OPEN_POINT = 500;
 
     @Override
@@ -223,4 +223,26 @@ public class VoteServiceImpl implements VoteService {
         voteInfo.setOpen(true);
         voteInfoRepository.save(voteInfo);
     }
+
+    @Override
+    @Transactional
+    public ResponseVoteWithVoteInfoListDto getVoteInfoToMeList(UUID memberId, Long voteId) {
+        Member member = memberService.findMemberById(memberId);
+        Vote vote = voteRepository.findById(voteId)
+                                  .orElseThrow(VoteNotFoundException::new);
+
+        List<VoteInfo> voteInfoToMeList = voteInfoRepository.findVoteInfoToMeListByMemberAndVote(
+            member, vote);
+
+        return ResponseVoteWithVoteInfoListDto.builder()
+                                              .voteId(voteId)
+                                              .content(vote.getContent())
+                                              .responseVoteInfoToMeDtoList(
+                                                  voteInfoToMeList.stream()
+                                                                  .map(ResponseVoteInfoToMeDto::VoteInfoToDto)
+                                                                  .toList()
+                                              )
+                                              .build();
+    }
+
 }
