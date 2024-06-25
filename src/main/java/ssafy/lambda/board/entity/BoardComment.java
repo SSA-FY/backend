@@ -1,5 +1,6 @@
 package ssafy.lambda.board.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,7 +30,8 @@ public class BoardComment extends BaseEntity {
     @JoinColumn(name = "expired_vote_id")
     private ExpiredVote expiredVote;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    // 회원탈퇴를 할때만 댓글삭제(멤버가 팀을 나가도 댓글 유지)
     @JoinColumn(name = "member_id")
     private Member commenter;
 

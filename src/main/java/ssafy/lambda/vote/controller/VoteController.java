@@ -8,17 +8,21 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
+import ssafy.lambda.global.annotation.ApiErrorResponse;
+import ssafy.lambda.global.response.ApiError;
 import ssafy.lambda.vote.dto.RequestReviewDto;
 import ssafy.lambda.vote.dto.RequestVoteDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
@@ -55,11 +59,11 @@ public class VoteController {
     public ResponseEntity createVote(
             Authentication authentication,
             @PathVariable(name = "voteId") Long voteId,
-            @RequestParam(name = "voteeId") UUID voteeId
+            @RequestParam(name = "voteeTag") String voteeTag
     ) {
         UUID voterId = UUID.fromString(authentication.getName());
-        log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeId);
-        Long voteInfoId = voteService.doVote(voteId, voterId, voteeId);
+        log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeTag);
+        Long voteInfoId = voteService.doVote(voteId, voterId, voteeTag);
         log.info("voteInfoId = {}", voteInfoId);
         URI uri = UriComponentsBuilder.fromPath(String.valueOf(voteInfoId))
                                       .buildAndExpand()
@@ -112,4 +116,21 @@ public class VoteController {
         return ResponseEntity.ok()
                              .body(responseVoteDtoList);
     }
+
+    @Operation(summary = "투표 정보 열기", description = "멤버가 선택한 투표 정보의 투표자 정보를 Open 합니다.")
+    @ApiErrorResponse({ApiError.VoteInfoNotFoundException, ApiError.NotEnoughPointException, ApiError.UnauthorizedMember})
+    @PutMapping("/voteinfo/open/{voteInfoId}")
+    public ResponseEntity<HttpStatus> openVoteInfo(
+            Authentication authentication,
+            @RequestParam(name = "voteInfoId") Long voteInfoId
+    ) {
+        UUID memberId = UUID.fromString(authentication.getName());
+
+        log.info("member {} -> Open : (voteInfoId {})", memberId, voteInfoId);
+        voteService.openVoteInfo(memberId, voteInfoId);
+        return ResponseEntity.ok()
+                             .build();
+    }
+
+
 }
