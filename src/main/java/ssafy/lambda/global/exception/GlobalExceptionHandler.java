@@ -13,10 +13,13 @@ import ssafy.lambda.member.exception.MemberNotFoundException;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.exception.DuplicatedNicknameException;
 import ssafy.lambda.notification.exception.NotificationNotFoundException;
+import ssafy.lambda.point.NotEnoughPointException;
 import ssafy.lambda.team.exception.DuplicatedTeamNameException;
 import ssafy.lambda.team.exception.ExitTeamException;
 import ssafy.lambda.team.exception.TeamNotFoundException;
 import ssafy.lambda.team.exception.TeamUnauthorizedException;
+import ssafy.lambda.vote.exception.VoteInfoNotFoundException;
+import ssafy.lambda.vote.exception.VoteNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -91,5 +94,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ExitTeamException.class)
     public ResponseEntity<Response> handleExitTeamException(ExitTeamException e) {
         return Response.res(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(NotEnoughPointException.class)
+    public ResponseEntity<Response> handleNotEnoughPointExceptionException(NotEnoughPointException e) {
+        return Response.res(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(VoteNotFoundException.class)
+    public ResponseEntity<Response> handleVoteNotFoundException(
+        VoteNotFoundException e) {
+        return Response.res(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+    @ExceptionHandler(VoteInfoNotFoundException.class)
+    public ResponseEntity<Response> handleVoteInfoNotFoundException(
+        VoteInfoNotFoundException e) {
+        return Response.res(HttpStatus.NOT_FOUND, e.getMessage());
     }
 }
