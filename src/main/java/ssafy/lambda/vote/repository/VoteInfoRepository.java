@@ -6,7 +6,7 @@ import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
 
-public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long> {
+public interface VoteInfoRepository extends JpaRepository<VoteInfo, Long>, VoteInfoRepositoryCustom {
 
     /* 해당 투표를 멤버가 이미 투표한 적이 있는지 판단하는 함수
     SELECT COALESCE(1, 0) AS vote_exists
