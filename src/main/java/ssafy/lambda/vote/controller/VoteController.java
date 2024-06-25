@@ -135,7 +135,7 @@ public class VoteController {
 
     @Operation(summary = "나에게 투표한 정보 리스트 반환", description = "해당 투표에서 나에게 투표한 투표 정보들을 반환합니다. ")
     @ApiErrorResponse({ApiError.VoteNotFoundException})
-    @PutMapping("/voteinfo/list/{voteId}")
+    @GetMapping("/voteinfo/list/{voteId}")
     public ResponseEntity<ResponseVoteWithVoteInfoListDto> getVoteInfoToMeList(
         Authentication authentication,
         @RequestParam(name = "voteId") Long voteId
