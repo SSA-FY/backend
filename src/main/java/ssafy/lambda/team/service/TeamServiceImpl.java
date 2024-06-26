@@ -2,8 +2,14 @@ package ssafy.lambda.team.service;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
+
+import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,6 +175,7 @@ public class TeamServiceImpl implements TeamService {
                 "team" + teamId + "." + StringUtils.getFilenameExtension(
                     img.getOriginalFilename());
 
+//            try {
             try {
                 minioClient.putObject(
                     PutObjectArgs.builder()
@@ -179,9 +186,28 @@ public class TeamServiceImpl implements TeamService {
                                  .contentType(img.getContentType())
                                  .build());
                 url = minioConfig.getUrl() + "/team/" + filename;
-            } catch (Exception e) {
-                throw new ImageUploadException();
+            } catch (ErrorResponseException e) {
+                throw new RuntimeException(e);
+            } catch (InsufficientDataException e) {
+                throw new RuntimeException(e);
+            } catch (InternalException e) {
+                throw new RuntimeException(e);
+            } catch (InvalidKeyException e) {
+                throw new RuntimeException(e);
+            } catch (InvalidResponseException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            } catch (ServerException e) {
+                throw new RuntimeException(e);
+            } catch (XmlParserException e) {
+                throw new RuntimeException(e);
             }
+//            } catch (Exception e) {
+//                throw new ImageUploadException();
+//            }
         }
 
         return url;
