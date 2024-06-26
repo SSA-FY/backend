@@ -1,6 +1,5 @@
 package ssafy.lambda.team.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import ssafy.lambda.team.entity.Team;
 
@@ -10,16 +9,15 @@ import ssafy.lambda.team.entity.Team;
 @Data
 public class RequestTeamCreateDto {
 
-    @NotBlank(message = "팀명은 비워둘 수 없습니다.")
     String teamName;
     String description;
-    String imgUrl;
+    String managerName;
 
     public Team toEntity() {
         return Team.builder()
                    .teamName(teamName)
                    .description(description)
-                   .imgUrl(imgUrl)
+                   .imgUrl("")
                    .build();
     }
 }
