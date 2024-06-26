@@ -175,7 +175,6 @@ public class TeamServiceImpl implements TeamService {
                 "team" + teamId + "." + StringUtils.getFilenameExtension(
                     img.getOriginalFilename());
 
-//            try {
             try {
                 minioClient.putObject(
                     PutObjectArgs.builder()
@@ -186,32 +185,10 @@ public class TeamServiceImpl implements TeamService {
                                  .contentType(img.getContentType())
                                  .build());
                 url = minioConfig.getUrl() + "/team/" + filename;
-            } catch (ErrorResponseException e) {
-                throw new RuntimeException(e);
-            } catch (InsufficientDataException e) {
-                throw new RuntimeException(e);
-            } catch (InternalException e) {
-                throw new RuntimeException(e);
-            } catch (InvalidKeyException e) {
-                throw new RuntimeException(e);
-            } catch (InvalidResponseException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            } catch (ServerException e) {
-                throw new RuntimeException(e);
-            } catch (XmlParserException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new ImageUploadException();
             }
-//            } catch (Exception e) {
-//                throw new ImageUploadException();
-//            }
         }
-
         return url;
-
-
     }
 }
