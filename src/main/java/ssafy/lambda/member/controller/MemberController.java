@@ -99,7 +99,8 @@ public class MemberController {
                                                               member))
                                                           .toList();
 
-        return ResponseData.res(HttpStatus.OK, "멤버 목록", memberList);
+        return ResponseEntity.ok()
+                             .body(memberList);
     }
 
 
