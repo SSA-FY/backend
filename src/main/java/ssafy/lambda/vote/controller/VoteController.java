@@ -27,6 +27,7 @@ import ssafy.lambda.vote.dto.RequestReviewDto;
 import ssafy.lambda.vote.dto.RequestVoteDto;
 import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
+import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
 import ssafy.lambda.vote.service.VoteService;
 
 @SecurityRequirement(name = "token")
@@ -132,5 +133,20 @@ public class VoteController {
                              .build();
     }
 
+    @Operation(summary = "나에게 투표한 정보 리스트 반환", description = "해당 투표에서 나에게 투표한 투표 정보들을 반환합니다. ")
+    @ApiErrorResponse({ApiError.VoteNotFoundException})
+    @GetMapping("/voteinfo/list/{voteId}")
+    public ResponseEntity<ResponseVoteWithVoteInfoListDto> getVoteInfoToMeList(
+        Authentication authentication,
+        @RequestParam(name = "voteId") Long voteId
+    ) {
+        UUID memberId = UUID.fromString(authentication.getName());
 
+        log.info("member {}, voteId : {}", memberId, voteId);
+        ResponseVoteWithVoteInfoListDto responseVoteWithVoteInfoList = voteService.getVoteInfoToMeList(
+            memberId, voteId);
+
+        return ResponseEntity.ok()
+                             .body(responseVoteWithVoteInfoList);
+    }
 }

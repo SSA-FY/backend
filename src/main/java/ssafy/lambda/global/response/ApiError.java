@@ -27,7 +27,9 @@ public enum ApiError {
     VoteInfoNotFoundException(HttpStatus.NOT_FOUND, "투표 정보 찾기 오류", "투표 정보가 존재하지 않습니다.",
         "투표 정보가 존재하지 않습니다."),
     NotEnoughPointException(HttpStatus.FORBIDDEN, "포인트 부족", "사용하고자 하는 기능에 대한 포인트가 부족합니다",
-        "포인트가 부족할 때 사용하려고 할 때 발생하는 예외");
+        "포인트가 부족할 때 사용하려고 할 때 발생하는 예외"),
+    VoteNotFoundException(HttpStatus.NOT_FOUND, "투표 찾기 오류", "투표를 찾지 못했습니다",
+        "잘못한 id를 입력하거나 만료된 투표입니다.");
   
     private final HttpStatus status;
     private final String name;
