@@ -43,10 +43,12 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamCreateDto.toEntity();
         team.setManager(manager);
+        teamRepository.save(team);
+
         team.setImgUrl(uploadImg(team.getTeamId(), img));
         teamRepository.save(team);
         membershipService.createMembership(manager, team, teamCreateDto.getManagerName());
-        
+
     }
 
     public Team findTeamById(Long teamId) {
