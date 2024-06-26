@@ -22,11 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import ssafy.lambda.global.annotation.ApiErrorResponse;
 import ssafy.lambda.global.response.ApiError;
-import ssafy.lambda.vote.dto.RequestReviewDto;
-import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
-import ssafy.lambda.vote.dto.ResponseVoteDto;
-import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
+import ssafy.lambda.vote.dto.*;
 import ssafy.lambda.vote.service.VoteService;
 
 @SecurityRequirement(name = "token")
@@ -148,5 +144,18 @@ public class VoteController {
 
         return ResponseEntity.ok()
                              .body(responseVoteWithVoteInfoList);
+    }
+
+    @Operation(summary = "오늘의 투표 개수, 한줄 평 개수, 포인트 확인", description = "오늘의 투표 개수, 한줄 평 개수, 포인트 확인")
+    @GetMapping("/voteinfo/today")
+    public ResponseEntity<ResponseTodayVoteInfoDto> getTodayVoteInfo(
+        Authentication authentication
+    ) {
+        UUID memberId = UUID.fromString(authentication.getName());
+
+        ResponseTodayVoteInfoDto todayVoteInfo = voteService.getTodayVoteInfo(memberId);
+
+        return ResponseEntity.ok()
+                             .body(todayVoteInfo);
     }
 }
