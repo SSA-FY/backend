@@ -25,32 +25,32 @@ public class MembershipController {
 
     private final MembershipService membershipService;
 
-    @Operation(summary = "유저와 그룹 관계 조회 (멤버 기준)", description = "유저와 그룹 관계를 멤버 기준으로 조회합니다")
-    @GetMapping
-    public ResponseEntity<List<ResponseMembershipDto>> getALLMembership() {
-        List<ResponseMembershipDto> teams = membershipService.findAllMembership()
-                                                             .stream()
-                                                             .map(ResponseMembershipDto::new)
-                                                             .toList();
-        return ResponseEntity.status(HttpStatus.OK)
-                             .body(teams);
-    }
+    // @Operation(summary = "유저와 그룹 관계 조회 (멤버 기준)", description = "유저와 그룹 관계를 멤버 기준으로 조회합니다")
+    // @GetMapping
+    // public ResponseEntity<List<ResponseMembershipDto>> getALLMembership() {
+    //     List<ResponseMembershipDto> teams = membershipService.findAllMembership()
+    //                                                          .stream()
+    //                                                          .map(ResponseMembershipDto::new)
+    //                                                          .toList();
+    //     return ResponseEntity.status(HttpStatus.OK)
+    //                          .body(teams);
+    // }
 
-    @Operation(summary = "유저와 그룹 관계 조회 (멤버 기준)", description = "유저와 그룹 관계를 멤버 기준으로 조회합니다")
-    @GetMapping("member")
-    public ResponseEntity<List<ResponseMembershipDto>> getMembershipsByMember(
-        Authentication authentication) {
+    // @Operation(summary = "유저와 그룹 관계 조회 (멤버 기준)", description = "유저와 그룹 관계를 멤버 기준으로 조회합니다")
+    // @GetMapping("member")
+    // public ResponseEntity<List<ResponseMembershipDto>> getMembershipsByMember(
+    //     Authentication authentication) {
 
-        UUID memberId = UUID.fromString(authentication.getName());
+    //     UUID memberId = UUID.fromString(authentication.getName());
 
-        List<ResponseMembershipDto> teams = membershipService.findMembershipByMemberId(memberId)
-                                                             .stream()
-                                                             .map(ResponseMembershipDto::new)
-                                                             .toList();
+    //     List<ResponseMembershipDto> teams = membershipService.findMembershipByMemberId(memberId)
+    //                                                          .stream()
+    //                                                          .map(ResponseMembershipDto::new)
+    //                                                          .toList();
 
-        return ResponseEntity.status(HttpStatus.OK)
-                             .body(teams);
-    }
+    //     return ResponseEntity.status(HttpStatus.OK)
+    //                          .body(teams);
+    // }
 
     @Operation(summary = "유저와 그룹 관계 조회 (그룹 기준)", description = "유저와 그룹 관계를 그룹 기준으로 조회합니다")
     @GetMapping("/team/{teamId}")
@@ -65,13 +65,13 @@ public class MembershipController {
                              .body(members);
     }
 
-    @Operation(summary = "유저와 그룹 관계 삭제", description = "유저와 그룹 관계를 삭제합니다")
-    @DeleteMapping("{MembershipId}")
-    public ResponseEntity<ResponseTeamDto> deleteMembership(
-        @PathVariable("MembershipId") Long MembershipId) {
-        membershipService.deleteMembership(MembershipId);
+    // @Operation(summary = "유저와 그룹 관계 삭제", description = "유저와 그룹 관계를 삭제합니다")
+    // @DeleteMapping("{MembershipId}")
+    // public ResponseEntity<ResponseTeamDto> deleteMembership(
+    //     @PathVariable("MembershipId") Long MembershipId) {
+    //     membershipService.deleteMembership(MembershipId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                             .build();
-    }
+    //     return ResponseEntity.status(HttpStatus.OK)
+    //                          .build();
+    // }
 }
