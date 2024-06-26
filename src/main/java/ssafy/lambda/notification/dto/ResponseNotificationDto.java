@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 public class ResponseNotificationDto {
-    private String title;
 
     private String dType;
 
@@ -23,13 +22,11 @@ public class ResponseNotificationDto {
 
     @Builder
     public ResponseNotificationDto(
-            String title,
             String dType,
             ResponseVoteNotification voteNotification,
             ResponseExpiredVoteNotification expiredVoteNotification,
             ResponseInvitionNotification invitionNotification
     ) {
-        this.title = title;
         this.dType = dType;
         this.voteNotification = voteNotification;
         this.expiredVoteNotification = expiredVoteNotification;
@@ -45,9 +42,10 @@ public class ResponseNotificationDto {
      * @param voteInfoItems
      * @return
      */
-    public static ResponseNotificationDto NotificationToVoteDto(Long voteId, String content, List<VoteInfoItem> voteInfoItems) {
+    public static ResponseNotificationDto NotificationToVoteDto(Long voteId, String content, List<VoteInfoItem> voteInfoItems, String dType) {
         return ResponseNotificationDto.builder()
                                       .voteNotification(new ResponseVoteNotification(voteId, content, voteInfoItems))
+                                      .dType(dType)
                                       .build();
     }
 
@@ -57,9 +55,10 @@ public class ResponseNotificationDto {
      * @param content
      * @return
      */
-    public static ResponseNotificationDto NotificationToExpiredVoteDto(Long expiredVoteId, String content){
+    public static ResponseNotificationDto NotificationToExpiredVoteDto(Long expiredVoteId, String content, String dType){
         return ResponseNotificationDto.builder()
                                       .expiredVoteNotification(new ResponseExpiredVoteNotification(expiredVoteId, content))
+                                      .dType(dType)
                                       .build();
 
     }
@@ -70,9 +69,10 @@ public class ResponseNotificationDto {
      * @param teamName
      * @return
      */
-    public static ResponseNotificationDto NotificationToInvitationDto(Long invitationId, String teamName){
+    public static ResponseNotificationDto NotificationToInvitationDto(Long invitationId, String teamName, String dType){
         return ResponseNotificationDto.builder()
                                       .invitionNotification(new ResponseInvitionNotification(invitationId, teamName))
+                                      .dType(dType)
                                       .build();
     }
 

@@ -12,7 +12,7 @@ import ssafy.lambda.vote.entity.Vote;
 @DiscriminatorValue("Vote")
 public class VoteNotification extends Notification {
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vote_id")
     private Vote vote;
 

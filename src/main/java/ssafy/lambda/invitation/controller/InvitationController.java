@@ -1,10 +1,10 @@
 package ssafy.lambda.invitation.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ssafy.lambda.global.exception.UnauthorizedMemberException;
 import ssafy.lambda.global.response.dto.Response;
 import ssafy.lambda.invitation.dto.RequestAcceptInvitationDto;
-import ssafy.lambda.invitation.dto.RequestCreateInvitationDto;
 import ssafy.lambda.invitation.dto.ResponseInvitationDto;
 import ssafy.lambda.invitation.service.InvitationService;
 import ssafy.lambda.member.service.MemberService;
@@ -38,42 +39,59 @@ public class InvitationController {
      */
     @GetMapping
     public ResponseEntity<List<ResponseInvitationDto>> getInvitations() {
-        return ResponseEntity.ok(invitationService.getAllInvitations()
-                                                  .stream()
-                                                  .map(
-                                                      (invitation -> new ResponseInvitationDto(
-                                                          invitation))
-                                                  )
-                                                  .toList());
+        return ResponseEntity.ok()
+                             .body(invitationService.getAllInvitations()
+                                                    .stream()
+                                                    .map(
+                                                        (invitation -> new ResponseInvitationDto(
+                                                            invitation))
+                                                    )
+                                                    .toList());
 
     }
 
+    @Operation(summary = "멤버 초대", description = "팀에 멤버를 추가합니다")
     @PostMapping
     public ResponseEntity<Response> createInvitation(
         Authentication authentication,
-        @RequestBody List<RequestCreateInvitationDto> requestCreateInvitationDto
+        @RequestParam(name = "teamName") String teamName,
+        @RequestBody List<String> memberList
     ) {
-        //TODO security 로 MemberID 가져와서 해당 팀에 초대권한이 있는 사람인지 체크
+        // 팀 검색
+        Long teamId = teamService.findTeamByName(teamName)
+                                 .getTeamId();
+
         UUID memberId = UUID.fromString(authentication.getName());
-        requestCreateInvitationDto
-            .forEach((invitation) -> {
-                invitationService.createInvitation(invitation.getMemberId(),
-                    invitation.getTeamId());
+        // 초대권한이 있는 사람(매니저)인지 체크
+        if (!teamService.findTeamById(teamId)
+                        .getManager()
+                        .getMemberId()
+                        .equals(memberId)) {
+            throw new UnauthorizedMemberException();
+        }
+        memberList
+            .forEach((mId) -> {
+                invitationService.createInvitation(UUID.fromString(mId),
+                    teamId);
             });
-        return Response.res(HttpStatus.CREATED, "초대가 생성되었습니다.");
+        return ResponseEntity.ok()
+                             .build();
     }
 
+    @Operation(summary = "초대 수락", description = "초대를 수락하고 팀에 가입합니다")
     @PostMapping("/accept")
     public ResponseEntity<Response> acceptInvitation(@RequestBody
     RequestAcceptInvitationDto requestAcceptInvitation) {
         invitationService.acceptInvitation(requestAcceptInvitation);
-        return Response.res(HttpStatus.OK, "초대를 수락하였습니다.");
+        return ResponseEntity.ok()
+                             .build();
     }
 
     @DeleteMapping("/{invitationId}")
     public ResponseEntity<Response> rejectInvitation(
         @PathVariable(name = "invitationId") Long invitationId) {
         invitationService.rejectInvitation(invitationId);
-        return Response.res(HttpStatus.OK, "초대를 삭제하였습니다.");
+        return ResponseEntity.ok()
+                             .build();
     }
 }

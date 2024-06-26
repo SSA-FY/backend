@@ -12,7 +12,7 @@ import ssafy.lambda.notification.entity.Notification;
 @DiscriminatorValue("ExpiredVote")
 public class ExpiredVoteNotification extends Notification {
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expired_vote_id")
     private ExpiredVote expiredVote;
 

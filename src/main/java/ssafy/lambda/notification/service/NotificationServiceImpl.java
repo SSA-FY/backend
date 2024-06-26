@@ -74,14 +74,17 @@ public class NotificationServiceImpl implements NotificationService {
                                         .getId(),
                         voteNotification.getVote()
                                         .getContent(),
-                        notificationRepository.findVoteNotificationInfoByVoteAndMember(voteNotification.getVote(), voteNotification.getMember()));
+                        notificationRepository.findVoteNotificationInfoByVoteAndMember(voteNotification.getVote(), voteNotification.getMember()),
+                        "Vote"
+                );
             } else if (notification instanceof ExpiredVoteNotification) {
                 ExpiredVoteNotification expiredVoteNotification = (ExpiredVoteNotification) notification;
                 return ResponseNotificationDto.NotificationToExpiredVoteDto(
                         expiredVoteNotification.getExpiredVote()
                                                .getId(),
                         expiredVoteNotification.getExpiredVote()
-                                               .getContent()
+                                               .getContent(),
+                        "ExpiredVote"
                 );
             } else {
                 InvitationNotification invitationNotification = (InvitationNotification) notification;
@@ -90,7 +93,8 @@ public class NotificationServiceImpl implements NotificationService {
                                               .getId(),
                         invitationNotification.getInvitation()
                                               .getTeam()
-                                              .getTeamName()
+                                              .getTeamName(),
+                        "Invitation"
                 );
             }
         });

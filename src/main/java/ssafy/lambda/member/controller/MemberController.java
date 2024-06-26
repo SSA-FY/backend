@@ -82,12 +82,12 @@ public class MemberController {
         return Response.res(HttpStatus.OK, "멤버 삭제 성공");
     }
 
-    @Operation(summary = "회원 찾기", description = "이메일로 회원을 검색합니다.")
+    @Operation(summary = "회원 찾기", description = "태그로 회원을 검색합니다.")
     @ApiErrorResponse({ApiError.MemberNotFound})
-    @GetMapping("/email")
-    public ResponseEntity<ResponseMemberDto> findMemberByEmail(@RequestParam String email) {
-        Member member = memberService.findMemberByEmail(email);
-        return ResponseData.res(HttpStatus.OK, "멤버 찾기 성공", new ResponseMemberDto(member));
+    @GetMapping("/tag")
+    public ResponseEntity<ResponseMemberDto> findMemberByEmail(@RequestParam String tag) {
+        Member member = memberService.findMemberByTag(tag);
+        return ResponseEntity.ok(new ResponseMemberDto(member));
     }
 
     @Operation(summary = "아이디 검색", description = "@ID 로 회원을 검색합니다.")
@@ -95,11 +95,11 @@ public class MemberController {
     public ResponseEntity<List<ResponseMemberDto>> findMemberByTag(@RequestParam String tag) {
         List<ResponseMemberDto> memberList = memberService.findMemberByTagLike(tag)
                                                           .stream()
-                                                          .map(member -> new ResponseMemberDto(
-                                                              member))
+                                                          .map(ResponseMemberDto::new)
                                                           .toList();
 
-        return ResponseData.res(HttpStatus.OK, "멤버 목록", memberList);
+        return ResponseEntity.ok()
+                             .body(memberList);
     }
 
 

@@ -2,7 +2,6 @@ package ssafy.lambda.vote.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -23,11 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import ssafy.lambda.global.annotation.ApiErrorResponse;
 import ssafy.lambda.global.response.ApiError;
-import ssafy.lambda.vote.dto.RequestReviewDto;
-import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
-import ssafy.lambda.vote.dto.ResponseVoteDto;
-import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
+import ssafy.lambda.vote.dto.*;
 import ssafy.lambda.vote.service.VoteService;
 
 @SecurityRequirement(name = "token")
@@ -58,9 +53,9 @@ public class VoteController {
     @Operation(summary = "투표하기", description = "멤버가 투표를 합니다")
     @PostMapping("/vote/{voteId}")
     public ResponseEntity createVote(
-            Authentication authentication,
-            @PathVariable(name = "voteId") Long voteId,
-            @RequestParam(name = "voteeTag") String voteeTag
+        Authentication authentication,
+        @PathVariable(name = "voteId") Long voteId,
+        @RequestParam(name = "voteeTag") String voteeTag
     ) {
         UUID voterId = UUID.fromString(authentication.getName());
         log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeTag);
@@ -76,9 +71,9 @@ public class VoteController {
     @Operation(summary = "한줄평 남기기", description = "멤버가 투표한 멤버에게 한줄평를 남깁니다")
     @PostMapping("/vote/review/{voteInfoId}")
     public ResponseEntity createReview(
-            Authentication authentication,
-            @PathVariable(name = "voteInfoId") Long voteInfoId,
-            @RequestBody RequestReviewDto requestReviewDto
+        Authentication authentication,
+        @PathVariable(name = "voteInfoId") Long voteInfoId,
+        @RequestBody RequestReviewDto requestReviewDto
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
@@ -93,7 +88,7 @@ public class VoteController {
     @Operation(summary = "투표 결과", description = "현재 투표의 결과로, 상위 6명 멤버 정보를 반환합니다")
     @GetMapping("/vote/{voteId}")
     public ResponseEntity<List<ResponseProfileWithPercentDto>> getVoteResult(
-            @PathVariable(name = "voteId") Long voteId
+        @PathVariable(name = "voteId") Long voteId
     ) {
         log.info("voteResult - vote {}");
         List<ResponseProfileWithPercentDto> voteResult = voteService.voteResult(voteId);
@@ -104,26 +99,27 @@ public class VoteController {
     @Operation(summary = "투표 리스트 가져오기", description = "멤버가 선택한 팀의 진행 중인 투표를 가져옵니다.")
     @GetMapping("/vote/list")
     public ResponseEntity<List<ResponseVoteDto>> getVoteList(
-            Authentication authentication,
-            @RequestParam(name = "teamId") Long teamId
+        Authentication authentication,
+        @RequestParam(name = "teamId") Long teamId
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
         List<ResponseVoteDto> responseVoteDtoList = voteService.getVoteListByMember(memberId,
-                teamId);
+            teamId);
         log.info("member {}, team {} -> ListCount : {}", memberId, teamId,
-                responseVoteDtoList.size());
+            responseVoteDtoList.size());
 
         return ResponseEntity.ok()
                              .body(responseVoteDtoList);
     }
 
     @Operation(summary = "투표 정보 열기", description = "멤버가 선택한 투표 정보의 투표자 정보를 Open 합니다.")
-    @ApiErrorResponse({ApiError.VoteInfoNotFoundException, ApiError.NotEnoughPointException, ApiError.UnauthorizedMember})
+    @ApiErrorResponse({ApiError.VoteInfoNotFoundException, ApiError.NotEnoughPointException,
+        ApiError.UnauthorizedMember})
     @PutMapping("/voteinfo/open/{voteInfoId}")
     public ResponseEntity<HttpStatus> openVoteInfo(
-            Authentication authentication,
-            @RequestParam(name = "voteInfoId") Long voteInfoId
+        Authentication authentication,
+        @PathVariable(name = "voteInfoId") Long voteInfoId
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
@@ -138,7 +134,7 @@ public class VoteController {
     @GetMapping("/voteinfo/list/{voteId}")
     public ResponseEntity<ResponseVoteWithVoteInfoListDto> getVoteInfoToMeList(
         Authentication authentication,
-        @RequestParam(name = "voteId") Long voteId
+        @PathVariable(name = "voteId") Long voteId
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
@@ -148,5 +144,18 @@ public class VoteController {
 
         return ResponseEntity.ok()
                              .body(responseVoteWithVoteInfoList);
+    }
+
+    @Operation(summary = "오늘의 투표 개수, 한줄 평 개수, 포인트 확인", description = "오늘의 투표 개수, 한줄 평 개수, 포인트 확인")
+    @GetMapping("/voteinfo/today")
+    public ResponseEntity<ResponseTodayVoteInfoDto> getTodayVoteInfo(
+        Authentication authentication
+    ) {
+        UUID memberId = UUID.fromString(authentication.getName());
+
+        ResponseTodayVoteInfoDto todayVoteInfo = voteService.getTodayVoteInfo(memberId);
+
+        return ResponseEntity.ok()
+                             .body(todayVoteInfo);
     }
 }

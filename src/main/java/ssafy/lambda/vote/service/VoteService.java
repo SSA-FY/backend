@@ -4,11 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 import ssafy.lambda.team.entity.Team;
-import ssafy.lambda.vote.dto.RequestReviewDto;
-import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
-import ssafy.lambda.vote.dto.ResponseVoteDto;
-import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
+import ssafy.lambda.vote.dto.*;
 
 public interface VoteService {
 
@@ -27,4 +23,6 @@ public interface VoteService {
     void openVoteInfo(UUID memberId, Long voteInfoId);
 
     ResponseVoteWithVoteInfoListDto getVoteInfoToMeList(UUID memberId, Long voteId);
+
+    ResponseTodayVoteInfoDto getTodayVoteInfo(UUID memberId);
 }

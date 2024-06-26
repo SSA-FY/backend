@@ -21,12 +21,7 @@ import ssafy.lambda.notification.service.NotificationService;
 import ssafy.lambda.point.NotEnoughPointException;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
-import ssafy.lambda.vote.dto.RequestReviewDto;
-import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
-import ssafy.lambda.vote.dto.ResponseVoteDto;
-import ssafy.lambda.vote.dto.ResponseVoteInfoToMeDto;
-import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
+import ssafy.lambda.vote.dto.*;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
 import ssafy.lambda.vote.exception.VoteInfoNotFoundException;
@@ -243,6 +238,12 @@ public class VoteServiceImpl implements VoteService {
                                                                   .toList()
                                               )
                                               .build();
+    }
+
+    @Override
+    public ResponseTodayVoteInfoDto getTodayVoteInfo(UUID memberId) {
+        Member member = memberService.findMemberById(memberId);
+        return voteInfoRepository.findTodayVoteInfoByMember(member);
     }
 
 }
