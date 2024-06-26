@@ -35,7 +35,7 @@ public class TeamServiceImpl implements TeamService {
     private final MembershipService membershipService;
 
     @Transactional
-    public Long createTeam(Member manager, RequestTeamCreateDto teamCreateDto, MultipartFile img) {
+    public void createTeam(Member manager, RequestTeamCreateDto teamCreateDto, MultipartFile img) {
         if (teamRepository.findByTeamName(teamCreateDto.getTeamName())
                           .isPresent()) {
             throw new DuplicatedTeamNameException(teamCreateDto.getTeamName());
@@ -43,13 +43,10 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamCreateDto.toEntity();
         team.setManager(manager);
-        teamRepository.save(team);
-        membershipService.createMembership(manager, team, teamCreateDto.getManagerName());
-
         team.setImgUrl(uploadImg(team.getTeamId(), img));
         teamRepository.save(team);
-
-        return team.getTeamId();
+        membershipService.createMembership(manager, team, teamCreateDto.getManagerName());
+        
     }
 
     public Team findTeamById(Long teamId) {

@@ -54,9 +54,13 @@ public class InvitationController {
     @PostMapping
     public ResponseEntity<Response> createInvitation(
         Authentication authentication,
-        @RequestParam(name = "teamId") Long teamId,
+        @RequestParam(name = "teamName") String teamName,
         @RequestBody List<String> memberList
     ) {
+        // 팀 검색
+        Long teamId = teamService.findTeamByName(teamName)
+                                 .getTeamId();
+
         UUID memberId = UUID.fromString(authentication.getName());
         // 초대권한이 있는 사람(매니저)인지 체크
         if (!teamService.findTeamById(teamId)

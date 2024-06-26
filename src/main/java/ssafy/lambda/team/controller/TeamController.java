@@ -10,8 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -42,22 +42,23 @@ public class TeamController {
     private final MemberService memberService;
     private final MembershipService membershipService;
 
-    @Operation(summary = "팀 목록 조회", description = "팀 목록을 조회합니다")
-    @GetMapping("/list")
-    public ResponseEntity<List<ResponseTeamDto>> getTeams() {
-        List<ResponseTeamDto> teams = teamService.findAllTeam()
-                                                 .stream()
-                                                 .map(ResponseTeamDto::new)
-                                                 .toList();
-        return ResponseEntity.ok()
-                             .body(teams);
-    }
+//    @Operation(summary = "팀 목록 조회", description = "팀 목록을 조회합니다")
+//    @GetMapping("/list")
+//    public ResponseEntity<List<ResponseTeamDto>> getTeams() {
+//        List<ResponseTeamDto> teams = teamService.findAllTeam()
+//                                                 .stream()
+//                                                 .map(ResponseTeamDto::new)
+//                                                 .toList();
+//        return ResponseEntity.ok()
+//                             .body(teams);
+//    }
 
     @Operation(summary = "팀 정보 조회", description = "팀의 정보를 조회합니다")
     @ApiErrorResponse(ApiError.DuplicatedTeamName)
-    @GetMapping("{teamId}")
-    public ResponseEntity<ResponseTeamDto> getTeam(@PathVariable("teamId") Long teamId) {
-        Team team = teamService.findTeamById(teamId);
+    @GetMapping("/info")
+    public ResponseEntity<ResponseTeamDto> getTeam(
+        @RequestParam("teamName") String teamName) {
+        Team team = teamService.findTeamByName(teamName);
 
         // 관리자 정보 가져오기
         UUID managerId = team.getManager()
@@ -83,18 +84,18 @@ public class TeamController {
         UUID memberId = UUID.fromString(authentication.getName());
         Member member = memberService.findMemberById(memberId);
 
-        Long teamId = teamService.createTeam(member, requestTeamCreateDto, img);
-        return ResponseEntity.ok()
-                             .body(teamId);
-    }
-
-    @Operation(summary = "팀 삭제", description = "팀을 삭제합니다")
-    @DeleteMapping("{id}")
-    public ResponseEntity deleteTeam(@PathVariable("id") Long id) {
-        teamService.deleteTeam(id);
+        teamService.createTeam(member, requestTeamCreateDto, img);
         return ResponseEntity.ok()
                              .build();
     }
+
+//    @Operation(summary = "팀 삭제", description = "팀을 삭제합니다")
+//    @DeleteMapping("{id}")
+//    public ResponseEntity deleteTeam(@PathVariable("id") Long id) {
+//        teamService.deleteTeam(id);
+//        return ResponseEntity.ok()
+//                             .build();
+//    }
 
     @Operation(summary = "멤버가 속한 팀 검색", description = "멤버가 속한 팀을 조회합니다.")
     @GetMapping
@@ -110,18 +111,18 @@ public class TeamController {
                              .body(teamList);
     }
 
-    @Operation(summary = "팀 이름 검색", description = "팀 이름으로 조회합니다.")
-    @ApiErrorResponse(ApiError.DuplicatedTeamName)
-    @GetMapping("name")
-    public ResponseEntity<List<ResponseTeamDto>> getTeamByTeamName(
-        @RequestParam("teamName") String teamName) {
-        List<ResponseTeamDto> teamList = teamService.findTeamByNameLike(teamName)
-                                                    .stream()
-                                                    .map(ResponseTeamDto::new)
-                                                    .toList();
-        return ResponseEntity.ok()
-                             .body(teamList);
-    }
+//    @Operation(summary = "팀 이름 검색", description = "팀 이름으로 조회합니다.")
+//    @ApiErrorResponse(ApiError.DuplicatedTeamName)
+//    @GetMapping("name")
+//    public ResponseEntity<List<ResponseTeamDto>> getTeamByTeamName(
+//        @RequestParam("teamName") String teamName) {
+//        List<ResponseTeamDto> teamList = teamService.findTeamByNameLike(teamName)
+//                                                    .stream()
+//                                                    .map(ResponseTeamDto::new)
+//                                                    .toList();
+//        return ResponseEntity.ok()
+//                             .body(teamList);
+//    }
 
     @Operation(summary = "팀 정보 변경", description = "팀 정보를 변경합니다.")
     @PatchMapping
@@ -156,8 +157,11 @@ public class TeamController {
 
     @Operation(summary = "팀 내 닉네임 변경", description = "팀 내 보여지는 닉네임을 변경합니다.")
     @PatchMapping("/nickname")
-    public ResponseEntity changeNickname(Authentication authentication,
-        RequestChangeNicknameDto nicknameDto) {
+    public ResponseEntity changeNickname(
+        Authentication authentication,
+        @RequestBody RequestChangeNicknameDto nicknameDto) {
+//        System.out.println("닉네임 변경");
+//        System.out.println(nicknameDto.toString());
         UUID memberId = UUID.fromString(authentication.getName());
         teamService.changeNickname(nicknameDto, memberId);
         return ResponseEntity.ok()

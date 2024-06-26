@@ -12,7 +12,7 @@ import ssafy.lambda.team.entity.Team;
 
 public interface TeamService {
 
-    Long createTeam(Member member, RequestTeamCreateDto teamCreateDto, MultipartFile img);
+    void createTeam(Member member, RequestTeamCreateDto teamCreateDto, MultipartFile img);
 
     Team findTeamById(Long teamId);
 
