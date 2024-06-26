@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ssafy.lambda.invitation.dto.RequestAcceptInvitationDto;
 import ssafy.lambda.invitation.entity.Invitation;
-import ssafy.lambda.invitation.exception.DuplicatedInvitationException;
 import ssafy.lambda.invitation.exception.InvitationNotFoundException;
 import ssafy.lambda.invitation.repository.InvitationRepository;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
-import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
@@ -30,11 +28,14 @@ public class InvitationServiceImpl implements InvitationService {
     public void createInvitation(UUID memberId, Long teamId) {
         Member member = memberService.findMemberById(memberId);
         Team team = teamService.findTeamById(teamId);
+        // TODO Exception 수정하기
         if (membershipService.duplicatedMembershipCheck(member, team)) {
-            throw new AlreadyExistingMemberException();
+            return;
+//            throw new AlreadyExistingMemberException();
         }
         if (invitationRepository.existsByMemberAndTeam(member, team)) {
-            throw new DuplicatedInvitationException();
+            return;
+//            throw new DuplicatedInvitationException();
         }
         Invitation invitation = Invitation.builder()
                                           .team(teamService.findTeamById(teamId))
