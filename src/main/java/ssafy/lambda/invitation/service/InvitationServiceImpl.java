@@ -14,6 +14,7 @@ import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.service.MembershipService;
+import ssafy.lambda.notification.service.NotificationService;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
 
@@ -25,7 +26,9 @@ public class InvitationServiceImpl implements InvitationService {
     private final MemberService memberService;
     private final TeamService teamService;
     private final MembershipService membershipService;
+    private final NotificationService notificationService;
 
+    @Transactional
     @Override
     public void createInvitation(UUID memberId, Long teamId) {
         Member member = memberService.findMemberById(memberId);
@@ -41,6 +44,7 @@ public class InvitationServiceImpl implements InvitationService {
                                           .member(memberService.findMemberById(memberId))
                                           .build();
         invitationRepository.save(invitation);
+        notificationService.createInvitationNotification(member, invitation);
     }
 
     @Transactional
