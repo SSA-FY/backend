@@ -17,7 +17,7 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     List<Membership> findByMember(Member member);
 
     @Query("SELECT m FROM Membership m JOIN FETCH m.member WHERE m.team = :team")
-    List<Membership> findByTeam(Team team);
+    List<Membership> findByTeam(@Param("team") Team team);
 
     Optional<Membership> findByMemberAndTeam(Member member, Team team);
 
