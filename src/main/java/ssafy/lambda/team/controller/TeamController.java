@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -125,7 +125,8 @@ public class TeamController {
 //    }
 
     @Operation(summary = "팀 정보 변경", description = "팀 정보를 변경합니다.")
-    @PatchMapping
+    @ApiErrorResponse({ApiError.DuplicatedTeamName})
+    @PutMapping
     public ResponseEntity updateTeam(
         Authentication authentication,
         @RequestPart("dto") RequestTeamUpdateDto requestTeamUpdateDto,
@@ -156,7 +157,7 @@ public class TeamController {
     }
 
     @Operation(summary = "팀 내 닉네임 변경", description = "팀 내 보여지는 닉네임을 변경합니다.")
-    @PatchMapping("/nickname")
+    @PutMapping("/nickname")
     public ResponseEntity changeNickname(
         Authentication authentication,
         @RequestBody RequestChangeNicknameDto nicknameDto) {
@@ -169,7 +170,7 @@ public class TeamController {
     }
 
 //    @Operation(summary = "팀 관리자 변경", description = "팀의 관리자를 변경합니다.")
-//    @PatchMapping("/manager")
+//    @PutMapping("/manager")
 //    public ResponseEntity changerManager(Authentication authentication,
 //        RequestTeamManagerChangeDto requestTeamManagerChangeDto) {
 //        UUID memberId = UUID.fromString(authentication.getName());

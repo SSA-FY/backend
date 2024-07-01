@@ -11,13 +11,11 @@ public class ResponseTeamGetDto {
     private final String teamName;
     private final String description;
     private final Instant createdAt;
-    private final Integer participants;
 
     public ResponseTeamGetDto(Team team) {
         this.teamId = team.getTeamId();
         this.teamName = team.getTeamName();
         this.description = team.getDescription();
         this.createdAt = team.getCreatedAt();
-        this.participants = team.getParticipants();
     }
 }
