@@ -104,11 +104,11 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findAllByTeamId(teamId);
     }
 
-    @Override
-    public Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                               .orElseThrow(() -> new MemberNotFoundException(email));
-    }
+//    @Override
+//    public Member findMemberByEmail(String email) {
+//        return memberRepository.findByEmail(email)
+//                               .orElseThrow(() -> new MemberNotFoundException(email));
+//    }
 
     @Override
     public List<Member> findMemberByTagLike(String tag) {
