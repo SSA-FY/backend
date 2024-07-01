@@ -37,14 +37,14 @@ public class VoteController {
     @PostMapping("/vote")
     public ResponseEntity createVote(
         Authentication authentication,
-        @RequestParam(name = "teamId") Long teamId,
+        @RequestParam(name = "teamName") String teamName,
         @RequestPart(name = "content") RequestVoteDto requestVoteDto,
         @RequestPart(name = "img", required = false) MultipartFile img
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
-        log.info("createVote - team {}, memberId {} : {}, img : {}", teamId, memberId,
+        log.info("createVote - team {}, memberId {} : {}, img : {}", teamName, memberId,
             requestVoteDto.toString(), img);
-        voteService.createVote(memberId, teamId, requestVoteDto, img);
+        voteService.createVote(memberId, teamName, requestVoteDto, img);
         return ResponseEntity.ok()
                              .build();
     }
@@ -100,13 +100,13 @@ public class VoteController {
     @GetMapping("/vote/list")
     public ResponseEntity<List<ResponseVoteDto>> getVoteList(
         Authentication authentication,
-        @RequestParam(name = "teamId") Long teamId
+        @RequestParam(name = "teamName") String teamName
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
         List<ResponseVoteDto> responseVoteDtoList = voteService.getVoteListByMember(memberId,
-            teamId);
-        log.info("member {}, team {} -> ListCount : {}", memberId, teamId,
+            teamName);
+        log.info("member {}, team {} -> ListCount : {}", memberId, teamName,
             responseVoteDtoList.size());
 
         return ResponseEntity.ok()
