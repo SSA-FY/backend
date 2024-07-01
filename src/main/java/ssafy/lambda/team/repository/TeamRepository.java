@@ -27,5 +27,5 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     List<Team> findByTeamNameLike(@Param("teamName") String teamName);
 
     @Query("SELECT t FROM Team t JOIN t.memberships ms WHERE ms.member.memberId = :memberId")
-    List<Team> findAllByMemberId(UUID memberId);
+    List<Team> findAllByMemberId(@Param("memberId") UUID memberId);
 }
