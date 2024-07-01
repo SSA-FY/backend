@@ -63,6 +63,7 @@ public class SecurityConfig {
             auth -> auth
                 .requestMatchers(
                     // 개발용
+                    new AntPathRequestMatcher("/token/member"),
                     new AntPathRequestMatcher("/token/refresh"),
                     new AntPathRequestMatcher("/token"),
                     new AntPathRequestMatcher("/api"),

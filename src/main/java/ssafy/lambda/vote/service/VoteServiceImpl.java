@@ -1,24 +1,31 @@
 package ssafy.lambda.vote.service;
 
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import ssafy.lambda.global.config.MinioConfig;
+import ssafy.lambda.global.exception.UnauthorizedMemberException;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.member.exception.ImageUploadException;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.membership.service.MembershipService;
+import ssafy.lambda.notification.service.NotificationService;
+import ssafy.lambda.point.NotEnoughPointException;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
-import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
-import ssafy.lambda.vote.dto.ResponseVoteDto;
-import ssafy.lambda.vote.dto.ResponseVoteStatusDto;
+import ssafy.lambda.vote.dto.*;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
+import ssafy.lambda.vote.exception.VoteInfoNotFoundException;
+import ssafy.lambda.vote.exception.VoteNotFoundException;
 import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
 
@@ -27,31 +34,64 @@ import ssafy.lambda.vote.repository.VoteRepository;
 @RequiredArgsConstructor
 public class VoteServiceImpl implements VoteService {
 
+    private final MinioConfig minioConfig;
+    private final MinioClient minioClient;
+
     private final VoteRepository voteRepository;
     private final VoteInfoRepository voteInfoRepository;
-    /////////////////////////////////////////////////////
     private final MembershipService membershipService;
     private final TeamService teamService;
     private final MemberService memberService;
+    private final NotificationService notificationService;
+    private static final long OPEN_POINT = 500;
 
     @Override
-    public void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto) {
+    @Transactional
+    public void createVote(UUID memberId, String teamName, RequestVoteDto requestVoteDto,
+        MultipartFile img) {
+
+        String url = minioConfig.getUrl() + "/vote/Default.jpeg";
+
+        log.info("img = {}", img);
+        if (img != null) {
+            StringBuilder filename = new StringBuilder();
+            filename.append(img.getOriginalFilename());
+            filename.append("_");
+            filename.append(UUID.randomUUID());
+            filename.append(".");
+            filename.append(StringUtils.getFilenameExtension(img.getOriginalFilename()));
+            try {
+                minioClient.putObject(
+                    PutObjectArgs.builder()
+                                 .bucket("vote")
+                                 .object(filename.toString())
+                                 .stream(
+                                     img.getInputStream(), img.getSize(), -1)
+                                 .contentType(img.getContentType())
+                                 .build());
+                url = minioConfig.getUrl() + "/vote/" + filename;
+            } catch (Exception e) {
+                throw new ImageUploadException();
+            }
+        }
+        Team team = teamService.findTeamByName(teamName);
         Vote vote = Vote.builder()
                         .content(requestVoteDto.getContent())
-                        .imgUrl(requestVoteDto.getBackgroundUrl())
+                        .imgUrl(url)
                         .membership(
-                            membershipService.findMembershipByMemberIdAndTeamId(memberId, teamId))
+                            membershipService.findMembershipByMemberIdAndTeamId(memberId, team.getTeamId()))
                         .build();
         voteRepository.save(vote);
     }
 
     @Override
-    public Long doVote(Long voteId, UUID voterId, UUID voteeId)
+    @Transactional
+    public Long doVote(Long voteId, UUID voterId, String tag)
         throws IllegalArgumentException {
 
         Vote foundVote = validateVote(voteId);
         Member voter = memberService.findMemberById(voterId);
-        Member votee = memberService.findMemberById(voteeId);
+        Member votee = memberService.findMemberByTag(tag);
 
         // 이미 투표했는가
         if (voteInfoRepository.existsByVoteAndVoter(foundVote, voter)) {
@@ -65,14 +105,20 @@ public class VoteServiceImpl implements VoteService {
                                     .vote(foundVote)
                                     .build();
 
+        //투표한 정보 저장
         voteInfoRepository.save(voteInfo);
+        //투표한 사람에게 마일리지 적립
+        memberService.changePoint(voterId, "투표 완료 : " + foundVote.getContent(), 100L);
+        //투표 받은 사람에게 알림 생성
+        notificationService.createVoteNotification(votee, foundVote);
         return voteInfo.getId();
     }
 
     @Override
-    public void review(UUID memberId, Long voteId, String review) {
+    @Transactional
+    public void review(UUID memberId, Long voteInfoId, RequestReviewDto requestReviewDto) {
 
-        Vote foundVote = validateVote(voteId);
+        Vote foundVote = validateVote(requestReviewDto.getVoteId());
         Member member = memberService.findMemberById(memberId);
 
         // 투표했는가
@@ -87,8 +133,9 @@ public class VoteServiceImpl implements VoteService {
             throw new IllegalArgumentException("The member already left a review");
         }
 
-        foundVoteInfo.setOpinion(review);
+        foundVoteInfo.setOpinion(requestReviewDto.getReview());
         voteInfoRepository.save(foundVoteInfo);
+        memberService.changePoint(memberId, "한줄 평 : " + foundVote.getContent(), 50L);
     }
 
 
@@ -138,45 +185,66 @@ public class VoteServiceImpl implements VoteService {
 
 
     @Override
-    public List<ResponseVoteDto> getVoteListByMember(UUID memberId, Long teamId) {
+    public List<ResponseVoteDto> getVoteListByMember(UUID memberId, String teamName) {
         Member member = memberService.findMemberById(memberId);
-        Team team = teamService.findTeamById(teamId);
+        Team team = teamService.findTeamByName(teamName);
         return voteRepository.findVoteByVoterAndTeam(member, team);
     }
 
-    /**
-     * sortByVoteStatus : 투표 상태에 따른 정렬 로직 팀 리스트를 받고 각각의 팀에 대해 아직 투표했는지 안했는지를 판단 이를 통해
-     * ResponseSortVoteDto에 2개의 리스트에 각각 저장 but 팀 리스트의 size()만큼 쿼리가 나간다.
-     * TODO: 주석 처리 된 부분에 파라미터를 통해 실제 엔티티 받아와서 로직 처리 (entityManager 삭제 후 주석 해제)
-     *
-     * @param memberId
-     * @param teamIds
-     * @return ResponseSortVoteDto(멤버가 모든 투표에 참여한 팀리스트, 투표가 아직 남은 팀 리스트)
-     */
     @Override
-    public ResponseVoteStatusDto sortByVoteStatus(UUID memberId, List<Long> teamIds) {
-        ResponseVoteStatusDto responseVoteStatusDto = new ResponseVoteStatusDto();
-        List<Object[]> inCompleteVotes = new ArrayList<>();
-
+    public List<Team> sortedTeamByVoteWhether(UUID memberId, List<Team> teamList) {
         Member member = memberService.findMemberById(memberId);
-        for (Long teamId : teamIds) {
-            Vote findResult = voteRepository.findInCompleteVoteByVoterAndTeam(member,
-                teamService.findTeamById(teamId));
-            if (findResult == null) {
-//                responseSortVoteDto.getCompletedTeams()
-//                                   .add(team.getTeamId());
-            } else {
-//                inCompleteVotes.add(new Object[]{team.getTeamId(), findResult});
-            }
+        return voteRepository.findByMemberAndVoteWhether(member, teamList);
+    }
+
+    @Override
+    @Transactional
+    public void openVoteInfo(UUID memberId, Long voteInfoId) {
+        Member member = memberService.findMemberById(memberId);
+
+        VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId)
+                                              .orElseThrow(VoteInfoNotFoundException::new);
+        if(voteInfo.getVotee() != member) {
+            //자기가 받은 투표가 아닌데 열려고 하는 경우
+            throw new UnauthorizedMemberException();
+        }
+        //포인트 확인 (500 보다 작으면 열 수 없다.)
+        if (member.getPoint() < OPEN_POINT) {
+            throw new NotEnoughPointException();
         }
 
-        Collections.sort(inCompleteVotes, (o1, o2) -> ((Vote) o1[1]).getExpiredAt()
-                                                                    .compareTo(
-                                                                        ((Vote) o2[1]).getExpiredAt()));
-        inCompleteVotes.stream()
-                       .forEach((o1) -> responseVoteStatusDto.getInCompletedTeams()
-                                                             .add((Long) o1[0]));
-        return responseVoteStatusDto;
+        //포인트 사용
+        memberService.changePoint(memberId, "투표 정보 확인", -OPEN_POINT);
+        //공개 여부 변경
+        voteInfo.setOpen(true);
+        voteInfoRepository.save(voteInfo);
+    }
+
+    @Override
+    @Transactional
+    public ResponseVoteWithVoteInfoListDto getVoteInfoToMeList(UUID memberId, Long voteId) {
+        Member member = memberService.findMemberById(memberId);
+        Vote vote = voteRepository.findById(voteId)
+                                  .orElseThrow(VoteNotFoundException::new);
+
+        List<VoteInfo> voteInfoToMeList = voteInfoRepository.findVoteInfoToMeListByMemberAndVote(
+            member, vote);
+
+        return ResponseVoteWithVoteInfoListDto.builder()
+                                              .voteId(voteId)
+                                              .content(vote.getContent())
+                                              .responseVoteInfoToMeDtoList(
+                                                  voteInfoToMeList.stream()
+                                                                  .map(ResponseVoteInfoToMeDto::VoteInfoToDto)
+                                                                  .toList()
+                                              )
+                                              .build();
+    }
+
+    @Override
+    public ResponseTodayVoteInfoDto getTodayVoteInfo(UUID memberId) {
+        Member member = memberService.findMemberById(memberId);
+        return voteInfoRepository.findTodayVoteInfoByMember(member);
     }
 
 }

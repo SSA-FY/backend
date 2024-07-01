@@ -1,5 +1,6 @@
 package ssafy.lambda.team.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ssafy.lambda.global.common.BaseEntity;
+import ssafy.lambda.invitation.entity.Invitation;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.membership.entity.Membership;
 
@@ -45,6 +47,9 @@ public class Team extends BaseEntity {
     @Setter
     @JoinColumn(nullable = false, name = "manager_id")
     private Member manager;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Invitation> invitations = new ArrayList<>();
 
     protected Team() {
     }

@@ -1,5 +1,6 @@
 package ssafy.lambda.invitation.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,13 +8,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ssafy.lambda.global.common.BaseEntity;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.notification.entity.NotificationDetail.InvitationNotification;
 import ssafy.lambda.team.entity.Team;
 
 @Entity
@@ -35,6 +40,9 @@ public class Invitation extends BaseEntity {
     @Setter
     @Column(name = "invalidate_at")
     private Instant invalidateAt;
+
+    @OneToMany(mappedBy = "invitation", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<InvitationNotification> notifications = new ArrayList<>();
 
     protected Invitation() {
     }

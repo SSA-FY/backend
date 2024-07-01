@@ -5,5 +5,4 @@ import lombok.Data;
 @Data
 public class RequestVoteDto {
     String content;
-    String backgroundUrl;
 }

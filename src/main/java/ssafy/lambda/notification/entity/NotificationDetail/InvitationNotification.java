@@ -12,7 +12,7 @@ import ssafy.lambda.notification.entity.Notification;
 @DiscriminatorValue("Invitation")
 public class InvitationNotification extends Notification {
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invitation_id")
     private Invitation invitation;
 

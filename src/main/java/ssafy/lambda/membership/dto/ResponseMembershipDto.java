@@ -10,6 +10,7 @@ public class ResponseMembershipDto {
     private final String memberName;
     private final String memberTag;
     private final String nickname;
+    private final String profileImgUrl;
 
     public ResponseMembershipDto(Membership membership) {
 
@@ -18,6 +19,6 @@ public class ResponseMembershipDto {
         this.memberTag = membership.getMember()
                                    .getTag();
         this.nickname = membership.getNickname();
-
+        this.profileImgUrl = membership.getMember().getProfileImgUrl();
     }
 }

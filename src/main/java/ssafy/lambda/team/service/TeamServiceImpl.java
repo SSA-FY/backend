@@ -2,8 +2,14 @@ package ssafy.lambda.team.service;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
+
+import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -187,9 +193,6 @@ public class TeamServiceImpl implements TeamService {
                 throw new ImageUploadException();
             }
         }
-
         return url;
-
-
     }
 }
