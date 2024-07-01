@@ -93,11 +93,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExitTeamException.class)
     public ResponseEntity<Response> handleExitTeamException(ExitTeamException e) {
-        return Response.res(HttpStatus.CONFLICT, e.getMessage());
+        return Response.res(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler(NotEnoughPointException.class)
-    public ResponseEntity<Response> handleNotEnoughPointExceptionException(NotEnoughPointException e) {
+    public ResponseEntity<Response> handleNotEnoughPointExceptionException(
+        NotEnoughPointException e) {
         return Response.res(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
@@ -106,6 +107,7 @@ public class GlobalExceptionHandler {
         VoteNotFoundException e) {
         return Response.res(HttpStatus.NOT_FOUND, e.getMessage());
     }
+
     @ExceptionHandler(VoteInfoNotFoundException.class)
     public ResponseEntity<Response> handleVoteInfoNotFoundException(
         VoteInfoNotFoundException e) {
