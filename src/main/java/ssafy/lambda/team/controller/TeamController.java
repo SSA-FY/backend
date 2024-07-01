@@ -28,9 +28,10 @@ import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.team.dto.RequestTeamCreateDto;
 import ssafy.lambda.team.dto.RequestTeamUpdateDto;
 import ssafy.lambda.team.dto.ResponseTeamDto;
-import ssafy.lambda.team.dto.ResponseTeamGetDto;
+import ssafy.lambda.team.dto.ResponseTeamVoteWhetherDto;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
+import ssafy.lambda.team.service.TeamWithVoteService;
 
 @SecurityRequirement(name = "token")
 @RestController
@@ -41,6 +42,7 @@ public class TeamController {
     private final TeamService teamService;
     private final MemberService memberService;
     private final MembershipService membershipService;
+    private final TeamWithVoteService teamWithVoteService;
 
 //    @Operation(summary = "팀 목록 조회", description = "팀 목록을 조회합니다")
 //    @GetMapping("/list")
@@ -99,14 +101,16 @@ public class TeamController {
 
     @Operation(summary = "멤버가 속한 팀 검색", description = "멤버가 속한 팀을 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<ResponseTeamGetDto>> getTeamByMemberId(
+    public ResponseEntity<List<ResponseTeamVoteWhetherDto>> getTeamByMemberId(
         Authentication authentication) {
         UUID memberId = UUID.fromString(authentication.getName());
 
-        List<ResponseTeamGetDto> teamList = teamService.findAllTeamByMemberId(memberId)
-                                                       .stream()
-                                                       .map((ResponseTeamGetDto::new))
-                                                       .toList();
+        List<ResponseTeamVoteWhetherDto> teamList = teamWithVoteService.getTeamByVoteOrderByVoteWhether(
+            memberId);
+        System.out.println(teamList.size());
+        List<Team> allTeamByMemberId = teamService.findAllTeamByMemberId(memberId);
+        System.out.println(allTeamByMemberId.size() + "!!");
+
         return ResponseEntity.ok()
                              .body(teamList);
     }

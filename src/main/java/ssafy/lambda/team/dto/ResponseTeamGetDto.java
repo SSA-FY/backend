@@ -12,6 +12,5 @@ public class ResponseTeamGetDto {
     public ResponseTeamGetDto(Team team) {
         this.teamName = team.getTeamName();
         this.imgUrl = team.getImgUrl();
-
     }
 }
