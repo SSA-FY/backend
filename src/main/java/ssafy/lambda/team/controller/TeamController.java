@@ -144,7 +144,7 @@ public class TeamController {
     @Operation(summary = "팀내 멤버 리스트", description = "팀에 포함된 멤버 리스트를 반환합니다.")
     @ApiErrorResponse({ApiError.TeamNotFound})
     @GetMapping("/member")
-    public ResponseEntity<List<ResponseMembershipDto>> getMember(String teamName) {
+    public ResponseEntity<List<ResponseMembershipDto>> getMember(@RequestParam String teamName) {
         Long teamId = teamService.findTeamByName(teamName)
                                  .getTeamId();
         List<Membership> membershipByTeamId = membershipService.findMembershipByTeamId(teamId);
@@ -190,7 +190,7 @@ public class TeamController {
 
     @Operation(summary = "팀 나가기", description = "팀을 나갑니다. 관리자는 1명 이상의 다른 팀원이 있을경우 나갈 수 없습니다.")
     @DeleteMapping
-    public ResponseEntity exitTeam(Authentication authentication, String teamName) {
+    public ResponseEntity exitTeam(Authentication authentication, @RequestParam String teamName) {
         UUID memberId = UUID.fromString(authentication.getName());
         Member member = memberService.findMemberById(memberId);
         teamService.exitTeam(teamName, member);
