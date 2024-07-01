@@ -20,6 +20,7 @@ import ssafy.lambda.global.config.JwtConfig;
 import ssafy.lambda.global.security.jwt.TokenService;
 import ssafy.lambda.global.utils.CookieUtil;
 import ssafy.lambda.member.entity.Member;
+import ssafy.lambda.member.entity.SocialType;
 import ssafy.lambda.member.service.MemberService;
 
 /**
@@ -94,10 +95,9 @@ public class AccessTokenService {
      */
     @Transactional
     public void createRefreshTokenDev(HttpServletRequest request,
-        HttpServletResponse response) {
+        HttpServletResponse response, String email, SocialType social) {
 
-        Member member = memberService.findMemberById(
-            UUID.fromString("fcdf61a1-f3ed-4d7f-8321-bf5c00688225"));
+        Member member = memberService.findMemberByEmailAndSocial(email, social);
 
         String refreshToken = tokenService.generateToken(member, REFRESH_TOKEN_DURATION);
         CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
