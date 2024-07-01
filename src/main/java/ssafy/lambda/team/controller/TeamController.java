@@ -107,10 +107,6 @@ public class TeamController {
 
         List<ResponseTeamVoteWhetherDto> teamList = teamWithVoteService.getTeamByVoteOrderByVoteWhether(
             memberId);
-        System.out.println(teamList.size());
-        List<Team> allTeamByMemberId = teamService.findAllTeamByMemberId(memberId);
-        System.out.println(allTeamByMemberId.size() + "!!");
-
         return ResponseEntity.ok()
                              .body(teamList);
     }
