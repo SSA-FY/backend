@@ -99,15 +99,16 @@ public class TeamServiceImpl implements TeamService {
 
         // 팀의 관리자만 해당 요청을 보낼 수 있음
         if (!team.getManager()
-                 .equals(member)) {
+                 .getTag()
+                 .equals(member.getTag())) {
             throw new UnauthorizedMemberException();
         }
 
         // 팀명 중복검색
-        String teamName = requestDto.getTeamName();
-        if (teamRepository.findByTeamName(teamName)
-                          .isPresent()) {
-            throw new DuplicatedTeamNameException(teamName);
+        String newTeamName = requestDto.getTeamName();
+        if (!newTeamName.equals(team.getTeamName()) && teamRepository.findByTeamName(newTeamName)
+                                                                     .isPresent()) {
+            throw new DuplicatedTeamNameException(newTeamName);
         }
 
         // 새로운 관리자 확인
@@ -116,7 +117,7 @@ public class TeamServiceImpl implements TeamService {
         ;
 
         // 팀 정보 갱신
-        team.setTeamName(teamName);
+        team.setTeamName(newTeamName);
         team.setDescription(requestDto.getDescription());
         team.setManager(newManager);
         team.setImgUrl(uploadImg(teamId, img));
@@ -132,6 +133,7 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     public void changeNickname(RequestChangeNicknameDto requestChangeNicknameDto, UUID memberId) {
         Team team = findTeamByName(requestChangeNicknameDto.getTeamName());
+        // TODO 중복닉네임 체크
         Membership membership = membershipService.findMembershipByMemberIdAndTeamId(
             memberId, team.getTeamId());
         membership.setNickname(requestChangeNicknameDto.getNickname());

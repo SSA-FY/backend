@@ -38,10 +38,6 @@ public class Team extends BaseEntity {
 
     @Setter
     @Column
-    private Integer participants;
-
-    @Setter
-    @Column
     private String imgUrl;
 
     @OneToMany(mappedBy = "team", orphanRemoval = true)
@@ -49,7 +45,7 @@ public class Team extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Setter
-    @JoinColumn(nullable = false, updatable = false, name = "manager_id")
+    @JoinColumn(nullable = false, name = "manager_id")
     private Member manager;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,7 +59,6 @@ public class Team extends BaseEntity {
         this.teamId = teamId;
         this.teamName = teamName;
         this.description = description;
-        this.participants = 0;
         this.manager = manager;
         this.imgUrl = imgUrl;
     }

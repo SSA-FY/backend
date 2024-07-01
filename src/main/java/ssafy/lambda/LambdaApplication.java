@@ -40,7 +40,6 @@ public class LambdaApplication {
                         HttpMethod.HEAD.name(),
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
-                        HttpMethod.PATCH.name(),
                         HttpMethod.PUT.name(),
                         HttpMethod.DELETE.name(),
                         HttpMethod.OPTIONS.name());
