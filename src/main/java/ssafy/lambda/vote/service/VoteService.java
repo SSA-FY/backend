@@ -8,7 +8,7 @@ import ssafy.lambda.vote.dto.*;
 
 public interface VoteService {
 
-    void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto, MultipartFile img);
+    void createVote(UUID memberId, String teamName, RequestVoteDto requestVoteDto, MultipartFile img);
 
     Long doVote(Long voteId, UUID voterId, String tag);
 
@@ -16,7 +16,7 @@ public interface VoteService {
 
     List<ResponseProfileWithPercentDto> voteResult(Long voteId);
 
-    List<ResponseVoteDto> getVoteListByMember(UUID memberId, Long teamId);
+    List<ResponseVoteDto> getVoteListByMember(UUID memberId, String teamName);
 
     List<Team> sortedTeamByVoteWhether(UUID memberId, List<Team> teamList);
 

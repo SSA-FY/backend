@@ -47,7 +47,7 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     @Transactional
-    public void createVote(UUID memberId, Long teamId, RequestVoteDto requestVoteDto,
+    public void createVote(UUID memberId, String teamName, RequestVoteDto requestVoteDto,
         MultipartFile img) {
 
         String url = minioConfig.getUrl() + "/vote/Default.jpeg";
@@ -74,11 +74,12 @@ public class VoteServiceImpl implements VoteService {
                 throw new ImageUploadException();
             }
         }
+        Team team = teamService.findTeamByName(teamName);
         Vote vote = Vote.builder()
                         .content(requestVoteDto.getContent())
                         .imgUrl(url)
                         .membership(
-                            membershipService.findMembershipByMemberIdAndTeamId(memberId, teamId))
+                            membershipService.findMembershipByMemberIdAndTeamId(memberId, team.getTeamId()))
                         .build();
         voteRepository.save(vote);
     }
@@ -184,9 +185,9 @@ public class VoteServiceImpl implements VoteService {
 
 
     @Override
-    public List<ResponseVoteDto> getVoteListByMember(UUID memberId, Long teamId) {
+    public List<ResponseVoteDto> getVoteListByMember(UUID memberId, String teamName) {
         Member member = memberService.findMemberById(memberId);
-        Team team = teamService.findTeamById(teamId);
+        Team team = teamService.findTeamByName(teamName);
         return voteRepository.findVoteByVoterAndTeam(member, team);
     }
 
