@@ -24,7 +24,7 @@ public interface MembershipService {
 
     public List<Membership> findAllMembership();
 
-    public void updateNickname(Member member, Team team, String newNickname);
+    public void updateNickname(Membership membership, String newNickname);
 
     public boolean duplicatedMembershipCheck(Member member, Team team);
 
