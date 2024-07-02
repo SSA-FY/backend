@@ -8,7 +8,7 @@ import ssafy.lambda.board.dto.ResponseCommentDto;
 
 public interface BoardService {
 
-    List<ResponseBoardSummaryDto> getBoardList(Long teamId, UUID memberId, Long page);
+    List<ResponseBoardSummaryDto> getBoardList(String teamName, UUID memberId, Long page);
 
     ResponseBoardDetailDto getBoardDetail(Long expiredVoteId, Long page);
 
