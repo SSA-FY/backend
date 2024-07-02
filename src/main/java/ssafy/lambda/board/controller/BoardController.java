@@ -30,14 +30,14 @@ public class BoardController {
     private final BoardService boardService;
 
     @Operation(summary = "보드 리스트 조회", description = "그룹 별 만료된 투표 목록을 반환합니다<br>페이지 별 10개의 보드를 반환합니다")
-    @GetMapping("/boards/{teamId}")
+    @GetMapping("/boards")
     public ResponseEntity<List<ResponseBoardSummaryDto>> getBoards(
         Authentication authentication,
-        @PathVariable(name = "teamId") Long teamId,
+        @RequestParam(name = "teamName") String teamName,
         @RequestParam(defaultValue = "0", name = "page") Long page
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
-        List boardList = boardService.getBoardList(teamId, memberId, page);
+        List boardList = boardService.getBoardList(teamName, memberId, page);
         return ResponseEntity.ok()
                              .body(boardList);
     }

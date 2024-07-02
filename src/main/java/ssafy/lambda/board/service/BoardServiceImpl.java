@@ -22,6 +22,8 @@ import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.service.MemberService;
 import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.membership.service.MembershipService;
+import ssafy.lambda.team.entity.Team;
+import ssafy.lambda.team.service.TeamService;
 
 @Service
 @Slf4j
@@ -34,14 +36,18 @@ public class BoardServiceImpl implements BoardService {
     private final MemberService memberService;
     private final MembershipService membershipService;
 
+    private final TeamService teamService;
+
     /////////////////////////////////////////////////////
 
     @Override
-    public List<ResponseBoardSummaryDto> getBoardList(Long teamId, UUID memberId, Long page) {
+    public List<ResponseBoardSummaryDto> getBoardList(String teamName, UUID memberId, Long page) {
+        Team team = teamService.findTeamByName(teamName);
         Membership membership = membershipService.findMembershipByMemberIdAndTeamId(memberId,
-            teamId);
+            team.getTeamId());
+
         Pageable pageable = PageRequest.of(page.intValue(), 10);
-        List<ExpiredVote> boardList = boardRepository.findAllByTeamId(teamId, pageable);
+        List<ExpiredVote> boardList = boardRepository.findAllByTeamId(team.getTeamId(), pageable);
 
         return boardList.stream()
                         .map(ev ->
