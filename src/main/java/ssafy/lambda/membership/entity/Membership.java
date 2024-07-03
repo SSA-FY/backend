@@ -8,12 +8,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ssafy.lambda.global.common.BaseEntity;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.team.entity.Team;
+import ssafy.lambda.vote.entity.Vote;
 
 @Getter
 @Entity
@@ -31,6 +35,9 @@ public class Membership extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
+
+    @OneToMany(mappedBy = "membership", orphanRemoval = true)
+    private List<Vote> votes = new ArrayList<>();
 
     @Setter
     @Column(name = "nickname")

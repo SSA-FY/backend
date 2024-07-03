@@ -8,11 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,8 +39,12 @@ public class Invitation extends BaseEntity {
     @Column(name = "invalidate_at")
     private Instant invalidateAt;
 
-    @OneToMany(mappedBy = "invitation", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<InvitationNotification> notifications = new ArrayList<>();
+    @OneToOne(mappedBy = "invitation", orphanRemoval = true)
+    private InvitationNotification invitationNotification;
+
+
+    @OneToOne(mappedBy = "invitation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private InvitationNotification notification;
 
     protected Invitation() {
     }

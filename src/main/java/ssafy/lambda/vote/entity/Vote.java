@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import ssafy.lambda.global.common.BaseEntity;
 import ssafy.lambda.membership.entity.Membership;
+import ssafy.lambda.notification.entity.NotificationDetail.VoteNotification;
 
 @Entity
 @Getter
@@ -40,9 +41,11 @@ public class Vote extends BaseEntity {
     @Column
     private Instant expiredAt;
 
-    @OneToMany(mappedBy = "vote")
+    @OneToMany(mappedBy = "vote", orphanRemoval = true)
     List<VoteInfo> voteInfoList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "vote", orphanRemoval = true)
+    List<VoteNotification> notificationList = new ArrayList<>();
 
     protected Vote() {
 

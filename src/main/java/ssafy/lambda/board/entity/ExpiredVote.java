@@ -47,7 +47,7 @@ public class ExpiredVote {
     @Column
     private Long voteId;
 
-    @OneToMany(mappedBy = "expiredVote")
+    @OneToMany(mappedBy = "expiredVote", orphanRemoval = true)
     List<ExpiredVoteInfo> expiredVoteInfoList = new ArrayList<>();
 
 
