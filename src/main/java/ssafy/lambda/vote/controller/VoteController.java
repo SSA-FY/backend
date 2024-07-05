@@ -22,7 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import ssafy.lambda.global.annotation.ApiErrorResponse;
 import ssafy.lambda.global.response.ApiError;
-import ssafy.lambda.vote.dto.*;
+import ssafy.lambda.vote.dto.RequestReviewDto;
+import ssafy.lambda.vote.dto.RequestVoteDto;
+import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
+import ssafy.lambda.vote.dto.ResponseTodayVoteInfoDto;
+import ssafy.lambda.vote.dto.ResponseVoteDto;
+import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
 import ssafy.lambda.vote.service.VoteService;
 
 @SecurityRequirement(name = "token")
@@ -42,8 +47,8 @@ public class VoteController {
         @RequestPart(name = "img", required = false) MultipartFile img
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
-        log.info("createVote - team {}, memberId {} : {}, img : {}", teamName, memberId,
-            requestVoteDto.toString(), img);
+//        log.info("createVote - team {}, memberId {} : {}, img : {}", teamName, memberId,
+//            requestVoteDto.toString(), img);
         voteService.createVote(memberId, teamName, requestVoteDto, img);
         return ResponseEntity.ok()
                              .build();
@@ -58,9 +63,9 @@ public class VoteController {
         @RequestParam(name = "voteeTag") String voteeTag
     ) {
         UUID voterId = UUID.fromString(authentication.getName());
-        log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeTag);
+//        log.info("doVote - vote {} : {} -> {}", voteId, voterId, voteeTag);
         Long voteInfoId = voteService.doVote(voteId, voterId, voteeTag);
-        log.info("voteInfoId = {}", voteInfoId);
+//        log.info("voteInfoId = {}", voteInfoId);
         URI uri = UriComponentsBuilder.fromPath(String.valueOf(voteInfoId))
                                       .buildAndExpand()
                                       .toUri();
@@ -77,8 +82,8 @@ public class VoteController {
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
-        log.info("review - member {}, voteInfoId {}. voteId {} : {}", memberId, voteInfoId,
-            requestReviewDto.getVoteId(), requestReviewDto.getReview());
+//        log.info("review - member {}, voteInfoId {}. voteId {} : {}", memberId, voteInfoId,
+//            requestReviewDto.getVoteId(), requestReviewDto.getReview());
         voteService.review(memberId, voteInfoId, requestReviewDto);
         return ResponseEntity.ok()
                              .build();
@@ -90,7 +95,7 @@ public class VoteController {
     public ResponseEntity<List<ResponseProfileWithPercentDto>> getVoteResult(
         @PathVariable(name = "voteId") Long voteId
     ) {
-        log.info("voteResult - vote {}");
+//        log.info("voteResult - vote {}");
         List<ResponseProfileWithPercentDto> voteResult = voteService.voteResult(voteId);
         return ResponseEntity.ok()
                              .body(voteResult);
@@ -106,8 +111,8 @@ public class VoteController {
 
         List<ResponseVoteDto> responseVoteDtoList = voteService.getVoteListByMember(memberId,
             teamName);
-        log.info("member {}, team {} -> ListCount : {}", memberId, teamName,
-            responseVoteDtoList.size());
+//        log.info("member {}, team {} -> ListCount : {}", memberId, teamName,
+//            responseVoteDtoList.size());
 
         return ResponseEntity.ok()
                              .body(responseVoteDtoList);
@@ -123,7 +128,7 @@ public class VoteController {
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
-        log.info("member {} -> Open : (voteInfoId {})", memberId, voteInfoId);
+//        log.info("member {} -> Open : (voteInfoId {})", memberId, voteInfoId);
         voteService.openVoteInfo(memberId, voteInfoId);
         return ResponseEntity.ok()
                              .build();
@@ -138,7 +143,7 @@ public class VoteController {
     ) {
         UUID memberId = UUID.fromString(authentication.getName());
 
-        log.info("member {}, voteId : {}", memberId, voteId);
+//        log.info("member {}, voteId : {}", memberId, voteId);
         ResponseVoteWithVoteInfoListDto responseVoteWithVoteInfoList = voteService.getVoteInfoToMeList(
             memberId, voteId);
 

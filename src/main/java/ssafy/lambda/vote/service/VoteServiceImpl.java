@@ -21,7 +21,13 @@ import ssafy.lambda.notification.service.NotificationService;
 import ssafy.lambda.point.NotEnoughPointException;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
-import ssafy.lambda.vote.dto.*;
+import ssafy.lambda.vote.dto.RequestReviewDto;
+import ssafy.lambda.vote.dto.RequestVoteDto;
+import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
+import ssafy.lambda.vote.dto.ResponseTodayVoteInfoDto;
+import ssafy.lambda.vote.dto.ResponseVoteDto;
+import ssafy.lambda.vote.dto.ResponseVoteInfoToMeDto;
+import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
 import ssafy.lambda.vote.exception.VoteInfoNotFoundException;
@@ -52,7 +58,6 @@ public class VoteServiceImpl implements VoteService {
 
         String url = minioConfig.getUrl() + "/vote/Default.jpeg";
 
-        log.info("img = {}", img);
         if (img != null) {
             StringBuilder filename = new StringBuilder();
             filename.append(img.getOriginalFilename());
@@ -78,8 +83,7 @@ public class VoteServiceImpl implements VoteService {
         Vote vote = Vote.builder()
                         .content(requestVoteDto.getContent())
                         .imgUrl(url)
-                        .membership(
-                            membershipService.findMembershipByMemberIdAndTeamId(memberId, team.getTeamId()))
+                        .team(team)
                         .build();
         voteRepository.save(vote);
     }
@@ -177,7 +181,8 @@ public class VoteServiceImpl implements VoteService {
                                        .orElseThrow(
                                            () -> new IllegalArgumentException("vote doesn't exist")
                                        );
-        if (foundVote.getExpiredAt().isBefore(Instant.now())) {
+        if (foundVote.getExpiredAt()
+                     .isBefore(Instant.now())) {
             throw new IllegalArgumentException("vote is over");
         }
         return foundVote;
@@ -204,7 +209,7 @@ public class VoteServiceImpl implements VoteService {
 
         VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId)
                                               .orElseThrow(VoteInfoNotFoundException::new);
-        if(voteInfo.getVotee() != member) {
+        if (voteInfo.getVotee() != member) {
             //자기가 받은 투표가 아닌데 열려고 하는 경우
             throw new UnauthorizedMemberException();
         }
@@ -235,7 +240,8 @@ public class VoteServiceImpl implements VoteService {
                                               .content(vote.getContent())
                                               .responseVoteInfoToMeDtoList(
                                                   voteInfoToMeList.stream()
-                                                                  .map(ResponseVoteInfoToMeDto::VoteInfoToDto)
+                                                                  .map(
+                                                                      ResponseVoteInfoToMeDto::VoteInfoToDto)
                                                                   .toList()
                                               )
                                               .build();

@@ -14,7 +14,7 @@ public interface ExpiredVoteRepository extends JpaRepository<ExpiredVote, Long>,
     @Query(
         "select ev "
             + "from ExpiredVote ev "
-            + "where ev.membership.team.teamId = :teamId "
+            + "where ev.team.teamId = :teamId "
             + "order by ev.id DESC"
     )
     List<ExpiredVote> findAllByTeamId(@Param("teamId") Long teamId, Pageable pageable);

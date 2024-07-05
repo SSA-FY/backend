@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import ssafy.lambda.global.common.BaseEntity;
 import ssafy.lambda.member.entity.Member;
 
@@ -24,6 +26,7 @@ public class VoteInfo extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vote_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Vote vote;
 
     @ManyToOne(fetch = FetchType.LAZY)

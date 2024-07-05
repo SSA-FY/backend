@@ -1,6 +1,5 @@
 package ssafy.lambda.vote.repository;
 
-import static ssafy.lambda.membership.entity.QMembership.membership;
 import static ssafy.lambda.vote.entity.QVote.vote;
 import static ssafy.lambda.vote.entity.QVoteInfo.voteInfo;
 
@@ -20,7 +19,6 @@ import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.QResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.QVote;
-import ssafy.lambda.vote.entity.Vote;
 
 public class VoteRepositoryImpl implements VoteRepositoryCustom {
 
@@ -44,31 +42,29 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     public List<ResponseVoteDto> findVoteByVoterAndTeam(Member voter, Team team) {
         QVote voteSub = new QVote("voteSub");
         return queryFactory.select(
-                                   new QResponseVoteDto(
-                                           vote.id.as("voteId"),
-                                           vote.content.as("content"),
-                                           vote.imgUrl.as("imgUrl"),
-                                           new CaseBuilder().
-                                                   when(voteInfo.voter.eq(voter))
-                                                   .then(true)
-                                                   .otherwise(false)))
+                               new QResponseVoteDto(
+                                   vote.id.as("voteId"),
+                                   vote.content.as("content"),
+                                   vote.imgUrl.as("imgUrl"),
+                                   new CaseBuilder().
+                                       when(voteInfo.voter.eq(voter))
+                                       .then(true)
+                                       .otherwise(false)))
                            .from(voteInfo)
                            .rightJoin(voteInfo.vote, vote)
                            .on(voteInfo.voter.eq(voter))
                            .where(
-                                   isProceeding(),
-                                   vote.id.in(
-                                           //해당 멤버의 선택 팀에 대한 진행중인 모든 투표의 아이디를 가져온다.
-                                           JPAExpressions.select(voteSub.id)
-                                                         .from(voteSub)
-                                                         .join(voteSub.membership, membership)
-                                                         .where(
-                                                                 teamEq(team)
-                                                         ))
+                               isProceeding(),
+                               vote.id.in(
+                                   //해당 멤버의 선택 팀에 대한 진행중인 모든 투표의 아이디를 가져온다.
+                                   JPAExpressions.select(voteSub.id)
+                                                 .from(voteSub)
+                                                 .where(voteSub.team.eq(team))
+                               )
                            )
                            .orderBy(new OrderSpecifier(Order.ASC, voteInfo.voter).nullsFirst(),
-                                   new OrderSpecifier(Order.ASC, vote.expiredAt),
-                                   new OrderSpecifier(Order.ASC, vote.id))
+                               new OrderSpecifier(Order.ASC, vote.expiredAt),
+                               new OrderSpecifier(Order.ASC, vote.id))
                            .fetch();
     }
 
@@ -80,7 +76,7 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
      * @return
      */
     public BooleanExpression teamEq(Team team) {
-        return team != null ? vote.membership.team.eq(team) : null;
+        return team != null ? vote.team.eq(team) : null;
     }
 
     public BooleanExpression isProceeding() {
@@ -91,11 +87,11 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     public List<Object[]> findVoteInfoByCnt(Long voteId) {
 
         String sql =
-                " SELECT vi.votee.id, COUNT(*) as cnt, ROUND(1.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
-                        + "FROM VoteInfo vi "
-                        + "WHERE vi.vote.id = :voteId "
-                        + "GROUP BY vi.votee.id "
-                        + "ORDER BY cnt DESC LIMIT 6";
+            " SELECT vi.votee.id, COUNT(*) as cnt, ROUND(1.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) "
+                + "FROM VoteInfo vi "
+                + "WHERE vi.vote.id = :voteId "
+                + "GROUP BY vi.votee.id "
+                + "ORDER BY cnt DESC LIMIT 6";
 
         Query query = entityManager.createQuery(sql);
         query.setParameter("voteId", voteId);
@@ -106,9 +102,8 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
     }
 
     /**
-     * 멤버가 속한 팀 리스트를 받아,
-     * 아직 투표하지 않은 투표를 가지고 잇는 팀을 반환
-     * 만료 시간 가까운 것 우선
+     * 멤버가 속한 팀 리스트를 받아, 아직 투표하지 않은 투표를 가지고 잇는 팀을 반환 만료 시간 가까운 것 우선
+     *
      * @param member
      * @param teamList
      * @return
@@ -125,13 +120,13 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
         // 멤버가 속한 팀의 모든 투표 중 아직 투표하지 않은 투표를 찾기
         return queryFactory
             .select(
-                vote.membership.team
+                vote.team
             )
             .from(vote)
-            .where(vote.membership.team.in(teamList)
-                                       .and(vote.id.notIn(votedIds))
-                                       .and(isProceeding()))
-            .groupBy(vote.membership.team)
+            .where(vote.team.in(teamList)
+                            .and(vote.id.notIn(votedIds))
+                            .and(isProceeding()))
+            .groupBy(vote.team)
             .orderBy(vote.expiredAt.asc())
             .fetch();
     }
