@@ -15,9 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import ssafy.lambda.global.common.BaseEntity;
-import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.notification.entity.NotificationDetail.VoteNotification;
+import ssafy.lambda.team.entity.Team;
 
 @Entity
 @Getter
@@ -35,8 +37,9 @@ public class Vote extends BaseEntity {
     private String imgUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "membership_id")
-    private Membership membership;
+    @JoinColumn(name = "team_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Team team;
 
     @Column
     private Instant expiredAt;
@@ -52,10 +55,10 @@ public class Vote extends BaseEntity {
     }
 
     @Builder
-    public Vote(String content, String imgUrl, Membership membership) {
+    public Vote(String content, String imgUrl, Team team) {
         this.content = content;
         this.imgUrl = imgUrl;
-        this.membership = membership;
+        this.team = team;
         this.expiredAt = Instant.now()
                                 .plus(1, ChronoUnit.DAYS);
     }

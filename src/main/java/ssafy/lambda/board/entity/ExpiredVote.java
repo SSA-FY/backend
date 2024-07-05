@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import ssafy.lambda.membership.entity.Membership;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import ssafy.lambda.team.entity.Team;
 
 @Entity
 @Getter
@@ -32,8 +34,9 @@ public class ExpiredVote {
     private String imgUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "membership_id")
-    private Membership membership;
+    @JoinColumn(name = "team_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Team team;
 
     @Column
     private Instant expiredAt;
@@ -60,12 +63,12 @@ public class ExpiredVote {
      * 것임에 주의한다. 자체적인 createdAt는 존재하지 않아 BaseEntity를 상속받지 않는다.
      */
     @Builder
-    public ExpiredVote(String content, String imgUrl, Membership membership,
+    public ExpiredVote(String content, String imgUrl, Team team,
         Instant expiredAt, Instant createdAt, Instant updatedAt, Long voteId,
         List<ExpiredVoteInfo> expiredVoteInfoList) {
         this.content = content;
         this.imgUrl = imgUrl;
-        this.membership = membership;
+        this.team = team;
         this.expiredAt = expiredAt;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
