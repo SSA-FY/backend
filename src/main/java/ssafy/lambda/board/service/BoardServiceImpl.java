@@ -72,8 +72,7 @@ public class BoardServiceImpl implements BoardService {
     public ResponseBoardDetailDto getBoardDetail(Long expiredVoteId, Long page) {
         // 1. 유효성 검증
         ExpiredVote expiredVote = getExpriedVote(expiredVoteId);
-        Long teamId = expiredVote.getMembership()
-                                 .getTeam()
+        Long teamId = expiredVote.getTeam()
                                  .getTeamId();
         // 2. dto 생성
         Long totalCnt = boardRepository.getCntByBoard(expiredVoteId);
@@ -114,8 +113,7 @@ public class BoardServiceImpl implements BoardService {
         // 1. 댓글 반환
         Pageable pageable = PageRequest.of(page.intValue(), 20, Sort.by(Sort.Direction.DESC, "id"));
         ExpiredVote expiredVote = getExpriedVote(expiredVoteId);
-        Long teamId = expiredVote.getMembership()
-                                 .getTeam()
+        Long teamId = expiredVote.getTeam()
                                  .getTeamId();
         List<BoardComment> commentList = commentRepository.findAllByExpiredVote(expiredVote,
             pageable);
