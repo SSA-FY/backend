@@ -2,14 +2,8 @@ package ssafy.lambda.team.service;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
-
-import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,9 +127,10 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     public void changeNickname(RequestChangeNicknameDto requestChangeNicknameDto, UUID memberId) {
         Team team = findTeamByName(requestChangeNicknameDto.getTeamName());
-        // TODO 중복닉네임 체크
         Membership membership = membershipService.findMembershipByMemberIdAndTeamId(
             memberId, team.getTeamId());
+        // 중복닉네임 체크
+        membershipService.updateNickname(membership, requestChangeNicknameDto.getNickname());
         membership.setNickname(requestChangeNicknameDto.getNickname());
     }
 

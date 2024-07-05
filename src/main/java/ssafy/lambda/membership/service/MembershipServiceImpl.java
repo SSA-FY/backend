@@ -12,7 +12,6 @@ import ssafy.lambda.member.repository.MemberRepository;
 import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.membership.exception.AlreadyExistingMemberException;
 import ssafy.lambda.membership.exception.DuplicatedNicknameException;
-import ssafy.lambda.membership.exception.MembershipNotFoundException;
 import ssafy.lambda.membership.repository.MembershipRepository;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.repository.TeamRepository;
@@ -70,11 +69,8 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Transactional
-    public void updateNickname(Member member, Team team, String newNickname) {
-        Membership membership = membershipRepository.findByMemberAndTeam(member, team)
-                                                    .orElseThrow(
-                                                        MembershipNotFoundException::new);
-        if (duplicatedNicknameCheck(team, newNickname)) {
+    public void updateNickname(Membership membership, String newNickname) {
+        if (duplicatedNicknameCheck(membership.getTeam(), newNickname)) {
             throw new DuplicatedNicknameException(newNickname);
         }
         membership.setNickname(newNickname);

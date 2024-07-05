@@ -1,6 +1,10 @@
 package ssafy.lambda.notification.entity.NotificationDetail;
 
-import jakarta.persistence.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import ssafy.lambda.invitation.entity.Invitation;
@@ -12,7 +16,7 @@ import ssafy.lambda.notification.entity.Notification;
 @DiscriminatorValue("Invitation")
 public class InvitationNotification extends Notification {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invitation_id")
     private Invitation invitation;
 
