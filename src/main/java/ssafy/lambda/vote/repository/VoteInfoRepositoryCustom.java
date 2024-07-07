@@ -11,4 +11,6 @@ public interface VoteInfoRepositoryCustom {
     List<VoteInfo> findVoteInfoToMeListByMemberAndVote(Member member, Vote vote);
 
     ResponseTodayVoteInfoDto findTodayVoteInfoByMember(Member member);
+
+    Long deleteVoteInfoByVoteId(List<Long> voteIds);
 }

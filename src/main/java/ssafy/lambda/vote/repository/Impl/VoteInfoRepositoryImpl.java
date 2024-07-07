@@ -1,4 +1,4 @@
-package ssafy.lambda.vote.repository;
+package ssafy.lambda.vote.repository.Impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import ssafy.lambda.vote.repository.VoteInfoRepositoryCustom;
 
 import static ssafy.lambda.vote.entity.QVoteInfo.voteInfo;
 
@@ -52,5 +53,12 @@ public class VoteInfoRepositoryImpl implements VoteInfoRepositoryCustom {
                                    voteInfo.voter.eq(member))
                            .groupBy(voteInfo.voter)
                            .fetchOne();
+    }
+
+    @Override
+    public Long deleteVoteInfoByVoteId(List<Long> voteIds) {
+        return queryFactory.delete(voteInfo)
+                           .where(voteInfo.vote.id.in(voteIds))
+                           .execute();
     }
 }
