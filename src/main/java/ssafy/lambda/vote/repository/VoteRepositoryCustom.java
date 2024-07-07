@@ -12,4 +12,6 @@ public interface VoteRepositoryCustom {
     List<Object[]> findVoteInfoByCnt(Long voteId);
 
     List<Team> findByMemberAndVoteWhether(Member member, List<Team> teamList);
+
+    Long deleteVoteByExpiredVote(List<Long> voteIds);
 }

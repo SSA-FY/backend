@@ -1,4 +1,4 @@
-package ssafy.lambda.vote.repository;
+package ssafy.lambda.vote.repository.Impl;
 
 import static ssafy.lambda.vote.entity.QVote.vote;
 import static ssafy.lambda.vote.entity.QVoteInfo.voteInfo;
@@ -19,6 +19,7 @@ import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.vote.dto.QResponseVoteDto;
 import ssafy.lambda.vote.dto.ResponseVoteDto;
 import ssafy.lambda.vote.entity.QVote;
+import ssafy.lambda.vote.repository.VoteRepositoryCustom;
 
 public class VoteRepositoryImpl implements VoteRepositoryCustom {
 
@@ -129,5 +130,12 @@ public class VoteRepositoryImpl implements VoteRepositoryCustom {
             .groupBy(vote.team)
             .orderBy(vote.expiredAt.asc())
             .fetch();
+    }
+
+    @Override
+    public Long deleteVoteByExpiredVote(List<Long> voteIds) {
+        return queryFactory.delete(vote)
+                           .where(vote.id.in(voteIds))
+                           .execute();
     }
 }
