@@ -12,6 +12,7 @@ import ssafy.lambda.board.repository.ExpiredVoteRepository;
 import ssafy.lambda.membership.entity.Membership;
 import ssafy.lambda.membership.repository.MembershipRepository;
 import ssafy.lambda.notification.entity.NotificationDetail.ExpiredVoteNotification;
+import ssafy.lambda.notification.entity.NotificationDetail.VoteNotification;
 import ssafy.lambda.notification.repository.NotificationRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
 
@@ -28,10 +29,17 @@ public class ExpiredVoteItemWriter implements ItemWriter<ExpiredVote> {
     @Override
     public void write(Chunk<? extends ExpiredVote> chunk) throws Exception {
         List<Long> voteIds = new ArrayList<>();
+
         for (ExpiredVote expiredVote : chunk) {
             voteIds.add(expiredVote.getVoteId());
             expiredVoteRepository.save(expiredVote);
+            VoteNotification voteNotification = notificationRepository.findNotificationByVoteId(expiredVote.getVoteId());
+            voteNotification.setExpiredVote(expiredVote);
+            voteNotification.setIsExpired(true);
+            voteNotification.setVote(null);
 
+            notificationRepository.save(voteNotification);
+            notificationRepository.flush();
             List<Membership> memberships = membershipRepository.findByTeam(expiredVote.getTeam());
             for (Membership membership : memberships) {
                 ExpiredVoteNotification expiredVoteNotification = ExpiredVoteNotification.builder()
