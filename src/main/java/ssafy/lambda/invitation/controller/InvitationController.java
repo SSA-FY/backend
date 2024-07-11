@@ -81,8 +81,9 @@ public class InvitationController {
     @Operation(summary = "초대 수락", description = "초대를 수락하고 팀에 가입합니다")
     @PostMapping("/accept")
     public ResponseEntity<Response> acceptInvitation(@RequestBody
-    RequestAcceptInvitationDto requestAcceptInvitation) {
-        invitationService.acceptInvitation(requestAcceptInvitation);
+    RequestAcceptInvitationDto requestAcceptInvitation, Authentication authentication) {
+        UUID memberId = UUID.fromString(authentication.getName());
+        invitationService.acceptInvitation(requestAcceptInvitation, memberId);
         return ResponseEntity.ok()
                              .build();
     }

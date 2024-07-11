@@ -9,7 +9,7 @@ public interface InvitationService {
 
     public void createInvitation(UUID memberId, Long teamId);
 
-    public void acceptInvitation(RequestAcceptInvitationDto requestAcceptInvitation);
+    public void acceptInvitation(RequestAcceptInvitationDto requestAcceptInvitation, UUID memberId);
 
     public void rejectInvitation(Long invitationId);
 
