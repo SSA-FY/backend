@@ -1,9 +1,10 @@
-package ssafy.lambda.board.repository;
+package ssafy.lambda.board.repository.Impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import java.util.List;
+import ssafy.lambda.board.repository.BoardRepositoryCustom;
 
 public class ExpiredVoteRepositoryImpl implements BoardRepositoryCustom {
 

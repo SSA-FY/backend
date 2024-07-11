@@ -53,6 +53,11 @@ public class ExpiredVoteInfo {
     protected ExpiredVoteInfo() {
     }
 
+    public void addExpiredVote(ExpiredVote expiredVote){
+        this.expiredVote = expiredVote;
+        expiredVote.getExpiredVoteInfoList().add(this);
+    }
+
     /**
      * ExpiredVoteInfo는 VoteInfo의 정보를 그대로 가져오므로 All (expired_vote_info_id 제외) 이때, createdAt와
      * updatedAt는 VoteInfo 테이블의 것임에 주의한다. 자체적인 createdAt는 존재하지 않아 BaseEntity를 상속받지 않는다.

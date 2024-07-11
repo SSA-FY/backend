@@ -2,38 +2,34 @@ package ssafy.lambda.vote.service;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import ssafy.lambda.board.entity.ExpiredVoteInfo;
+import ssafy.lambda.board.repository.ExpiredVoteInfoRepository;
 import ssafy.lambda.global.config.MinioConfig;
 import ssafy.lambda.global.exception.UnauthorizedMemberException;
 import ssafy.lambda.member.entity.Member;
 import ssafy.lambda.member.exception.ImageUploadException;
 import ssafy.lambda.member.service.MemberService;
-import ssafy.lambda.membership.service.MembershipService;
 import ssafy.lambda.notification.service.NotificationService;
 import ssafy.lambda.point.NotEnoughPointException;
 import ssafy.lambda.team.entity.Team;
 import ssafy.lambda.team.service.TeamService;
-import ssafy.lambda.vote.dto.RequestReviewDto;
-import ssafy.lambda.vote.dto.RequestVoteDto;
-import ssafy.lambda.vote.dto.ResponseProfileWithPercentDto;
-import ssafy.lambda.vote.dto.ResponseTodayVoteInfoDto;
-import ssafy.lambda.vote.dto.ResponseVoteDto;
-import ssafy.lambda.vote.dto.ResponseVoteInfoToMeDto;
-import ssafy.lambda.vote.dto.ResponseVoteWithVoteInfoListDto;
+import ssafy.lambda.vote.dto.*;
 import ssafy.lambda.vote.entity.Vote;
 import ssafy.lambda.vote.entity.VoteInfo;
-import ssafy.lambda.vote.exception.VoteInfoNotFoundException;
 import ssafy.lambda.vote.exception.VoteNotFoundException;
 import ssafy.lambda.vote.repository.VoteInfoRepository;
 import ssafy.lambda.vote.repository.VoteRepository;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -45,10 +41,10 @@ public class VoteServiceImpl implements VoteService {
 
     private final VoteRepository voteRepository;
     private final VoteInfoRepository voteInfoRepository;
-    private final MembershipService membershipService;
     private final TeamService teamService;
     private final MemberService memberService;
     private final NotificationService notificationService;
+    private ExpiredVoteInfoRepository expiredVoteInfoRepository;
     private static final long OPEN_POINT = 500;
 
     @Override
@@ -207,22 +203,38 @@ public class VoteServiceImpl implements VoteService {
     public void openVoteInfo(UUID memberId, Long voteInfoId) {
         Member member = memberService.findMemberById(memberId);
 
-        VoteInfo voteInfo = voteInfoRepository.findById(voteInfoId)
-                                              .orElseThrow(VoteInfoNotFoundException::new);
-        if (voteInfo.getVotee() != member) {
-            //자기가 받은 투표가 아닌데 열려고 하는 경우
-            throw new UnauthorizedMemberException();
-        }
-        //포인트 확인 (500 보다 작으면 열 수 없다.)
-        if (member.getPoint() < OPEN_POINT) {
-            throw new NotEnoughPointException();
+        Optional<VoteInfo> optionalVoteInfo = voteInfoRepository.findById(voteInfoId);
+        if (optionalVoteInfo.isPresent()) {
+            VoteInfo voteInfo = optionalVoteInfo.get();
+
+            if (voteInfo.getVotee() != member) {
+                //자기가 받은 투표가 아닌데 열려고 하는 경우
+                throw new UnauthorizedMemberException();
+            }
+            //포인트 확인 (500 보다 작으면 열 수 없다.)
+            if (member.getPoint() < OPEN_POINT) {
+                throw new NotEnoughPointException();
+            }
+            voteInfo.setOpen(true);
+            voteInfoRepository.save(voteInfo);
+        } else {
+            ExpiredVoteInfo expiredVoteInfo = expiredVoteInfoRepository.findById(voteInfoId)
+                                                                       .orElseThrow(VoteNotFoundException::new);
+
+            if (expiredVoteInfo.getVotee() != member) {
+                //자기가 받은 투표가 아닌데 열려고 하는 경우
+                throw new UnauthorizedMemberException();
+            }
+            //포인트 확인 (500 보다 작으면 열 수 없다.)
+            if (member.getPoint() < OPEN_POINT) {
+                throw new NotEnoughPointException();
+            }
+            expiredVoteInfo.setOpen(true);
+            expiredVoteInfoRepository.save(expiredVoteInfo);
         }
 
         //포인트 사용
         memberService.changePoint(memberId, "투표 정보 확인", -OPEN_POINT);
-        //공개 여부 변경
-        voteInfo.setOpen(true);
-        voteInfoRepository.save(voteInfo);
     }
 
     @Override

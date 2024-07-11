@@ -71,16 +71,28 @@ public class NotificationServiceImpl implements NotificationService {
         Page<ResponseNotificationDto> notificationDtos = notifications.map(notification -> {
             if (notification instanceof VoteNotification) {
                 VoteNotification voteNotification = (VoteNotification) notification;
-                return ResponseNotificationDto.NotificationToVoteDto(
-                    voteNotification.getVote()
-                                    .getId(),
-                    voteNotification.getVote()
-                                    .getContent(),
-                    notificationRepository.findVoteNotificationInfoByVoteAndMember(
-                        voteNotification.getVote(), voteNotification.getMember()),
-                    "Vote",
-                    voteNotification.getCreatedAt()
-                );
+                if (!voteNotification.getIsExpired()) {
+                    Vote vote = voteNotification.getVote();
+                    return ResponseNotificationDto.NotificationToVoteDto(
+                            vote.getId(),
+                            vote.getContent(),
+                            notificationRepository.findVoteNotificationInfoByVoteAndMember(
+                                    vote, voteNotification.getMember()),
+                            "Vote",
+                            voteNotification.getCreatedAt()
+                    );
+                } else {
+                    ExpiredVote expiredVote = voteNotification.getExpiredVote();
+                    return ResponseNotificationDto.NotificationToVoteDto(
+                            expiredVote.getId(),
+                            expiredVote.getContent(),
+                            notificationRepository.findVoteNotificationInfoByVoteAndMember(
+                                    expiredVote, voteNotification.getMember()),
+                            "Vote",
+                            voteNotification.getCreatedAt()
+                    );
+                }
+
             } else if (notification instanceof ExpiredVoteNotification) {
                 ExpiredVoteNotification expiredVoteNotification = (ExpiredVoteNotification) notification;
                 return ResponseNotificationDto.NotificationToExpiredVoteDto(
