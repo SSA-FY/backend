@@ -50,13 +50,15 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Transactional
     @Override
-    public void acceptInvitation(RequestAcceptInvitationDto requestAcceptInvitation) {
-        Invitation invitation = invitationRepository.findById(
-                                                        requestAcceptInvitation.getInvitationId())
+    public void acceptInvitation(RequestAcceptInvitationDto requestAcceptInvitationDto,
+        UUID memberId) {
+        Member member = memberService.findMemberById(memberId);
+        Team team = teamService.findTeamByName(requestAcceptInvitationDto.getTeamName());
+        Invitation invitation = invitationRepository.findByTeamAndMember(team, member)
                                                     .orElseThrow(
-                                                        () -> new InvitationNotFoundException());
-        membershipService.createMembership(invitation.getMember(), invitation.getTeam(),
-            requestAcceptInvitation.getNickname());
+                                                        () -> new InvitationNotFoundException()
+                                                    );
+        membershipService.createMembership(member, team, requestAcceptInvitationDto.getNickname());
         invitationRepository.delete(invitation);
     }
 

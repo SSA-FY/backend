@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class RequestAcceptInvitationDto {
 
-    private Long invitationId;
+    private String teamName;
     private String nickname;
 }
